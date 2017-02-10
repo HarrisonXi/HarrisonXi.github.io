@@ -19,7 +19,7 @@ def makeIndex(DIR):
 					matchedPosts.append(path)
 	# 创建文件头内容
 	readmeContent = '# [苹果梨的博客](http://blog.harrisonxi.com)\n'
-	indexContent = '# 苹果梨的博客\n'
+	indexContent = '---\ntitle: 苹果梨的博客 - 首页\n---\n\n# 苹果梨的博客\n'
 	# 按年月分类post并创建列表
 	matchedPosts = sorted(matchedPosts, reverse = True)
 	year = ''
