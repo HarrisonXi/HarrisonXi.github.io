@@ -25,7 +25,7 @@ def makeIndex(DIR):
 	year = ''
 	month = ''
 	for post in matchedPosts:
-		match = postNamePattern.match(path)
+		match = postNamePattern.match(post)
 		if match:
 			if year != match.group(1) or month != match.group(2):
 				year = match.group(1)
