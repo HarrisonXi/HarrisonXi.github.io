@@ -9,3 +9,5 @@
 ### 2015-07
 
 [操蛋的Block语法（译）](http://blog.harrisonxi.com/2015/07/操蛋的Block语法（译）.html)
+
+[A股历史K线和实时行情数据接口](http://blog.harrisonxi.com/2015/07/A股历史K线和实时行情数据接口.html)
