@@ -13,7 +13,8 @@ def convertCss(DIR):
 				htmlFile = open(fullPath, 'r+')
 				content = htmlFile.read()
 				content = re.sub("<style type='text/css'>[^<]+</style>",
-					   		     "<link href='/css/github.css' rel='stylesheet' type='text/css'>",
+					   		     "<link href='/css/github.css' rel='stylesheet' type='text/css'>" +
+					   		     "<link href='/css/myblog.css' rel='stylesheet' type='text/css'>",
 					    		 content)
 				htmlFile.seek(0)
 				htmlFile.write(content)

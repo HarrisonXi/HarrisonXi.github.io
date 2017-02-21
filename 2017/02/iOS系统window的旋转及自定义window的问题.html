@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
-<title>苹果梨的博客 - iOS系统window的旋转及自定义window的问题</title><link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'><link href='/css/github.css' rel='stylesheet' type='text/css'>
+<title>苹果梨的博客 - iOS系统window的旋转及自定义window的问题</title><link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'><link href='/css/github.css' rel='stylesheet' type='text/css'><link href='/css/myblog.css' rel='stylesheet' type='text/css'>
 </head>
 <body class='typora-export' >
 <div  id='write'  class = 'is-mac'><h1><a name='header-c315' class='md-header-anchor '></a>iOS系统window的旋转及自定义window的问题</h1><h3><a name='header-c316' class='md-header-anchor '></a>玩转window，真的是玩『转』</h3><table><thead><tr><th>更新时间</th><th>更新内容</th></tr></thead><tbody><tr><td>2017-02-15</td><td>发布</td></tr></tbody></table><p>具体某些细节内容和我的开源库<a href='https://github.com/HarrisonXi/TopmostView'>TopmostView</a>相关。</p><p>大家的App都会有全屏的引导页或者Loading界面之类吧？如果你的App结构比较简单，比如RootController是一个NavigationController，而且需要展示全屏页面的时候不存在present新VC或正在做VC切换动画之类的情况，那么直接在RootController的view上面做这些就可以。但是因为这种方案下还有各种意想不到的情况会导致全屏页面展示出问题，所以大家一般又会选择在application window上加一个subview来处理全屏页面的展示。</p><p>在App不存在旋转的情况下，这个方法就是最终最优解了。</p><p>在App支持旋转的情况下，要处理的问题就比较多了，下面整理我遇到的一些问题。</p><h4><a name='header-c332' class='md-header-anchor '></a>iOS7的window和之后版本iOS系统的表现不一致</h4><p>在一个iOS7的iPad上创建一个自定义window，再呼起键盘确保键盘window出现，在横屏的状态下断点并打印一下所有window的列表（过滤了一些我们不需要的信息）：</p><pre class='md-fences mock-cm' style='display:block;position:relative'>&lt;__NSArrayM 0x165c5d20&gt;(
