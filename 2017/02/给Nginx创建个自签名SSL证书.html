@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>苹果梨的博客 - 给Nginx创建个自签名SSL证书</title><link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css'><link href='/css/github.css' rel='stylesheet' type='text/css'><link href='/css/myblog.css' rel='stylesheet' type='text/css'>
+</head>
+<body class='typora-export' >
+<div  id='write'  class = 'is-mac'><h1><a name='header-c6' class='md-header-anchor '></a>给Nginx创建个自签名SSL证书</h1><h3><a name='header-c68' class='md-header-anchor '></a>Mac OS X搭建一个iOS自动打包装包系统的准备之一</h3><table><thead><tr><th>更新时间</th><th>更新内容</th></tr></thead><tbody><tr><td>2017-02-22</td><td>发布</td></tr></tbody></table><p>自建的内网服务器讲道理HTTP就够用了，奈何iOS设备想要通过网页自动装包就必须要支持HTTPS。</p><p>参考资料：<a href='http://www.akadia.com/services/ssh_test_certificate.html'>How to create a self-signed SSL Certificate</a>，<a href='http://www.cnblogs.com/kyrios/p/tls-and-certificates.html'>TLS/HTTPS 证书生成与验证</a></p><h4><a name='header-c50' class='md-header-anchor '></a>创建私钥</h4><pre class='md-fences mock-cm' style='display:block;position:relative'>openssl genrsa -out server.key 1024</pre><p>回车之后就可以得到一个server.key，这就是我们的私钥了。</p><p>因为我们是内部服务器使用，所以不需要进行一些加密操作。想要了解一些细节的可以用help参数：</p><pre class='md-fences mock-cm' style='display:block;position:relative'>openssl genrsa --help</pre><h4><a name='header-c89' class='md-header-anchor '></a>创建证书签名请求（Certificate Signing Request）</h4><pre class='md-fences mock-cm' style='display:block;position:relative'>openssl req -new -key server.key -out server.csr</pre><p>回车之后会有一堆等着你输入的东西，其它东西我们都不需要关心，唯独一个Common Name要填成对应网站的IP或者域名，剩余的一路直接回车带过：</p><pre class='md-fences mock-cm' style='display:block;position:relative'>Country Name (2 letter code) [AU]:
+State or Province Name (full name) [Some-State]:
+Locality Name (eg, city) []:
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:
+Organizational Unit Name (eg, section) []:
+Common Name (e.g. server FQDN or YOUR name) []:192.168.1.2
+Email Address []:
+A challenge password []:
+An optional company name []:</pre><p>因为iOS设备难以绑host，然后也没有必要买个域名，所以上面我直接填了机器的IP：<strong>192.168.1.2</strong></p><h4><a name='header-c128' class='md-header-anchor '></a>创建自签名证书</h4><pre class='md-fences mock-cm' style='display:block;position:relative'>openssl x509 -req -in server.csr -signkey server.key -out server.crt</pre><p>回车后悔得到一个server.crt，就是我们成功创建的自签名证书了。</p><h4><a name='header-c145' class='md-header-anchor '></a>配置Nginx</h4><p>Mac下Nginx的配置文件一般是在/usr/local/etc/nginx目录下，打开这个目录下的nginx.conf进行编辑：</p><pre class='md-fences mock-cm' style='display:block;position:relative'>http {
+  ...
+  server {
+    listen              443 ssl;
+    ssl_certificate     /Users/ios-builder/Documents/server.crt;
+    ssl_certificate_key /Users/ios-builder/Documents/server.key;
+    ...
+  }
+}</pre><p>记得改成你的证书对应地址，这里就给了个片段进行示意，具体的详细配置方法请自行搜索。</p><p>最后启动或者重启Nginx，保证设置生效后测试一下访问效果即可。</p><hr /><p>© 2017 苹果梨    <a href='/'>首页</a>    <a href='/about.html'>关于</a>    <a href='https://github.com/HarrisonXi'>GitHub</a>    <a href='mailto:gpra8764@gmail.com'>Email</a></p></div>
+</body>
+</html>
