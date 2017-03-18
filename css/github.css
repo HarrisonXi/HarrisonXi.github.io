@@ -454,9 +454,6 @@ table {
     padding: 0;
     word-break: initial;
 }
-#write {
-    overflow-x: auto;
-}
 table tr {
     border-top: 1px solid #cccccc;
     background-color: white;
