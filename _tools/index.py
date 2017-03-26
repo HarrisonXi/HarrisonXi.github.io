@@ -9,9 +9,7 @@ def makeIndex(DIR):
 	matchedPosts = []
 	for path in os.listdir(DIR):
 		fullPath = os.path.join(DIR, path)
-		if os.path.isdir(fullPath):
-			makeIndex(fullPath)
-		elif os.path.isfile(fullPath):
+		if os.path.isfile(fullPath):
 			if path.lower().endswith('.md'):
 				match = postNamePattern.match(path)
 				if match:
