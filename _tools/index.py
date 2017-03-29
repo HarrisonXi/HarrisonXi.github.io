@@ -33,7 +33,7 @@ def makeIndex(DIR):
 			readmeContent = readmeContent + '\n[%s](http://blog.harrisonxi.com/%s/%s/%s.html)\n' % (match.group(3), year, month, match.group(3))
 			indexContent = indexContent + '\n[%s](/%s/%s/%s.html)\n' % (match.group(3), year, month, match.group(3))
 	# 补全文件尾内容并写入
-	indexContent = indexContent + '\n------\n\n© 2017 苹果梨    首页    [关于](/about.html)    [GitHub](https://github.com/HarrisonXi)    [Email](mailto:gpra8764@gmail.com)\n'
+	indexContent = indexContent + '\n------\n\n© 2017 苹果梨　　首页　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)\n'
 	file = open('README.md', 'w')
 	file.write(readmeContent)
 	file.close()

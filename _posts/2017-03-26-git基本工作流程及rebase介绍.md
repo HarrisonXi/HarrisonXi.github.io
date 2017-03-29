@@ -194,4 +194,4 @@ feature2分支每次rebase完之后得到新的commit，看上去也会变成从
 
 ------
 
-© 2017 苹果梨    [首页](/)    [关于](/about.html)    [GitHub](https://github.com/HarrisonXi)    [Email](mailto:gpra8764@gmail.com)
+© 2017 苹果梨　　[首页](/)　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)

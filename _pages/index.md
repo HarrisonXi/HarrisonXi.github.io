@@ -28,4 +28,4 @@ title: 苹果梨的博客 - 首页
 
 ------
 
-© 2017 苹果梨    首页    [关于](/about.html)    [GitHub](https://github.com/HarrisonXi)    [Email](mailto:gpra8764@gmail.com)
+© 2017 苹果梨　　首页　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)

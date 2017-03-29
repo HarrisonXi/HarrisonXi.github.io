@@ -30,4 +30,4 @@ Markdown手写，借助Python脚本+[Typora](https://typora.io/)转换为静态�
 
 ------
 
-© 2017 苹果梨    [首页](/)    关于    [GitHub](https://github.com/HarrisonXi)    [Email](mailto:gpra8764@gmail.com)
+© 2017 苹果梨　　[首页](/)　　关于　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)
