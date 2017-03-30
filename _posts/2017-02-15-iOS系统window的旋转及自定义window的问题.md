@@ -79,7 +79,7 @@ tag: window, 旋转, 自定义, iOS, 开源
 
 在iOS中，设备方向相关的定义都是叫做StatusBarOrientation，下面列出一些常用的定义：
 
-```objective-c
+```
 // 取得当前的设备方向
 [UIApplication sharedApplication].statusBarOrientation
 // 设备即将改变方向的通知事件name
@@ -106,7 +106,7 @@ DidChange通知发生的时候，statusBarOrientation会取得旋转后的方向
 
 系统定义了三种WindowLevel，值其实都是CGFloat型的：
 
-```objective-c
+```
 // 普通window的level，实际值是0
 UIWindowLevel UIWindowLevelNormal;
 // Alert弹窗window的level，实际值是2000
@@ -127,7 +127,7 @@ userInteractionEnabled需要记得设置成NO，不然上层的window会截获�
 
 另外很诡异的一点是，一定要给window设置一个空的rootViewController：
 
-```objective-c
+```
 window.rootViewController = [UIViewController new];
 ```
 

@@ -11,8 +11,8 @@
 </head>
 <body class='typora-export'>
   <div id='write' class='is-mac'>
-    <h1><a name='header-c6' class='md-header-anchor' id="header-c6"></a>iOS系统的键盘window</h1>
-    <h3><a name='header-c7' class='md-header-anchor' id="header-c7"></a>从iOS7到iOS10的变更历史</h3>
+    <h1><a name='header-c7' class='md-header-anchor' id="header-c7"></a>iOS系统的键盘window</h1>
+    <h3><a name='header-c8' class='md-header-anchor' id="header-c8"></a>从iOS7到iOS10的变更历史</h3>
     <table>
       <thead>
         <tr>
@@ -30,52 +30,14 @@
     <p>具体某些细节内容和我的开源库<a href='https://github.com/HarrisonXi/TopmostView'>TopmostView</a>相关。</p>
     <p>发现这个键盘window需要调研一下的原因，就是在这个开源库调试过程中，发现新建的自定义window连状态栏都能盖住的情况下，居然盖不住键盘。</p>
     <p>让我们从iOS7开始慢慢调研起。</p>
-    <h4><a name='header-c49' class='md-header-anchor' id="header-c49"></a>iOS7/8的键盘window</h4>
+    <h4><a name='header-c22' class='md-header-anchor' id="header-c22"></a>iOS7/8的键盘window</h4>
     <p>先写一些日志来方便观察一个App的window结构：</p>
-    <pre class="md-fences md-end-block" lang="objective-c"> </pre>
-    <div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="objective-c">
-      <div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 4px;"></div>
-      <div class="CodeMirror-hscrollbar" style="left: 0px; min-height: 18px;">
-        <div style="height: 100%; min-height: 1px; width: 0px;"></div>
-      </div>
-      <div class="CodeMirror-vscrollbar" style="min-width: 18px;">
-        <div style="min-width: 1px; height: 0px;"></div>
-      </div>
-      <div class="CodeMirror-scrollbar-filler"></div>
-      <div class="CodeMirror-gutter-filler"></div>
-      <div class="CodeMirror-scroll" tabindex="-1">
-        <div class="CodeMirror-sizer" style="margin-left: 0px; min-height: 0px;">
-          <div style="position: relative; top: 0px;">
-            <div class="CodeMirror-lines">
-              <div style="position: relative; outline: none;">
-                <div class="CodeMirror-measure">
-                  <div style="width: 50px; height: 50px; overflow-x: scroll;"></div>
-                </div>
-                <div class="CodeMirror-measure"></div>
-                <div style="position: relative; z-index: 1;"></div>
-                <div class="CodeMirror-code" style="">
-                  <div class="CodeMirror-activeline" style="position: relative;">
-                    <div class="CodeMirror-activeline-background CodeMirror-linebackground"></div>
-                    <pre class=""><span style="padding-right: 0.1px;"><span class="cm-keyword">for</span> (<span class="cm-variable">UIWindow</span> <span class="cm-operator">*</span><span class="cm-variable">win</span> <span class="cm-keyword">in</span> [<span class="cm-variable">UIApplication</span> <span class="cm-variable">sharedApplication</span>].<span class="cm-variable">windows</span>) {</span></pre>
-                  </div>
-                  <pre class=""><span style="padding-right: 0.1px;">    <span class="cm-variable">NSLog</span>(<span class="cm-keyword">@</span><span class="cm-string">"window class: %@, window level: %.0f"</span>, <span class="cm-variable">NSStringFromClass</span>([<span class="cm-variable">win</span> <span class="cm-variable">class</span>]), <span class="cm-variable">win</span>.<span class="cm-variable">windowLevel</span>);</span></pre>
-                  <pre class=""><span style="padding-right: 0.1px;">    <span class="cm-keyword">for</span> (<span class="cm-variable">UIView</span> <span class="cm-operator">*</span><span class="cm-variable">subview</span> <span class="cm-keyword">in</span> <span class="cm-variable">win</span>.<span class="cm-variable">subviews</span>) {</span></pre>
-                  <pre class=""><span style="padding-right: 0.1px;">        <span class="cm-variable">NSLog</span>(<span class="cm-keyword">@</span><span class="cm-string">"    subview class: %@"</span>, <span class="cm-variable">NSStringFromClass</span>([<span class="cm-variable">subview</span> <span class="cm-variable">class</span>]));</span></pre>
-                  <div class="" style="position: relative;">
-                    <pre class=""><span style="padding-right: 0.1px;">    }</span></pre>
-                  </div>
-                  <div class="" style="position: relative;">
-                    <pre class=""><span style="padding-right: 0.1px;">}</span></pre>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style="position: absolute; height: 30px; width: 1px; top: 0px;"></div>
-        <div class="CodeMirror-gutters" style="display: none; height: 154px;"></div>
-      </div>
-    </div>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>for (UIWindow *win in [UIApplication sharedApplication].windows) {
+    NSLog(@"window class: %@, window level: %.0f", NSStringFromClass([win class]), win.windowLevel);
+    for (UIView *subview in win.subviews) {
+        NSLog(@"    subview class: %@", NSStringFromClass([subview class]));
+    }
+}</pre>
     <p>在iOS7里运行可能得到以下两种结果：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
@@ -95,7 +57,7 @@ window class: UITextEffectsWindow, window level: 1
 window class: UITextEffectsWindow, window level: 2100
     subview class: TopmostView</pre>
     <p>再深入的话，iOS7和iOS8的键盘window有个区别：iOS7的键盘window是frame始终恒定，通过transform来变换旋转方向。细节可以参考我的后一篇博客，在此不深入讨论。</p>
-    <h4><a name='header-c146' class='md-header-anchor' id="header-c146"></a>iOS9/10的键盘window</h4>
+    <h4><a name='header-c39' class='md-header-anchor' id="header-c39"></a>iOS9/10的键盘window</h4>
     <p>iOS9的window层次如下：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
@@ -110,50 +72,14 @@ window class: UIRemoteKeyboardWindow, window level: 10000000
     <p>重点在于多了一个level为1000万的window……导致了我建一个level两千多的window没办法盖住键盘window了。</p>
     <p>建立一个level比1000万还大的window我个人就不太建议了（能不能创建成功是另一码事），所以iOS9之后想要做一些盖住键盘的提示之类，还是建议在这个UIRemoteKeyboardWindow上增加subview来做了。</p>
     <p>比较有趣的事情是，我的开源库是在UITextEffectsWindow上addSubview的，结果实际上这个TopmostView被增加到了UIRemoteKeyboardWindow上。应该是UITextEffectsWindow做了一些代理或者转发的工作，所以按照iOS7/8的逻辑直接在顶层的UITextEffectsWindow上addSubview也可以。</p>
-    <h4><a name='header-c221' class='md-header-anchor' id="header-c221"></a>总结</h4>
+    <h4><a name='header-c51' class='md-header-anchor' id="header-c51"></a>总结</h4>
     <p>App有盖住键盘的提示之类需求，建议的统一方案是从高层往低层逆序遍历所有的window，找到第一个UITextEffectsWindow，在上面新增一个subview然后在这个subview上做剩余的操作。找到这个window的具体代码示例如下：</p>
-    <pre class="md-fences md-end-block" lang="objective-c"> </pre>
-    <div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="objective-c">
-      <div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 4px;"></div>
-      <div class="CodeMirror-hscrollbar" style="left: 0px; min-height: 18px;">
-        <div style="height: 100%; min-height: 1px; width: 0px;"></div>
-      </div>
-      <div class="CodeMirror-vscrollbar" style="min-width: 18px;">
-        <div style="min-width: 1px; height: 0px;"></div>
-      </div>
-      <div class="CodeMirror-scrollbar-filler"></div>
-      <div class="CodeMirror-gutter-filler"></div>
-      <div class="CodeMirror-scroll" tabindex="-1">
-        <div class="CodeMirror-sizer" style="margin-left: 0px; min-height: 0px;">
-          <div style="position: relative; top: 0px;">
-            <div class="CodeMirror-lines">
-              <div style="position: relative; outline: none;">
-                <div class="CodeMirror-measure">
-                  <div style="width: 50px; height: 50px; overflow-x: scroll;"></div>
-                </div>
-                <div class="CodeMirror-measure"></div>
-                <div style="position: relative; z-index: 1;"></div>
-                <div class="CodeMirror-code" style="">
-                  <div class="CodeMirror-activeline" style="position: relative;">
-                    <div class="CodeMirror-activeline-background CodeMirror-linebackground"></div>
-                    <pre class=""><span style="padding-right: 0.1px;"><span class="cm-keyword">for</span> (<span class="cm-variable">UIWindow</span> <span class="cm-operator">*</span><span class="cm-variable">window</span> <span class="cm-keyword">in</span> [[<span class="cm-variable">UIApplication</span> <span class="cm-variable">sharedApplication</span>].<span class="cm-variable">windows</span> <span class="cm-variable">reverseObjectEnumerator</span>]) {</span></pre>
-                  </div>
-                  <pre class=""><span style="padding-right: 0.1px;">    <span class="cm-keyword">if</span> ([<span class="cm-variable">window</span> <span class="cm-variable">isKindOfClass</span>:<span class="cm-variable">NSClassFromString</span>(<span class="cm-keyword">@</span><span class="cm-string">"UITextEffectsWindow"</span>)] <span class="cm-operator">&amp;&</span> <span class="cm-variable">window</span>.<span class="cm-variable">hidden</span> <span class="cm-operator">==</span> <span class="cm-atom">NO</span> <span class="cm-operator">&amp;&</span> <span class="cm-variable">window</span>.<span class="cm-variable">alpha</span> <span class="cm-operator">&gt;</span> <span class="cm-number">0</span>) {</span></pre>
-                  <pre class=""><span style="padding-right: 0.1px;">        <span class="cm-keyword">return</span> <span class="cm-variable">window</span>;</span></pre>
-                  <pre class=""><span style="padding-right: 0.1px;">    }</span></pre>
-                  <pre class=""><span style="padding-right: 0.1px;">}</span></pre>
-                  <div class="" style="position: relative;">
-                    <pre class=""><span style="padding-right: 0.1px;"><span class="cm-keyword">return</span> <span class="cm-keyword">nil</span>;</span></pre>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style="position: absolute; height: 30px; width: 1px; top: 0px;"></div>
-        <div class="CodeMirror-gutters" style="display: none; height: 176px;"></div>
-      </div>
-    </div>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>for (UIWindow *window in [[UIApplication sharedApplication].windows reverseObjectEnumerator]) {
+    if ([window isKindOfClass:NSClassFromString(@"UITextEffectsWindow")] &amp;& window.hidden == NO &amp;& window.alpha &gt; 0) {
+        return window;
+    }
+}
+return nil;</pre>
     <p>当然还有一些旋转和尺寸问题等着你处理。</p>
     <p>如果你不想自己处理这些，那么请移步至开源库：<a href='https://github.com/HarrisonXi/TopmostView'>TopmostView</a></p>
     <hr>
