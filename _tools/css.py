@@ -16,6 +16,7 @@ def convertCss(DIR):
 					   		     "<link href='/css/github.css' rel='stylesheet' type='text/css'>" +
 					   		     "<link href='/css/myblog.css' rel='stylesheet' type='text/css'>",
 					    		 content)
+				content = re.sub('fonts.googleapis.com', 'fonts.lug.ustc.edu.cn', content)
 				htmlFile.seek(0)
 				htmlFile.write(content)
 				htmlFile.truncate()
