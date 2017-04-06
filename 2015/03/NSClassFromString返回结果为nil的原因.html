@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Mac OS X version 5.4.0">
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width initial-scale=1'>
+  <title>苹果梨的博客 - NSClassFromString返回结果为nil的原因</title>
+  <link href='http://fonts.lug.ustc.edu.cn/css?family=Open+Sans:400italic,700italic,700,400&amp;subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  <link href='/css/github.css' rel='stylesheet' type='text/css'>
+  <link href='/css/myblog.css' rel='stylesheet' type='text/css'>
+</head>
+<body class='typora-export'>
+  <div id='write' class='is-mac'>
+    <h1><a name='header-c7' class='md-header-anchor' id="header-c7"></a>NSClassFromString返回结果为nil的原因</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>更新时间</th>
+          <th>更新内容</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2015-03-09</td>
+          <td>发布</td>
+        </tr>
+        <tr>
+          <td>2017-04-06</td>
+          <td>修订</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>NSClassFromString算是ObjC动态化的精华之一，在运行时可以从一个NSString动态获得对应的Class，再创建其对应实例，调用实例内部方法。</p>
+    <p>可最近有一次写代码碰到了NSClassFromString结果总是为nil的问题，debug了半天才找到原因。</p>
+    <h4><a name='header-c22' class='md-header-anchor' id="header-c22"></a>因为未加载对应类导致的nil结果</h4>
+    <p>先看看<a href='https://stackoverflow.com/questions/2227085/nsclassfromstring-returns-nil'>StackOverflow传送门</a>和苹果的NSClassFromString函数<a href='https://developer.apple.com/reference/foundation/1395135-nsclassfromstring'>官方文档</a>。</p>
+    <p>Return Value: The class object named by aClassName, or nil if no class by that name is <strong>currently loaded</strong>. If aClassName is nil, returns nil.</p>
+    <p>关键点就是标记的这里，NSClassFromString只能返回当前已经加载过的Class。所以在某些类并没有被使用过或加载过时，就会得到nil的结果。比如想要用NSClassFromString获得一个静态库里的类，通常就会遇到这种情况。这种时候我们要做的就是在<strong>主工程的编译选项</strong>里加一个参数：</p>
+    <p><img src='09-A.png' alt='09-A'></p>
+    <p>如图，先选中工程的target，然后在Build Settings里搜一下Other Linker Flags，双击添加一个『-ObjC』，就OK了。如果你想要了解『-ObjC』这个flag具体是做什么的，可以参考<a href='https://developer.apple.com/library/content/qa/qa1490/_index.html'>这个链接</a>。</p>
+    <h4><a name='header-c33' class='md-header-anchor' id="header-c33"></a>因为未实现对应类导致的nil结果</h4>
+    <p>当然我碰到的问题不是这个……我的问题在于光写了@interface，忘记写@implementation了……也是醉了……</p>
+    <p>下图里面这个comment的人就是我，当然这位大哥说的.m文件忘记加到工程里也会导致同样的问题。</p>
+    <p><img src='09-B.png' alt='09-B'></p>
+    <p>所以各位一定也要记得检查下，自己是不是也犯二了233。</p>
+    <hr>
+    <p>© 2017 苹果梨　　<a href='/'>首页</a>　　<a href='/about.html'>关于</a>　　<a href='https://github.com/HarrisonXi'>GitHub</a>　　<a href='mailto:gpra8764@gmail.com'>Email</a></p>
+  </div>
+</body>
+</html>
