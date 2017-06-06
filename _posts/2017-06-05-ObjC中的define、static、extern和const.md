@@ -341,9 +341,11 @@ UIKIT_EXTERN const UIWindowLevel UIWindowLevelStatusBar __TVOS_PROHIBITED;
 
 关于为什么不使用define，在前文的对比中大概的讲解了。
 
-不使用static配合const的原因在于，static提供的常量会产生很多副本。
+不使用static配合const的原因在于，static提供的常量会产生很多副本，而且static本身从设计初衷上就不应该是配合const使用的。
 
-理论上用extern导出的字串常量，在比对时都可以直接用`==`来直接进行比对而不需要使用`isEqualToString`，但是考虑代码的健壮性最好仍使用`isEqualToString`来进行比对，现在的设备CPU已经不差这么点性能优化了。
+extern导出的常量有一个优点就是不会直接展示出具体的常量值是多少，因为实际的初始化是在.m文件里，在对外导出library或者framework的时候.h里面就不会包含这个初始值。（当然用户还是能知道值是多少的就是。）
+
+extern导出的常量还有一个优点，理论上用extern导出的字串常量，在比对时都可以直接用`==`来直接进行比对而不需要使用`isEqualToString`。但是考虑代码的健壮性最好仍使用`isEqualToString`来进行比对，毕竟现在的设备CPU已经不差这么点性能优化了。
 
 所以从最后来说最合适的导出手段，也就是如上iOS SDK导出常量的方式了。
 
