@@ -11,7 +11,7 @@ tag: iOS, ObjC, MRC, ARC, 内存, 引用计数, 手动, 自动
 | 更新时间       | 更新内容        |
 | ---------- | ----------- |
 | 2013-05-22 | 发布          |
-| 2017-04-05 | 修订内容，新增部门内容 |
+| 2017-04-05 | 修订内容，新增部分内容 |
 
 Apple Developer原文：[Transitioning to ARC Release Notes](https://developer.apple.com/library/content/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html)
 
