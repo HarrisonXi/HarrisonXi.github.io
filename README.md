@@ -33,3 +33,7 @@
 ### 2013-05
 
 [iOS从MRC（手动引用计数）过渡到ARC（自动引用计数）](http://blog.harrisonxi.com/2013/05/iOS从MRC（手动引用计数）过渡到ARC（自动引用计数）.html)
+
+### 2013-04
+
+[iOS中App的生命周期](http://blog.harrisonxi.com/2013/04/iOS中App的生命周期.html)

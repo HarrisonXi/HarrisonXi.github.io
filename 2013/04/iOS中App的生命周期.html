@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Mac OS X version 5.4.0">
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width initial-scale=1'>
+  <title>苹果梨的博客 - iOS中App的生命周期</title>
+  <link href='http://fonts.lug.ustc.edu.cn/css?family=Open+Sans:400italic,700italic,700,400&amp;subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  <link href='/css/github.css' rel='stylesheet' type='text/css'>
+  <link href='/css/myblog.css' rel='stylesheet' type='text/css'>
+</head>
+<body class='typora-export'>
+  <div id='write' class='is-mac'>
+    <h1><a name='header-c7' class='md-header-anchor' id="header-c7"></a>iOS中App的生命周期</h1>
+    <h3><a name='header-c8' class='md-header-anchor' id="header-c8"></a>后台、中断及回调消息</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>更新时间</th>
+          <th>更新内容</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2013-04-17</td>
+          <td>发布</td>
+        </tr>
+        <tr>
+          <td>2017-06-12</td>
+          <td>删除iOS4及之前的单线程生命周期说明</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>参考Apple的官方文章：<a href='https://developer.apple.com/library/content/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/StrategiesforHandlingAppStateTransitions/StrategiesforHandlingAppStateTransitions.html'>Strategies for Handling App State Transitions</a></p>
+    <h4><a name='header-c21' class='md-header-anchor' id="header-c21"></a>在启动时我们应该做些什么</h4>
+    <p>App启动的时候，我们应该在<a href='https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application'>application:didFinishLaunchingWithOptions:</a>回调里：</p>
+    <ol start=''>
+      <li>通过launch options字典来检查App为什么被启动，做出相应的反馈</li>
+      <li>初始化App所需要的各种数据</li>
+      <li>准备应用的初始化window和视图用来展示</li>
+    </ol>
+    <p>在这个回调里的处理应该尽可能的轻量化，这样可以减少App的启动时间。如果5秒内App还没有成功进入接收消息的就绪状态，App将会被系统杀死。</p>
+    <h4><a name='header-c36' class='md-header-anchor' id="header-c36"></a>启动后正式进入前台之前</h4>
+    <p><a href='https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622956-applicationdidbecomeactive'>applicationDidBecomeActive:</a>会被触发，在这个回调触发之后我们就可以确认App是在前台运行了。</p>
+    <h4><a name='header-c39' class='md-header-anchor' id="header-c39"></a>在临时中断时我们应该做些什么</h4>
+    <p>在一个基于alert的中断发生或者收到来电时，<a href='https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622950-applicationwillresignactive'>applicationWillResignActive:</a>会被触发，在这回调里：</p>
+    <ol start=''>
+      <li>保存应用的状态</li>
+      <li>停止计时器和其它的一些定时触发的周期任务</li>
+      <li>停止各种请求并不再初始化新的任务</li>
+      <li>进行其它各种暂停操作等</li>
+    </ol>
+    <p>在用户取消了alert或者未接电话时，App会回到原先的active状态，触发<a href='https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622956-applicationdidbecomeactive'>applicationDidBecomeActive:</a>回调，这时候我们应该做一些中断操作的反向操作。</p>
+    <p>其实在App任何情况下即将失去焦点时，最先都会调用<code>applicationWillResignActive:</code>。</p>
+    <p>而在App回到前台运行，在开始主线程Run Loop之前，必定会先触发<code>applicationDidBecomeActive:</code>。</p>
+    <p>注意：一定不要刻意等到App状态切换的时候再去保存用户数据，用户数据应该在更改后尽快的进行保存。</p>
+    <h4><a name='header-c63' class='md-header-anchor' id="header-c63"></a>在进入后台运行时我们应该做些什么</h4>
+    <p>在App进入后台时，<a href='https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622997-applicationdidenterbackground'>applicationDidEnterBackground:</a>回调将被触发，这时我们可以：</p>
+    <ol start=''>
+      <li>处理App快照截图。在我们App进入后台之前，系统会做一张快照截图，用于多任务界面的切换动画。如果你的App包含一些敏感数据，一定要在<code>applicationDidEnterBackground:</code>返回之前，处理好你的App视图。记住大多数情况下可能需要强制执行一次绘图。</li>
+      <li>保存应用信息。</li>
+      <li>释放一些不需要的内存空间。占用内存大的后台App在系统内存吃紧的时候会最先被干掉。</li>
+    </ol>
+    <p>和App启动一样，真的进入后台前你有5秒钟时间再处理各种事务，这个回调的处理也应该尽可能的轻量化，否则超时的话App一样会被系统干掉。</p>
+    <p>如果需要在后台进行一些较为耗时的处理，可以参照方法<code>beginBackgroundTaskWithExpirationHandler:</code>。</p>
+    <p>在应用再从后台准备回到前台时，最先触发的是对应的回调<a href='https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623076-applicationwillenterforeground'>applicationWillEnterForeground:</a>，在这个回调里我们应该进行各种进入后台操作的反向操作。</p>
+    <h4><a name='header-c82' class='md-header-anchor' id="header-c82"></a>具有后台运行权限的App</h4>
+    <p>通常代表是导航和多媒体播放App，这些App在后台也是需要工作的。在Info.plsit文件里声明对应的权限，开启后台模式后，App在后台运行的时候仍然会运行一个Run Loop。</p>
+    <h4><a name='header-c85' class='md-header-anchor' id="header-c85"></a>图示总结</h4>
+    <p><img src='17-A.png' alt='17-A'></p>
+    <hr>
+    <p>© 2017 苹果梨　　<a href='/'>首页</a>　　<a href='/about.html'>关于</a>　　<a href='https://github.com/HarrisonXi'>GitHub</a>　　<a href='mailto:gpra8764@gmail.com'>Email</a></p>
+  </div>
+</body>
+</html>

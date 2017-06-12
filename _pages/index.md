@@ -38,6 +38,10 @@ title: 苹果梨的博客 - 首页
 
 [iOS从MRC（手动引用计数）过渡到ARC（自动引用计数）](/2013/05/iOS从MRC（手动引用计数）过渡到ARC（自动引用计数）.html)
 
+### 2013-04
+
+[iOS中App的生命周期](/2013/04/iOS中App的生命周期.html)
+
 ------
 
 © 2017 苹果梨　　首页　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)

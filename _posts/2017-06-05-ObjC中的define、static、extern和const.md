@@ -1,7 +1,7 @@
 ---
 title: 苹果梨的博客 - ObjC中的define、static、extern和const
-category: ObjC, define, static, extern, const
-tag: ObjC
+category: ObjC
+tag: ObjC, keyword, define, static, extern, const
 ---
 
 # ObjC中的define、static、extern和const
