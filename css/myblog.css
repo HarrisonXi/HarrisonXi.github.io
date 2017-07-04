@@ -1,5 +1,9 @@
-strong, b { 
+strong, b {
   color: rgb(224, 0, 0);
+}
+i, em {
+  color: rgb(224, 224, 255);
+  background-color: rgb(224, 224, 255);
 }
 #write {
   white-space: normal;

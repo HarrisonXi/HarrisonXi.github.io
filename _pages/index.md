@@ -4,6 +4,10 @@ title: 苹果梨的博客 - 首页
 
 # 苹果梨的博客
 
+### 2017-07
+
+[a为大于3的质数，证明a*a-1为24的倍数](/2017/07/a为大于3的质数，证明a*a-1为24的倍数.html)
+
 ### 2017-06
 
 [ObjC中的define、static、extern和const](/2017/06/ObjC中的define、static、extern和const.html)
