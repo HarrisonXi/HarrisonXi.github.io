@@ -3,6 +3,7 @@ import re
 import sys,os
 
 postNamePattern = re.compile(r'(\d{4})-(\d{2})-\d{2}-(.+)\.md')
+categoryPattern = re.compile(r'category: (.+)')
 
 def makeIndex(DIR):
 	# 遍历所有有效的post
@@ -30,8 +31,15 @@ def makeIndex(DIR):
 				month = match.group(2)
 				readmeContent = readmeContent + '\n### %s-%s\n' % (year, month)
 				indexContent = indexContent + '\n### %s-%s\n' % (year, month)
-			readmeContent = readmeContent + '\n[%s](http://blog.harrisonxi.com/%s/%s/%s.html)\n' % (match.group(3), year, month, match.group(3))
-			indexContent = indexContent + '\n[%s](/%s/%s/%s.html)\n' % (match.group(3), year, month, match.group(3))
+			file = open(os.path.join(DIR, post), 'r')
+			content = file.read()
+			file.close()
+			categoryMatch = categoryPattern.search(content)
+			categoryName = '未分类'
+			if categoryMatch:
+				categoryName = categoryMatch.group(1)
+			readmeContent = readmeContent + '\n`%s` [%s](http://blog.harrisonxi.com/%s/%s/%s.html)\n' % (categoryName, match.group(3), year, month, match.group(3))
+			indexContent = indexContent + '\n`%s` [%s](/%s/%s/%s.html)\n' % (categoryName, match.group(3), year, month, match.group(3))
 	# 补全文件尾内容并写入
 	indexContent = indexContent + '\n------\n\n© 2017 苹果梨　　首页　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)\n'
 	file = open('README.md', 'w')
