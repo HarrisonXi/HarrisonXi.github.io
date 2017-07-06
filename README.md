@@ -2,6 +2,8 @@
 
 ### 2017-07
 
+`逻辑` [鬼谷子问徒](http://blog.harrisonxi.com/2017/07/鬼谷子问徒.html)
+
 `逻辑` [a为大于3的质数，证明a*a-1为24的倍数](http://blog.harrisonxi.com/2017/07/a为大于3的质数，证明a*a-1为24的倍数.html)
 
 ### 2017-06
