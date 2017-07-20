@@ -30,11 +30,12 @@
     <h4><a name='header-c16' class='md-header-anchor' id="header-c16"></a>前言</h4>
     <p><a href='https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel'>MVVM</a>是微软于2005年开发出的一种软件架构设计模式，主要是为了在WPF和Silverlight中更简单的对UI实现事件驱动编程。在WPF和Silverlight中，通过MVVM成功的实现了UI布局和数据逻辑的剥离。虽然WPF和Silverlight最后都没有推广开来，但是还是让大家看到了MVVM设计模式的优秀之处。</p>
     <p>我有幸在早年参加过<a href='https://en.wikipedia.org/wiki/Microsoft_Blend'>Expression Blend</a>的自动化测试工作，期间做了不少WPF和Silverlight的App，算是较早一批接触熟悉MVVM的天朝码农了。在iOS平台出现了可以优雅实现MVVM的RAC时，着实激动了一下。下面就让我们先从最早的MVC开始慢慢说起。</p>
-    <h4><a name='header-c21' class='md-header-anchor' id="header-c21"></a>MVC理想设计模式</h4>
+    <p>如果你想简单点直接看代码：<a href='https://github.com/HarrisonXi/MvvmDemo'>Show you the code</a>。</p>
+    <h4><a name='header-c23' class='md-header-anchor' id="header-c23"></a>MVC理想设计模式</h4>
     <p>MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、数据和控制逻辑三大部分：</p>
     <p><img src='18-A.png' alt='18-A'></p>
     <p>一个UI交互的整体过程：View接受用户操作发送给Controller，Controller根据操作对数据进行修改，Controller接受数据修改的通知，并根据通知更新对应的UI。当然Controller可能有一些自有逻辑会修改数据或者更新UI，从属关系上来说View和Model都属于Controller。</p>
-    <h4><a name='header-c28' class='md-header-anchor' id="header-c28"></a>MVC实例</h4>
+    <h4><a name='header-c30' class='md-header-anchor' id="header-c30"></a>MVC实例</h4>
     <p>这是我比较喜欢的一个实例，实现一个简单的登录界面。先罗列一下简单的需求：</p>
     <ol start=''>
       <li>用户名有效长度为4-16位，无效时对应文本框显示为红色底色，有效时文本框显示为绿色底色，无输入时显示为白色底色。</li>
@@ -46,7 +47,7 @@
     <p>然后呢需要写的代码就是大概下面这样了：</p>
     <p><img src='18-C.png' alt='18-C'></p>
     <p>这里的<code>username</code>和<code>password</code>两个属性可以看作Model层，文本框和按钮的xib就是View层，VC主体代码就是Controller层。可以看到所有的Model修改逻辑和UI更新逻辑都是在Controller里一起完成的。（<a href='https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVC'>完整代码</a>）</p>
-    <h4><a name='header-c51' class='md-header-anchor' id="header-c51"></a>MVC解决的问题和优缺点</h4>
+    <h4><a name='header-c53' class='md-header-anchor' id="header-c53"></a>MVC解决的问题和优缺点</h4>
     <ul>
       <li>代码成功分化为UI、数据和控制逻辑三大部分。</li>
       <li>易于理解使用，普及成本低。</li>
@@ -54,15 +55,15 @@
       <li>细节不够明确，基本上不明确归属的代码全部会放在Controller层。</li>
       <li>和UI操作事件绑定较重，难以进行单元测试。</li>
     </ul>
-    <h4><a name='header-c68' class='md-header-anchor' id="header-c68"></a>MVC实际使用状况</h4>
+    <h4><a name='header-c70' class='md-header-anchor' id="header-c70"></a>MVC实际使用状况</h4>
     <p>因为上一节中提到的3和4两点，很多代码都只能写在Controller层。还因为xib的特殊性，对多人协作十分不友好，导致大部分UI的布局和初始化代码要用代码实现，而这些代码写成单独的类也多有不便，导致本该出现在View层的代码也堆积在了Controller层。而且在iOS中，UIViewController和UIView本来就是一一对应的。这就导致了MVC从最早的<strong>Model-View-Controller</strong>最终一点点变成了<strong>Massive-View-Controller</strong>：</p>
     <p><img src='18-D.png' alt='18-D'></p>
-    <h4><a name='header-c73' class='md-header-anchor' id="header-c73"></a>MVP设计模式</h4>
+    <h4><a name='header-c75' class='md-header-anchor' id="header-c75"></a>MVP设计模式</h4>
     <p>所谓设计模式，就是软件设计过程中为了解决普遍性问题而提出的通用解决方案。MVP的出现就是为了解决MVC的Controller越来越臃肿的问题，进一步明确代码的分工：</p>
     <p><img src='18-E.png' alt='18-E'></p>
     <p>这个图看上去和MVC很相似，但是这里的实虚线和MVC设计模式不同。所表示的意义为View层持有Presenter层，Presenter层持有Model层，View层并不可直接访问到Model层。整体的UI交互流程和MVC类似。</p>
     <p>这么做的意义就在于真正意义上的将UI逻辑和数据逻辑隔离，而隔离之后就可以更方便的对数据逻辑部分进行单元测试，隔离的另一个好处就是解开了一部分的耦合。</p>
-    <h4><a name='header-c82' class='md-header-anchor' id="header-c82"></a>MVP实例</h4>
+    <h4><a name='header-c84' class='md-header-anchor' id="header-c84"></a>MVP实例</h4>
     <p>接着刚刚的实例，我们在它的基础上继续进行修改。</p>
     <p>首先我们需要定义一个Presenter，头文件内把所有可接受的用户操作和更新UI需要用的回调定义好：</p>
     <p><img src='18-F.png' alt='18-F'></p>
@@ -70,11 +71,11 @@
     <p><img src='18-G.png' alt='18-G'></p>
     <p>可以看到Presenter做的事情就是把原来Controller的逻辑控制相关代码抽离出来构建成一个单独的类。接下来看一看对应的Controller现在变成什么样：</p>
     <p><img src='18-H.png' alt='18-H'></p>
-    <p>现在Controller的代码变得无比的清晰：两个更新数据的调用，三个更新UI的调用，多了一些初始化Presenter的操作。</p>
-    <p>因为现在Presenter只包含逻辑，所以我们也很容易实现一个单元测试：</p>
+    <p>现在Controller的代码变得更加清晰了：两个更新数据的调用，三个更新UI的调用，多了一些初始化Presenter的操作。</p>
+    <p>因为现在Presenter只包含逻辑，所以我们也较容易实现一个单元测试：</p>
     <p><img src='18-I.png' alt='18-I'></p>
-    <p>从结果可以看到Controller的代码的确转移了一部分到Presenter，也成功把逻辑和UI分离了。（<a href='https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVP'>完整代码</a>）</p>
-    <h4><a name='header-c105' class='md-header-anchor' id="header-c105"></a>MVP优缺点</h4>
+    <p>从结果可以看到Controller的代码转移了一部分到Presenter，MVP也成功把逻辑和UI代码分离了。（<a href='https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVP'>完整代码</a>）</p>
+    <h4><a name='header-c107' class='md-header-anchor' id="header-c107"></a>MVP优缺点</h4>
     <ul>
       <li>UI布局和数据逻辑代码划分界限更明确。</li>
       <li>理解难度尚可，较容易推广。</li>
@@ -82,7 +83,7 @@
       <li>Presenter-Model层可以进行单元测试。</li>
       <li>需要额外写大量接口定义和逻辑代码（或者自己实现KVO监视）。</li>
     </ul>
-    <h4><a name='header-c122' class='md-header-anchor' id="header-c122"></a>MVVM设计模式</h4>
+    <h4><a name='header-c124' class='md-header-anchor' id="header-c124"></a>MVVM设计模式</h4>
     <p>随着UI交互越来越复杂，MVP本身的一些缺点还是会暴露出来。</p>
     <p>比如虽然是可以写单元测试，但是单元测试写起来还是有很多“啰嗦”的部分，需要模拟一些假的UI处理逻辑来进行结果的验证，即使用block写法这个部分的代码量也省不了太多。</p>
     <p>所有的用户操作和更新UI的回调需要细细定义，随着交互越来越复杂，这些定义都要有很大一坨代码。</p>
@@ -94,7 +95,7 @@
       <li>ViewModel相较于Present，不仅仅是个逻辑处理机，它附带了自己的状态，所以被才可以被称为“Model”。ViewModel也因为这个变的更加独立完整，<strong>我们更容易通过ViewModel的状态去进行单元测试</strong>。Presenter在没有设置回调的时候其实一直在做空运算而已，运算得到的值没有进行存储，下次必须重新运算。</li>
       <li>View不直接通过传递用户操作来控制ViewModel，ViewModel也不直接通过回调来修改View。对常用的数据和UI控件的事件&amp;属性，MVVM框架的底层均进行了封装，使得我们可以进行数据绑定操作。简单来说我们可以用类似<code>[viewModel.username bind:usernameTextField.text]</code>类似的操作使得viewModel的属性和UI控件的属性相互绑定，其中一方修改的时候另一方直接自动做对应更改。<strong>这样的话我们就不用重复的书写很多回调操作，也不用处理一大堆UI控件的delegate事件</strong>。</li>
     </ol>
-    <p>其实MVVM的精华小部分在ViewModel，更大部分就在数据绑定，甚至有很多人觉得应该称MVVM为MVB（Model-View-Binding）。</p>
+    <p>其实MVVM的精华小部分在ViewModel，更大部分就在数据绑定，甚至有很多人觉得应该称MVVM为MVB（Model-View-Binder）。</p>
     <p>数据绑定引申出来的一个概念就是数据管道（转换器），这个和大家学的数字电路比较相似：</p>
     <p><img src='18-K.png' alt='18-K'></p>
     <p>这里我们有ABC三个数据源和两个双输入的转换器，我们可以进行组合得出各种想要的结果（如上图），甚至于我们可以多次组合来完成更复杂的计算（如下图）：</p>
@@ -103,31 +104,31 @@
     <ol start='3'>
       <li>基于数据绑定和数据管道，<strong>可以对运算逻辑进行拆分和重用，最大程度的使代码易读易维护</strong>。</li>
     </ol>
-    <h4><a name='header-c160' class='md-header-anchor' id="header-c160"></a>MVVM实例</h4>
+    <h4><a name='header-c162' class='md-header-anchor' id="header-c162"></a>MVVM实例</h4>
     <p>还是接着刚刚的工程，首先要参照<a href='https://github.com/ReactiveCocoa/ReactiveObjC'>Reactive Cocoa</a>的文档把RAC添加到工程里。</p>
-    <h5><a name='header-c163' class='md-header-anchor' id="header-c163"></a>ViewModel的定义</h5>
+    <h5><a name='header-c165' class='md-header-anchor' id="header-c165"></a>ViewModel的定义</h5>
     <p>然后我们首先要把Present改造成ViewModel：</p>
     <p><img src='19-A.png' alt='19-A'></p>
     <p>这里可以看到作为ViewModel输出值的属性设置成了readonly，剩下的<code>username</code>和<code>password</code>是输入值。</p>
-    <h5><a name='header-c208' class='md-header-anchor' id="header-c208"></a>单元测试</h5>
+    <h5><a name='header-c172' class='md-header-anchor' id="header-c172"></a>单元测试</h5>
     <p>值得一提的是软件工程中最好是测试驱动开发（TDD）而不是写完逻辑再补测试，所以我们先改好单元测试：</p>
     <p><img src='19-B.png' alt='19-B'></p>
     <p>从单元测试也很容易看出来ViewModel现在足够独立并易于测试。</p>
-    <h5><a name='header-c287' class='md-header-anchor' id="header-c287"></a>View层和ViewModel层的绑定</h5>
+    <h5><a name='header-c179' class='md-header-anchor' id="header-c179"></a>View层和ViewModel层的绑定</h5>
     <p>我们再看一眼现在Controller应该怎么写：</p>
     <p><img src='19-C.png' alt='19-C'></p>
     <p>首先看到原来的一行<code>loginButton</code>初始化代码没有了，因为数据绑定是自动更新的，初次绑定就会初始化状态。</p>
     <p>对ViewModel进行输入数据的绑定，不再需要写UITextFieldDelegate然后再传递事件，一行代码完成绑定。</p>
     <p>同样将ViewModel的输出数据绑定到UI，不需要再实现对应的回调，一样一行代码完成绑定。</p>
     <p>这就是MVVM设计模式在最理想的情况下，Controller里需要和ViewModel交互的所有代码内容。</p>
-    <h5><a name='header-c299' class='md-header-anchor' id="header-c299"></a>数据管道（转换器）</h5>
+    <h5><a name='header-c192' class='md-header-anchor' id="header-c192"></a>数据管道（转换器）</h5>
     <p>现在来说说刚刚的<code>ConvertInputStateToColor</code>，它其实就是一个状态到颜色的转换器：</p>
     <p><img src='19-D.png' alt='19-D'></p>
     <p><img src='19-E.png' alt='19-E'></p>
     <p>这里利用RACSignal的map方法做了一个映射，这就是我们的转换器。当然我们以后也可以实现别的转换器来进行方便的替换，比如实现一个仅在有效态显示绿色其他状态都显示白色的转换器。另外这个转换器如果写的更通用点，也可以被别的模块重复使用。</p>
-    <h5><a name='header-c305' class='md-header-anchor' id="header-c305"></a>ViewModel的UI无关性／和转换器组合的多样可能性</h5>
+    <h5><a name='header-c201' class='md-header-anchor' id="header-c201"></a>ViewModel的UI无关性／转换器组合的多样可能性</h5>
     <p>这里要提一下为什么ViewModel不直接提供颜色值的输出：</p>
-    <ol>
+    <ol start=''>
       <li>ViewModel应该不关心具体的UI相关逻辑，只关心自己的逻辑正确和独立完整性。</li>
       <li>易于进行单元测试，枚举当然比颜色值好检查点……</li>
       <li>提供更为基础的状态，这样和不同的转换器组合会产生更多的可能性。</li>
@@ -136,18 +137,18 @@
     <ol start='4'>
       <li>可以进行二次组合，用以计算输出值<code>loginEnabled</code>。（见下一节）</li>
     </ol>
-    <h5><a name='header-c371' class='md-header-anchor' id="header-c371"></a>ViewModel的完整实现</h5>
+    <h5><a name='header-c220' class='md-header-anchor' id="header-c220"></a>ViewModel的完整实现</h5>
     <p><img src='19-F.png' alt='19-F'></p>
     <p>需要把输出源对应的属性偷偷改成readwrite的先，不然不可写的话绑定的时候会跪。😂</p>
     <p>可以看到ViewModel现在就三块逻辑：</p>
-    <ol>
+    <ol start=''>
       <li>内部实现了一个转换器，监视<code>username</code>值更新对应的<code>usernameInputState</code>值。</li>
       <li>内部又实现了一个转换器，监视<code>password</code>值更新对应的<code>passwordInputState</code>值。</li>
       <li>监视<code>usernameInputState</code>和<code>passwordInputState</code>两个输出值，经过转换再输出<code>loginEnabled</code>值。</li>
     </ol>
     <p>这三块逻辑都十分独立且逻辑清晰，这就是MVVM或者说RAC带来的优势。</p>
     <p>回想一下最早时候MVC里的Controller，在UITextField的回调里UI操作和数据逻辑混杂在一起，计算<code>loginEnabled</code>属性的逻辑还夹杂在计算文本框颜色的逻辑中。</p>
-    <h5><a name='header-c425' class='md-header-anchor' id="header-c425"></a>相似的代码可以再次合并</h5>
+    <h5><a name='header-c241' class='md-header-anchor' id="header-c241"></a>相似的代码可以再次合并</h5>
     <p>刚刚的代码里，其实计算<code>usernameInputState</code>和<code>passwordInputState</code>两个值的转换器十分类似。如果以后还可能有类似的转换需求，我们应该把它俩的转换器再合并成独立的转换器，方便重用：</p>
     <p><img src='19-G.png' alt='19-G'></p>
     <p><img src='19-H.png' alt='19-H'></p>
@@ -157,25 +158,26 @@
     <p><img src='19-I.png' alt='19-I'></p>
     <p>可以看到代码更清晰易懂了😎，虽然貌似代码量没有减少多少🙄️。</p>
     <p>另外这里也看出来很灵活的一点，转换器可以直接写ViewModel里，也可以抽离成单独的类，这需要根据具体情况来定不同的写法。</p>
-    <h5><a name='header-c485' class='md-header-anchor' id="header-c485"></a>为转换器写单元测试</h5>
+    <h5><a name='header-c260' class='md-header-anchor' id="header-c260"></a>为转换器写单元测试</h5>
     <p>简单点的办法是把逻辑从RACSignal的map方法里抽出来，这样就可以单独测试逻辑了：</p>
     <p><img src='19-J.png' alt='19-J'></p>
     <p>添加完单元测试的完整MVVM设计模式实例代码在这里：<a href='https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVVM'>完整代码</a>。</p>
-    <p>当然，如果不想破坏转换器类的美观，有另一种单元测试的方案（这个我会另写一篇博客来介绍）：</p>
+    <p>当然，如果不想破坏转换器类的实现方式，有另一种单元测试的方案（这个我会另写一篇博客来介绍）：</p>
     <p><img src='19-K.png' alt='19-K'></p>
-    <h4><a name='header-c517' class='md-header-anchor' id="header-c517"></a>MVVM优缺点</h4>
-    <ol>
+    <h4><a name='header-c271' class='md-header-anchor' id="header-c271"></a>MVVM优缺点</h4>
+    <ol start=''>
       <li>UI布局和数据逻辑代码划分界限更明确，数据逻辑还可以细分成各种转换器。</li>
       <li>很难理解正确使用姿势，使用难度高容易出错，且出错调试难度也很大。</li>
       <li>代码量相较MVP应该有所减少，逻辑更清晰使得代码易读性重用性有所提高（用对姿势的话）。</li>
-      <li>方便实现单元测试。</li>
+      <li>更方便实现单元测试。</li>
       <li>内存和CPU开销较大。</li>
     </ol>
-    <h4><a name='header-c599' class='md-header-anchor' id="header-c599"></a>总结</h4>
+    <h4><a name='header-c288' class='md-header-anchor' id="header-c288"></a>总结</h4>
     <p>设计模式不是银弹，任何设计模式均有适用的场景，并没有某种设计模式可以解决所有的问题。</p>
     <p>比如UI交互较少较轻的页面，用MVC直接实现就会很轻松。</p>
     <p>比如团队整体水平较低，强行使用MVVM也会面临困境。</p>
     <p>学习和了解新的设计模式主要是开拓自己的眼界，以后面临问题的时候可以多一个新的选择。</p>
+    <p>而且谁说MVC就不能用RAC做数据绑定呢？MVC的Controller太臃肿了，也可以用Category来分散代码不是么？</p>
     <hr>
     <p>© 2017 苹果梨　　<a href='/'>首页</a>　　<a href='/about.html'>关于</a>　　<a href='https://github.com/HarrisonXi'>GitHub</a>　　<a href='mailto:gpra8764@gmail.com'>Email</a></p>
   </div>

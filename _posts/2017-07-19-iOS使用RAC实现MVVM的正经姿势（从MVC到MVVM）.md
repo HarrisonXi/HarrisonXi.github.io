@@ -18,6 +18,8 @@ tag: iOS, MVC, MVVM, 设计模式, RAC, Reactive Cocoa, 单元测试
 
 我有幸在早年参加过[Expression Blend](https://en.wikipedia.org/wiki/Microsoft_Blend)的自动化测试工作，期间做了不少WPF和Silverlight的App，算是较早一批接触熟悉MVVM的天朝码农了。在iOS平台出现了可以优雅实现MVVM的RAC时，着实激动了一下。下面就让我们先从最早的MVC开始慢慢说起。
 
+如果你想简单点直接看代码：[Show you the code](https://github.com/HarrisonXi/MvvmDemo)。
+
 #### MVC理想设计模式
 
 MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、数据和控制逻辑三大部分：
@@ -84,13 +86,13 @@ Presenter的内部实现：
 
 ![18-H](../2017/07/18-H.png)
 
-现在Controller的代码变得无比的清晰：两个更新数据的调用，三个更新UI的调用，多了一些初始化Presenter的操作。
+现在Controller的代码变得更加清晰了：两个更新数据的调用，三个更新UI的调用，多了一些初始化Presenter的操作。
 
-因为现在Presenter只包含逻辑，所以我们也很容易实现一个单元测试：
+因为现在Presenter只包含逻辑，所以我们也较容易实现一个单元测试：
 
 ![18-I](../2017/07/18-I.png)
 
-从结果可以看到Controller的代码的确转移了一部分到Presenter，也成功把逻辑和UI分离了。（[完整代码](https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVP)）
+从结果可以看到Controller的代码转移了一部分到Presenter，MVP也成功把逻辑和UI代码分离了。（[完整代码](https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVP)）
 
 #### MVP优缺点
 
@@ -119,7 +121,7 @@ Presenter的内部实现：
 1. ViewModel相较于Present，不仅仅是个逻辑处理机，它附带了自己的状态，所以被才可以被称为“Model”。ViewModel也因为这个变的更加独立完整，**我们更容易通过ViewModel的状态去进行单元测试**。Presenter在没有设置回调的时候其实一直在做空运算而已，运算得到的值没有进行存储，下次必须重新运算。
 2. View不直接通过传递用户操作来控制ViewModel，ViewModel也不直接通过回调来修改View。对常用的数据和UI控件的事件&属性，MVVM框架的底层均进行了封装，使得我们可以进行数据绑定操作。简单来说我们可以用类似`[viewModel.username bind:usernameTextField.text]`类似的操作使得viewModel的属性和UI控件的属性相互绑定，其中一方修改的时候另一方直接自动做对应更改。**这样的话我们就不用重复的书写很多回调操作，也不用处理一大堆UI控件的delegate事件**。
 
-其实MVVM的精华小部分在ViewModel，更大部分就在数据绑定，甚至有很多人觉得应该称MVVM为MVB（Model-View-Binding）。
+其实MVVM的精华小部分在ViewModel，更大部分就在数据绑定，甚至有很多人觉得应该称MVVM为MVB（Model-View-Binder）。
 
 数据绑定引申出来的一个概念就是数据管道（转换器），这个和大家学的数字电路比较相似：
 
@@ -177,7 +179,7 @@ Presenter的内部实现：
 
 这里利用RACSignal的map方法做了一个映射，这就是我们的转换器。当然我们以后也可以实现别的转换器来进行方便的替换，比如实现一个仅在有效态显示绿色其他状态都显示白色的转换器。另外这个转换器如果写的更通用点，也可以被别的模块重复使用。
 
-##### ViewModel的UI无关性／和转换器组合的多样可能性
+##### ViewModel的UI无关性／转换器组合的多样可能性
 
 这里要提一下为什么ViewModel不直接提供颜色值的输出：
 
@@ -233,7 +235,7 @@ Presenter的内部实现：
 
 添加完单元测试的完整MVVM设计模式实例代码在这里：[完整代码](https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVVM)。
 
-当然，如果不想破坏转换器类的美观，有另一种单元测试的方案（这个我会另写一篇博客来介绍）：
+当然，如果不想破坏转换器类的实现方式，有另一种单元测试的方案（这个我会另写一篇博客来介绍）：
 
 ![19-K](../2017/07/19-K.png)
 
@@ -242,7 +244,7 @@ Presenter的内部实现：
 1. UI布局和数据逻辑代码划分界限更明确，数据逻辑还可以细分成各种转换器。
 2. 很难理解正确使用姿势，使用难度高容易出错，且出错调试难度也很大。
 3. 代码量相较MVP应该有所减少，逻辑更清晰使得代码易读性重用性有所提高（用对姿势的话）。
-4. 方便实现单元测试。
+4. 更方便实现单元测试。
 5. 内存和CPU开销较大。
 
 #### 总结
@@ -254,6 +256,8 @@ Presenter的内部实现：
 比如团队整体水平较低，强行使用MVVM也会面临困境。
 
 学习和了解新的设计模式主要是开拓自己的眼界，以后面临问题的时候可以多一个新的选择。
+
+而且谁说MVC就不能用RAC做数据绑定呢？MVC的Controller太臃肿了，也可以用Category来分散代码不是么？
 
 ------
 
