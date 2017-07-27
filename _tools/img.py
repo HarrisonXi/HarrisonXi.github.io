@@ -12,7 +12,7 @@ def convertImg(DIR):
 				print('Converting: %s' % (path))
 				htmlFile = open(fullPath, 'r+')
 				content = htmlFile.read()
-				content = re.sub("src='\.\./\d{4}/\d{2}/(\d{2}-[A-Z].png)'",
+				content = re.sub("src='\.\./\d{4}/\d{2}/(\d{2}-[A-Z].(png|gif))'",
 					   		     "src='\g<1>'",
 					    		 content)
 				htmlFile.seek(0)

@@ -2,6 +2,8 @@
 
 ### 2017-07
 
+`iOS` [RAC中用RACChannel实现双向绑定](http://blog.harrisonxi.com/2017/07/RAC中用RACChannel实现双向绑定.html)
+
 `iOS` [iOS使用RAC实现MVVM的正经姿势（从MVC到MVVM）](http://blog.harrisonxi.com/2017/07/iOS使用RAC实现MVVM的正经姿势（从MVC到MVVM）.html)
 
 `逻辑` [贪婪的海盗](http://blog.harrisonxi.com/2017/07/贪婪的海盗.html)
