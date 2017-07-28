@@ -158,7 +158,7 @@ RACChannelTo(self, a) = RACChannelTo(self, b);
 [[RACKVOChannel alloc] initWithTarget:self keyPath:@"a" nilValue:nil][@"followingTerminal"]
 ```
 
-如果你对宏定义展开的细节感兴趣，我觉得sunny的[这篇博客](http://blog.sunnyxx.com/2014/03/06/rac_1_macros/)可以帮到你。
+如果你对宏定义展开的细节感兴趣，我觉得Sunny大大的[这篇博客](http://blog.sunnyxx.com/2014/03/06/rac_1_macros/)可以帮到你。
 
 ##### RACKVOChannel在哪里打断了信号通道的循环调用
 
