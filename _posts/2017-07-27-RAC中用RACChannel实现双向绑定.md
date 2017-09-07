@@ -6,9 +6,10 @@ tag: iOS, RAC, Reactive Cocoa, 双向绑定, RACChannel
 
 # RAC中用RACChannel实现双向绑定
 
-| 更新时间       | 更新内容 |
-| ---------- | ---- |
-| 2017-07-27 | 发布   |
+| 更新时间       | 更新内容                            |
+| ---------- | ------------------------------- |
+| 2017-07-27 | 发布                              |
+| 2017-09-07 | 调整下RACKVOChannel章节内子章节的顺序，做了些补充 |
 
 #### 尝试直接用RACSignal实现双向绑定
 
@@ -158,38 +159,12 @@ RACChannelTo(self, a) = RACChannelTo(self, b);
 [[RACKVOChannel alloc] initWithTarget:self keyPath:@"a" nilValue:nil][@"followingTerminal"]
 ```
 
+所以说，上面实现双向绑定的语句展开来，实际上做了两件事：
+
+1. 为A和B分别创建了`channelA`和`channelB`。
+2. 调用`channelA[@"followingTerminal"] = channelB[@"followingTerminal"]`。
+
 如果你对宏定义展开的细节感兴趣，我觉得Sunny大大的[这篇博客](http://blog.sunnyxx.com/2014/03/06/rac_1_macros/)可以帮到你。
-
-##### RACKVOChannel在哪里打断了信号通道的循环调用
-
-可以看到这段代码首先创建了一个RACKVOChannel，RACKVOChannel里主要做的两件事就是`leadingTerminal`的`sendNext`和`leadingTerminal`和`subscribeNext`，这个从前面一点点读下来的读者应该都能明白，是将目标的指定属性和RACKVOChannel的`leadingTerminal`做好绑定。
-
-我们主要关注的是，RACKVOChannel在哪里打断了信号通道的循环调用。先看`subscribeNext`段里这一部分：
-
-```
-// Set the ignoreNextUpdate flag before setting the value so this channel
-// ignores the value in the subsequent -didChangeValueForKey: callback.
-[self createCurrentThreadData];
-self.currentThreadData.ignoreNextUpdate = YES;
-```
-
-注释写得比较清楚，这个`ignoreNextUpdate`使得下一次的值修改被忽略。具体的忽略代码在`sendNext`段：
-
-```
-// If the change wasn't triggered by deallocation, only affects the last
-// path component, and ignoreNextUpdate is set, then it was triggered by
-// this channel and should not be forwarded.
-if (!causedByDealloc && affectedOnlyLastComponent && self.currentThreadData.ignoreNextUpdate) {
-    [self destroyCurrentThreadData];
-    return;
-}
-```
-
-在`ignoreNextUpdate`为YES的时候，这里就会return出去，不会触发`sendNext`操作。
-
-用图片标记的直观点，就是如果是在`leadingTerminal`的`subscribeNext`里修改了目标的属性值，通路会在此打断，不会重复的再把属性址改变的信号`sendNext`出去：
-
-![27-B](../2017/07/27-B.png)
 
 ##### RACKVOChannel如何实现双向绑定
 
@@ -221,6 +196,37 @@ if (!causedByDealloc && affectedOnlyLastComponent && self.currentThreadData.igno
 `objectForKeyedSubscript:`提供了通过键`@“followingTerminal”`读取终端的能力，`setObject:forKeyedSubscript:`提供了通过键`@“followingTerminal”`设定和绑定终端的能力。
 
 绑定的操作其实就是将两个`followingTerminal`相互订阅。注意因为两端数据是同步的，所以在正向订阅后两端的值应该一样了，所以在反向绑定的时候就可以`skip:1`来节约点性能了。
+
+##### RACKVOChannel在哪里打断了信号通道的循环调用
+
+可以看到这段代码首先创建了一个RACKVOChannel，RACKVOChannel里主要做的两件事就是`leadingTerminal`的`sendNext`和`leadingTerminal`和`subscribeNext`，这个从前面一点点读下来的读者应该都能明白，是将目标的指定属性和RACKVOChannel的`leadingTerminal`做好绑定。
+
+我们主要关注的是，RACKVOChannel在哪里打断了信号通道的循环调用。先看`subscribeNext`段里这一部分：
+
+```
+// Set the ignoreNextUpdate flag before setting the value so this channel
+// ignores the value in the subsequent -didChangeValueForKey: callback.
+[self createCurrentThreadData];
+self.currentThreadData.ignoreNextUpdate = YES;
+```
+
+注释写得比较清楚，这个`ignoreNextUpdate`使得下一次的值修改被忽略。具体的忽略代码在`sendNext`段：
+
+```
+// If the change wasn't triggered by deallocation, only affects the last
+// path component, and ignoreNextUpdate is set, then it was triggered by
+// this channel and should not be forwarded.
+if (!causedByDealloc && affectedOnlyLastComponent && self.currentThreadData.ignoreNextUpdate) {
+    [self destroyCurrentThreadData];
+    return;
+}
+```
+
+在`ignoreNextUpdate`为YES的时候，这里就会return出去，不会触发`sendNext`操作。
+
+用图片标记的直观点，就是如果是在`leadingTerminal`的`subscribeNext`里修改了目标的属性值，通路会在此打断，不会重复的再把属性址改变的信号`sendNext`出去：
+
+![27-B](../2017/07/27-B.png)
 
 ##### RACChannelTo总结
 

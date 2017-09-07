@@ -24,6 +24,10 @@
           <td>2017-07-27</td>
           <td>发布</td>
         </tr>
+        <tr>
+          <td>2017-09-07</td>
+          <td>调整下RACKVOChannel章节内子章节的顺序，做了些补充</td>
+        </tr>
       </tbody>
     </table>
     <h4><a name='header-c15' class='md-header-anchor' id="header-c15"></a>尝试直接用RACSignal实现双向绑定</h4>
@@ -117,26 +121,13 @@ RAC(self, b) = channel.followingTerminal;
     <h5><a name='header-c107' class='md-header-anchor' id="header-c107"></a>RACChannelTo的展开</h5>
     <p>我们把<code>RACChannelTo(self, a)</code>先展开来，看一下它到底做了什么：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>[[RACKVOChannel alloc] initWithTarget:self keyPath:@"a" nilValue:nil][@"followingTerminal"]</pre>
+    <p>所以说，上面实现双向绑定的语句展开来，实际上做了两件事：</p>
+    <ol>
+      <li>为A和B分别创建了<code>channelA</code>和<code>channelB</code>。</li>
+      <li>调用<code>channelA[@"followingTerminal"] = channelB[@"followingTerminal"]</code>。</li>
+    </ol>
     <p>如果你对宏定义展开的细节感兴趣，我觉得Sunny大大的<a href='http://blog.sunnyxx.com/2014/03/06/rac_1_macros/'>这篇博客</a>可以帮到你。</p>
-    <h5><a name='header-c113' class='md-header-anchor' id="header-c113"></a>RACKVOChannel在哪里打断了信号通道的循环调用</h5>
-    <p>可以看到这段代码首先创建了一个RACKVOChannel，RACKVOChannel里主要做的两件事就是<code>leadingTerminal</code>的<code>sendNext</code>和<code>leadingTerminal</code>和<code>subscribeNext</code>，这个从前面一点点读下来的读者应该都能明白，是将目标的指定属性和RACKVOChannel的<code>leadingTerminal</code>做好绑定。</p>
-    <p>我们主要关注的是，RACKVOChannel在哪里打断了信号通道的循环调用。先看<code>subscribeNext</code>段里这一部分：</p>
-    <pre class='md-fences mock-cm' style='display:block;position:relative'>// Set the ignoreNextUpdate flag before setting the value so this channel
-// ignores the value in the subsequent -didChangeValueForKey: callback.
-[self createCurrentThreadData];
-self.currentThreadData.ignoreNextUpdate = YES;</pre>
-    <p>注释写得比较清楚，这个<code>ignoreNextUpdate</code>使得下一次的值修改被忽略。具体的忽略代码在<code>sendNext</code>段：</p>
-    <pre class='md-fences mock-cm' style='display:block;position:relative'>// If the change wasn't triggered by deallocation, only affects the last
-// path component, and ignoreNextUpdate is set, then it was triggered by
-// this channel and should not be forwarded.
-if (!causedByDealloc &amp;& affectedOnlyLastComponent &amp;& self.currentThreadData.ignoreNextUpdate) {
-    [self destroyCurrentThreadData];
-    return;
-}</pre>
-    <p>在<code>ignoreNextUpdate</code>为YES的时候，这里就会return出去，不会触发<code>sendNext</code>操作。</p>
-    <p>用图片标记的直观点，就是如果是在<code>leadingTerminal</code>的<code>subscribeNext</code>里修改了目标的属性值，通路会在此打断，不会重复的再把属性址改变的信号<code>sendNext</code>出去：</p>
-    <p><img src='27-B.png' alt='27-B'></p>
-    <h5><a name='header-c128' class='md-header-anchor' id="header-c128"></a>RACKVOChannel如何实现双向绑定</h5>
+    <h5><a name='header-c113' class='md-header-anchor' id="header-c113"></a>RACKVOChannel如何实现双向绑定</h5>
     <p>我们看一下这段代码：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>@implementation RACKVOChannel (RACChannelTo)
 
@@ -160,6 +151,24 @@ if (!causedByDealloc &amp;& affectedOnlyLastComponent &amp;& self.currentThreadD
 @end</pre>
     <p><code>objectForKeyedSubscript:</code>提供了通过键<code>@“followingTerminal”</code>读取终端的能力，<code>setObject:forKeyedSubscript:</code>提供了通过键<code>@“followingTerminal”</code>设定和绑定终端的能力。</p>
     <p>绑定的操作其实就是将两个<code>followingTerminal</code>相互订阅。注意因为两端数据是同步的，所以在正向订阅后两端的值应该一样了，所以在反向绑定的时候就可以<code>skip:1</code>来节约点性能了。</p>
+    <h5><a name='header-c201' class='md-header-anchor' id="header-c201"></a>RACKVOChannel在哪里打断了信号通道的循环调用</h5>
+    <p>可以看到这段代码首先创建了一个RACKVOChannel，RACKVOChannel里主要做的两件事就是<code>leadingTerminal</code>的<code>sendNext</code>和<code>leadingTerminal</code>和<code>subscribeNext</code>，这个从前面一点点读下来的读者应该都能明白，是将目标的指定属性和RACKVOChannel的<code>leadingTerminal</code>做好绑定。</p>
+    <p>我们主要关注的是，RACKVOChannel在哪里打断了信号通道的循环调用。先看<code>subscribeNext</code>段里这一部分：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>// Set the ignoreNextUpdate flag before setting the value so this channel
+// ignores the value in the subsequent -didChangeValueForKey: callback.
+[self createCurrentThreadData];
+self.currentThreadData.ignoreNextUpdate = YES;</pre>
+    <p>注释写得比较清楚，这个<code>ignoreNextUpdate</code>使得下一次的值修改被忽略。具体的忽略代码在<code>sendNext</code>段：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>// If the change wasn't triggered by deallocation, only affects the last
+// path component, and ignoreNextUpdate is set, then it was triggered by
+// this channel and should not be forwarded.
+if (!causedByDealloc &amp;& affectedOnlyLastComponent &amp;& self.currentThreadData.ignoreNextUpdate) {
+    [self destroyCurrentThreadData];
+    return;
+}</pre>
+    <p>在<code>ignoreNextUpdate</code>为YES的时候，这里就会return出去，不会触发<code>sendNext</code>操作。</p>
+    <p>用图片标记的直观点，就是如果是在<code>leadingTerminal</code>的<code>subscribeNext</code>里修改了目标的属性值，通路会在此打断，不会重复的再把属性址改变的信号<code>sendNext</code>出去：</p>
+    <p><img src='27-B.png' alt='27-B'></p>
     <h5><a name='header-c136' class='md-header-anchor' id="header-c136"></a>RACChannelTo总结</h5>
     <p>总之进行通常数据的双向绑定，RACChannelTo基本就是无敌的，几乎可以完成绝大部分需求了。</p>
     <h4><a name='header-c139' class='md-header-anchor' id="header-c139"></a>其他常见的RACChannel相关的类扩展</h4>
