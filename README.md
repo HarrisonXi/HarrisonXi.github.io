@@ -1,5 +1,9 @@
 # [苹果梨的博客](http://blog.harrisonxi.com)
 
+### 2017-09
+
+`iOS` [RAC中用RACCommand处理指令](http://blog.harrisonxi.com/2017/09/RAC中用RACCommand处理指令.html)
+
 ### 2017-07
 
 `iOS` [RAC中用RACChannel实现双向绑定](http://blog.harrisonxi.com/2017/07/RAC中用RACChannel实现双向绑定.html)

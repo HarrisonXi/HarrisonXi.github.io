@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Mac OS X version 5.4.0">
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width initial-scale=1'>
+  <title>苹果梨的博客 - RAC中用RACCommand处理指令</title>
+  <link href='http://fonts.lug.ustc.edu.cn/css?family=Open+Sans:400italic,700italic,700,400&amp;subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+  <link href='/css/github.css' rel='stylesheet' type='text/css'>
+  <link href='/css/myblog.css' rel='stylesheet' type='text/css'>
+</head>
+<body class='typora-export'>
+  <div id='write' class='is-mac'>
+    <h1><a name='header-n2' class='md-header-anchor' id="header-n2"></a>RAC中用RACCommand处理指令</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>更新时间</th>
+          <th>更新内容</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2017-09-19</td>
+          <td>发布</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class='md-toc' mdtype='toc'>
+      <p class="md-toc-content"><span class="md-toc-item md-toc-h1" data-ref="n2"><a class="md-toc-inner" href="#header-n2">RAC中用RACCommand处理指令</a></span><span class="md-toc-item md-toc-h3" data-ref="n11"><a class="md-toc-inner" href="#header-n11">前言</a></span><span class="md-toc-item md-toc-h3" data-ref="n20"><a class="md-toc-inner" href="#header-n20">RACCommand的用途</a></span><span class="md-toc-item md-toc-h3" data-ref="n38"><a class="md-toc-inner" href="#header-n38">RACCommand的公开属性和方法</a></span><span class="md-toc-item md-toc-h5" data-ref="n39"><a class="md-toc-inner" href="#header-n39">executionSignals & errors</a></span><span class="md-toc-item md-toc-h5" data-ref="n44"><a class="md-toc-inner" href="#header-n44">allowsConcurrentExecution</a></span><span class="md-toc-item md-toc-h5" data-ref="n47"><a class="md-toc-inner" href="#header-n47">executing & enabled</a></span><span class="md-toc-item md-toc-h5" data-ref="n61"><a class="md-toc-inner" href="#header-n61">初始化方法 - initWithEnabled:signalBlock:</a></span><span class="md-toc-item md-toc-h5" data-ref="n69"><a class="md-toc-inner" href="#header-n69">执行指令方法 - execute:</a></span><span class="md-toc-item md-toc-h3" data-ref="n76"><a class="md-toc-inner" href="#header-n76">RACCommand的内部实现</a></span><span class="md-toc-item md-toc-h5" data-ref="n77"><a class="md-toc-inner" href="#header-n77">执行指令方法 - execute:</a></span><span class="md-toc-item md-toc-h5" data-ref="n105"><a class="md-toc-inner" href="#header-n105">RACSignal的catchTo:方法</a></span><span class="md-toc-item md-toc-h5" data-ref="n125"><a class="md-toc-inner" href="#header-n125">内部信号流 & 初始化方法 - initWithEnabled:signalBlock:</a></span><span class="md-toc-item md-toc-h3" data-ref="n153"><a class="md-toc-inner" href="#header-n153">RACCommand细节探究</a></span><span class="md-toc-item md-toc-h5" data-ref="n156"><a class="md-toc-inner" href="#header-n156">为什么一定要使用『主流程信号流』的形式</a></span><span class="md-toc-item md-toc-h5" data-ref="n163"><a class="md-toc-inner" href="#header-n163">为什么要单独封装errors信号流</a></span><span class="md-toc-item md-toc-h5" data-ref="n170"><a class="md-toc-inner" href="#header-n170">为什么主流程信号流执行时还需要一个input参数</a></span><span class="md-toc-item md-toc-h3" data-ref="n177"><a class="md-toc-inner" href="#header-n177">RACCommand的实际使用</a></span><span class="md-toc-item md-toc-h5" data-ref="n178"><a class="md-toc-inner" href="#header-n178">UIButton的RACCommand扩展</a></span><span class="md-toc-item md-toc-h5" data-ref="n195"><a class="md-toc-inner" href="#header-n195">实例代码</a></span><span class="md-toc-item md-toc-h5" data-ref="n210"><a class="md-toc-inner" href="#header-n210">关于switchToLatest</a></span><span class="md-toc-item md-toc-h3" data-ref="n230"><a class="md-toc-inner" href="#header-n230">总结</a></span></p>
+    </div>
+    <h3><a name='header-n11' class='md-header-anchor' id="header-n11"></a>前言</h3>
+    <p>信号流 - 即RACSignal，一组<code>next</code> / <code>error</code> / <code>completed</code>信号组成，本文称之为信号流。</p>
+    <p>发送信号 - <code>sendNext</code> / <code>sendError</code> / <code>sendCompleted</code>，统称为发送信号。</p>
+    <p>主流程信号流 - <code>execute:</code>成功执行一次指令产生的指令流程信号流。</p>
+    <p>因为将RACSignal也称为信号，容易引起理解的困难，而其通常就是一组信号组成，所以在这里称之为信号流。</p>
+    <h3><a name='header-n20' class='md-header-anchor' id="header-n20"></a>RACCommand的用途</h3>
+    <p>通常来说我们的App中会存在很多UI指令需要等待异步处理完成（比如等待网络请求返回结果），处理这些UI指令时如果我们手动去处理逻辑的话，一般需要完成以下内容：</p>
+    <ol start=''>
+      <li>保证指令不会在正在执行时被重复执行。</li>
+      <li>维护指令是否在执行中的状态，方便外界监视，用来确定是否需要展示loading界面。</li>
+      <li>维护指令是否可以执行的状态，方便和外界UI状态进行同步。</li>
+      <li>提供执行指令的入口和指令执行的信号流供处理后续逻辑。</li>
+    </ol>
+    <p>而RACCommand的出现就是为了将以上大部分逻辑封装起来，方便大家使用。</p>
+    <h3><a name='header-n38' class='md-header-anchor' id="header-n38"></a>RACCommand的公开属性和方法</h3>
+    <h5><a name='header-n39' class='md-header-anchor' id="header-n39"></a>executionSignals & errors</h5>
+    <p>在指令成功开始执行后<code>executionSignals</code>会发送一个信号，信号内包含的数据是一个信号流。对，这是一个信号流的信号流，和指针的指针一样绕口。后面介绍内部实现的时候再详细介绍这个属性。</p>
+    <p>在指令开始执行但遇到错误时<code>errors</code>会发送一个next信号，信号的数据是一个NSError。这里不能发送error信号，因为发送error信号后这整个信号流就会终止了。</p>
+    <h5><a name='header-n44' class='md-header-anchor' id="header-n44"></a>allowsConcurrentExecution</h5>
+    <p>是否支持同时多次执行指令，通常来说都会使用默认值NO。在本文里，我们暂不讨论此属性值为YES的情况。</p>
+    <h5><a name='header-n47' class='md-header-anchor' id="header-n47"></a>executing & enabled</h5>
+    <p><code>executing</code>用来标记指令是否正在运行，通常用于绑定到loading界面的<code>hidden</code>属性上。</p>
+    <p><code>enabled</code>用来标记指令是否可以运行，通常用于绑定到UIButton的<code>enabled</code>属性上。</p>
+    <p>一般来说以下两种情况下<code>enabled</code>为NO：</p>
+    <ol start=''>
+      <li>指令禁止同时多次运行，且指令正在运行中时。</li>
+      <li>初始化RACCommand时传入了<code>enabledSignal</code>，且<code>enabledSignal</code>返回NO的时候。</li>
+    </ol>
+    <h5><a name='header-n61' class='md-header-anchor' id="header-n61"></a>初始化方法 - initWithEnabled:signalBlock:</h5>
+    <p><code>enabledSignal</code>参数在上面提到了，用于控制指令是否可执行。</p>
+    <p>而<code>signalBlock</code>参数是为了传递数据和执行指令流程用的，先看一下这个block的类型：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>RACSignal&lt;ValueType&gt; * (^)(InputType _Nullable input)</pre>
+    <p>返回一个信号流，要求输入一个<code>input</code>值。这里返回的信号流就是给之前的<code>executionSignals</code>用的，而这里的输入值就是后面的<code>execute:</code>方法要用的。具体为什么要用这种方式，会在后面的单独章节里介绍。</p>
+    <h5><a name='header-n69' class='md-header-anchor' id="header-n69"></a>执行指令方法 - execute:</h5>
+    <p><code>execute:</code>方法用于执行指令，<code>input</code>用于传递一些自定义的数据，这个输入值可以为空。</p>
+    <p>在指令可以执行时，会通过<code>executionSignals</code>发出成功开始执行指令的<strong>主流程信号流</strong>并将之返回，否则会直接返回一个RACErrorSignal，另外在执行指令过程中遇到的错误信号会由<code>errors</code>信号流收集后统一发出。</p>
+    <p>如果想要获得单次执行的内部信号流，特别是想要获得信号流里的原始错误，可以从<code>execute:</code>方法的返回值获得对应信号流。</p>
+    <h3><a name='header-n76' class='md-header-anchor' id="header-n76"></a>RACCommand的内部实现</h3>
+    <h5><a name='header-n77' class='md-header-anchor' id="header-n77"></a>执行指令方法 - execute:</h5>
+    <p>细看<code>execute:</code>方法的内部逻辑：</p>
+    <ol start=''>
+      <li>
+        <p>首先判断了现在指令的<code>enabled</code>状态，如果不可运行则会直接返回一个RACErrorSignal后终止。</p>
+        <p><code>enabled</code>实时的状态是通过一个内部的<code>immediateEnabled</code>信号流来获得的：</p>
+        <pre class='md-fences mock-cm' style='display:block;position:relative'>_immediateEnabled = [[[[RACSignal
+    combineLatest:@[ enabledSignal, moreExecutionsAllowed ]]
+    and]
+    takeUntil:self.rac_willDeallocSignal]
+    replayLast];</pre>
+        <p>可以看到<code>immediateEnabled</code>信号流就是把<code>enabledSignal</code>信号流和<code>moreExecutionsAllowed</code>信号流进行逻辑与计算，在他们都是YES的情况下就会返回『可以运行』。</p>
+        <p><code>enabledSignal</code>是外部传入的不用讲解了，所以再来看看<code>moreExecutionsAllowed</code>信号流的实现：</p>
+        <pre class='md-fences mock-cm' style='display:block;position:relative'>RACSignal *moreExecutionsAllowed = [RACSignal
+    if:[self.allowsConcurrentExecutionSubject startWith:@NO]
+    then:[RACSignal return:@YES]
+    else:[immediateExecuting not]];</pre>
+        <p>因为我们之前说了不考虑支持同时多次执行指令，所以这里<code>moreExecutionsAllowed</code>实际上永远返回<code>immediateExecuting</code>的逻辑取反结果，也就是说保证了指令不可以同时多次执行。</p>
+      </li>
+      <li>
+        <p>用初始化时传入的<code>signalBlock</code>创建用于传递指令执行过程的<strong>主流程信号流</strong>，并断言验证确保其不为空。</p>
+      </li>
+      <li>
+        <p>将<strong>主流程信号流</strong>扔到主线程的RACScheduler里去，从注释看出来这样可以保证在<code>executing</code>和<code>enabled</code>信号流变更生效之后，<strong>主流程信号流</strong>才开始真的运作。</p>
+        <p>内部其它信号的触发，基本都是通过<code>addedExecutionSignalsSubject</code>这个RACSubject来组织的：</p>
+        <pre class='md-fences mock-cm' style='display:block;position:relative'>[self.addedExecutionSignalsSubject sendNext:connection.signal];</pre>
+        <p>可以看到这里也是将刚刚创建的<strong>主流程信号流</strong>当做参数放在了信号里，方便后续的信号管道逻辑取用。</p>
+      </li>
+    </ol>
+    <h5><a name='header-n105' class='md-header-anchor' id="header-n105"></a>RACSignal的catchTo:方法</h5>
+    <p>讲内部信号组织之前需要讲解下<code>catchTo:</code>是用来做什么的，这要首先看一下<code>catch:</code>：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>- (RACSignal *)catch:(RACSignal * (^)(NSError *error))catchBlock {
+    NSCParameterAssert(catchBlock != NULL);
+
+    return [[RACSignal createSignal:^(id&lt;RACSubscriber&gt; subscriber) {
+        RACSerialDisposable *catchDisposable = [[RACSerialDisposable alloc] init];
+
+        RACDisposable *subscriptionDisposable = [self subscribeNext:^(id x) {
+            [subscriber sendNext:x];
+        } error:^(NSError *error) {
+            RACSignal *signal = catchBlock(error);
+            NSCAssert(signal != nil, @"Expected non-nil signal from catch block on %@", self);
+            catchDisposable.disposable = [signal subscribe:subscriber];
+        } completed:^{
+            [subscriber sendCompleted];
+        }];
+
+        return [RACDisposable disposableWithBlock:^{
+            [catchDisposable dispose];
+            [subscriptionDisposable dispose];
+        }];
+    }] setNameWithFormat:@"[%@] -catch:", self.name];
+}</pre>
+    <p><code>catch:</code>方法的核心就在于对error信号的处理，参照上面的代码可以看到，<code>catch:</code>方法在原信号流<code>sendError</code>的时候，将对应的NSError通过<code>catchBlock</code>转换成了一个新的信号流并让原订阅者继续订阅。</p>
+    <p>参照以下例子：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>// 原始信号
+RACSignal *signal = [RACSignal createSignal:^RACDisposable * _Nullable(id&lt;RACSubscriber&gt;  _Nonnull subscriber) {
+    [subscriber sendNext:@1];
+    [subscriber sendError:nil];
+    return nil;
+}];
+
+// 经过catch:方法将sendError:nil替换为sendNext:@2
+RACSignal *catchedSignal = [signal catch:^RACSignal * _Nonnull(NSError * _Nonnull error) {
+    return [RACSignal return:@2];
+}];
+
+// 输出日志
+[catchedSignal subscribeNext:^(id  _Nullable x) {
+    NSLog(@"sendNext: %@", x);
+} error:^(NSError * _Nullable error) {
+    NSLog(@"sendError");
+} completed:^{
+    NSLog(@"sendCompleted");
+}];</pre>
+    <p>最终输出结果如下，其中的错误信号被替换了：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>sendNext: 1
+sendNext: 2
+sendCompleted</pre>
+    <p>而<code>catchTo:</code>又是做什么的，我们来看一下：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>- (RACSignal *)catchTo:(RACSignal *)signal {
+    return [[self catch:^(NSError *error) {
+        return signal;
+    }] setNameWithFormat:@"[%@] -catchTo: %@", self.name, signal];
+}</pre>
+    <p>可以看到逻辑很简单，就是预先传入了一个<code>signal</code>，无论收到的<code>sendError</code>传了什么类型的NSError，都直接返回这个<code>signal</code>。</p>
+    <p>这样的话上面的例子中间的<code>catch:</code>就可以替换为：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>RACSignal *catchedSignal = [signal catchTo:[RACSignal return:@2]];</pre>
+    <h5><a name='header-n125' class='md-header-anchor' id="header-n125"></a>内部信号流 & 初始化方法 - initWithEnabled:signalBlock:</h5>
+    <p>讲完了<code>catch:</code>系列方法，就可以开始细细讲初始化方法内各种信号的组织了。</p>
+    <p>最开始做的都是一些常规的初始化操作，创建内部使用的RACSubject，然后将外部传入的<code>signalBlock</code>存下来。</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>_executionSignals = [[[self.addedExecutionSignalsSubject
+    map:^(RACSignal *signal) {
+        return [signal catchTo:[RACSignal empty]];
+    }]
+    deliverOn:RACScheduler.mainThreadScheduler]
+    setNameWithFormat:@"%@ -executionSignals", self];</pre>
+    <p>第一个处理的信号流就是供外部使用的<code>executionSignals</code>，将<code>execute:</code>里发出的<strong>主流程信号流</strong>进行了一次<code>catchTo:</code>操作后，再传出供外部使用。这里是为了将<code>sendError</code>统一由后面的<code>errors</code>信号流捕获，所以才需要进行<code>catchTo:</code>操作。在<strong>主流程信号流</strong>进行<code>sendError</code>的时候，NSError会被<code>catchTo:</code>吞掉，而我们重新创建的又是个空信号流，所以外部的订阅者就收不到这个错误信号了。</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>RACMulticastConnection *errorsConnection = [[[self.addedExecutionSignalsSubject
+    flattenMap:^(RACSignal *signal) {
+        return [[signal
+            ignoreValues]
+            catch:^(NSError *error) {
+                return [RACSignal return:error];
+            }];
+    }]
+    deliverOn:RACScheduler.mainThreadScheduler]
+    publish];
+
+_errors = [errorsConnection.signal setNameWithFormat:@"%@ -errors", self];
+[errorsConnection connect];</pre>
+    <p>可以看到<code>errors</code>信号的核心就是通过<code>ignoreValues</code>排除<code>sendNext</code>，仅仅获得<code>sendError</code>，然后将<code>sendError</code>转换为发送NSError值的<code>sendNext</code>。</p>
+    <p>简单用图片概括下这两个主要的信号流：</p>
+    <p><img src='19-A.png' alt='19-A'></p>
+    <p>其中蓝色框的本身就是个信号流，也被当做一个信号发送，就是前文说到的『信号流的信号』。</p>
+    <p>后面的信号流有的已经讲过了，有的很简单不需要讲解了，我就再重点讲一下这个信号流：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>RACSignal *immediateExecuting = [[[[self.addedExecutionSignalsSubject
+    flattenMap:^(RACSignal *signal) {
+        return [[[signal
+            catchTo:[RACSignal empty]]
+            then:^{
+                return [RACSignal return:@-1];
+            }]
+            startWith:@1];
+    }]
+    scanWithStart:@0 reduce:^(NSNumber *running, NSNumber *next) {
+        return @(running.integerValue + next.integerValue);
+    }]
+    map:^(NSNumber *count) {
+        return @(count.integerValue &gt; 0);
+    }]
+    startWith:@NO];</pre>
+    <p>看上去很绕，看着很头大，不过整理成图片后应该好理解的多：</p>
+    <p><img src='19-B.png' alt='19-B'></p>
+    <p>最后的两步就不再画了，再画要画不下了……😂</p>
+    <p>这整个过程的一个主旨就是每次启动一个新的<strong>主流程信号流</strong>，就发送个<code>+1</code>信号，每次一个<strong>主流程信号流</strong>结束，就发送一个<code>-1</code>信号，最后统计计算出现在正在运行的指令流程总个数，判断现在是不是有指令正在执行。是不是了解了思路之后再回头看代码，就清晰无比了。😜</p>
+    <h3><a name='header-n153' class='md-header-anchor' id="header-n153"></a>RACCommand细节探究</h3>
+    <p>虽然内部代码也都看懂了，可是有些地方为什么要设计成这样还是值得探究的。</p>
+    <h5><a name='header-n156' class='md-header-anchor' id="header-n156"></a>为什么一定要使用『主流程信号流』的形式</h5>
+    <p>很多人要问，为什么不是直接发送一个执行成功或一个执行失败两种信号就可以了。</p>
+    <p>这里要说下执行的流程，这个流程不一定是单步的，所以使用RACCommand的时候是需要了解每一步执行的情况的。比如以下载文件为例：整个流程可能分为获得文件地址列表，逐个下载文件，全部下载完成，下载失败等各种步骤和状态。</p>
+    <p>这种时候每一个单独的执行流程就作为一个整体封装起来就更合理，而封装『流程』最合适的当然就是信号流了。</p>
+    <h5><a name='header-n163' class='md-header-anchor' id="header-n163"></a>为什么要单独封装errors信号流</h5>
+    <p>这样可以使得我们处理问题时更专注，在<code>executionSignals</code>信号流里只处理流程状态相关的逻辑，在<code>errors</code>信号流里专注于各种错误的处理。</p>
+    <p>当然不得不承认这在某些情况下也会带来问题：比如某些流程状态和错误状态很强相关的场景下，可能将代码写在一起反而会更容易理解。不过总体来说目前的设计更为通用一点。</p>
+    <p>另外一个重点是这样可以保证<code>executionSignals</code>能使用<code>switchToLatest</code>方法。这个后文会介绍。</p>
+    <h5><a name='header-n170' class='md-header-anchor' id="header-n170"></a>为什么主流程信号流执行时还需要一个input参数</h5>
+    <p>这个一定意义上来说和UIButton的点击事件<code>- (void)clickAction:(id)sender</code>为什么需要<code>sender</code>差不多。</p>
+    <p>展开来说的话就是函数需要消除<a href='https://zh.wikipedia.org/zh-hans/%E5%87%BD%E6%95%B0%E5%89%AF%E4%BD%9C%E7%94%A8'>副作用</a>成为纯函数，所以我们的<strong>主流程信号流</strong>也要具有这个特性，使得每一次的执行流程更独立。</p>
+    <p>通常来说这个<code>input</code>是用来区分调用者的，当然也可以用来传递一些其它的关键参数。</p>
+    <h3><a name='header-n177' class='md-header-anchor' id="header-n177"></a>RACCommand的实际使用</h3>
+    <h5><a name='header-n178' class='md-header-anchor' id="header-n178"></a>UIButton的RACCommand扩展</h5>
+    <p>了解完了RACCommand的原理，现在要看一下怎么实际使用它。一般来说用它用的最多的就是UIButton了。</p>
+    <p>UIButton的RACCommand扩展主要做了以下三件事：</p>
+    <ol start=''>
+      <li>扩展新的属性<code>rac_command</code>。</li>
+      <li>自动将UIButton的<code>enabled</code>状态绑定到RACCommand的<code>enabled</code>信号上，并在重新设置<code>rac_command</code>的时候正确处理销毁和重新绑定操作。</li>
+      <li>在按钮的点击事件中触发RACCommand的<code>execute:</code>方法，将按钮自身当做<code>input</code>参数传入。</li>
+    </ol>
+    <p>可见做的事情都简单干脆，这样在我们把RACCommand设置给UIButton之后，基本上就不再需要额外为UIButton写逻辑了。这也是RAC的一个主旨，就是让我们在Controller层写尽量少的东西。</p>
+    <h5><a name='header-n195' class='md-header-anchor' id="header-n195"></a>实例代码</h5>
+    <p>首先奉上<a href='https://github.com/HarrisonXi/MvvmDemo/releases/tag/RACCommand'>完整代码</a>，这是基于之前的一个MvvmDemo工程继续做的。</p>
+    <p>接着来看一下细节代码，首先是ViewModel里的RACCommand实现：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>self.loginCommand = [[RACCommand alloc] initWithEnabled:RACObserve(self, loginEnabled) signalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
+    return [RACSignal createSignal:^RACDisposable * _Nullable(id&lt;RACSubscriber&gt;  _Nonnull subscriber) {
+        [subscriber sendNext:@"start"];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            @strongify(self);
+            if ([self.password isEqualToString:@"123456789"]) {
+                [subscriber sendNext:@"success"];
+                [subscriber sendCompleted];
+            } else {
+                [subscriber sendError:nil];
+            }
+        });
+        return nil;
+    }];
+}];</pre>
+    <p>创建一个新的RACCommand，使用ViewModel的<code>loginEnabled</code>属性来控制RACCommand的<code>enabled</code>状态。</p>
+    <p>在内部创建一个<strong>冷信号流</strong>来模拟登录指令的流程，在一秒的延时后判断下密码是否符合条件，来决定是发出错误信号，还是发出登录成功及完成信号。</p>
+    <p>ViewController这一侧的代码：</p>
+    <pre class='md-fences mock-cm' style='display:block;position:relative'>self.loginButton.rac_command = self.viewModel.loginCommand;
+[self.viewModel.loginCommand.executionSignals subscribeNext:^(RACSignal&lt;id&gt; * executionSignal) {
+    NSLog(@"get signal: %@", executionSignal);
+    [executionSignal subscribeNext:^(NSString *step) {
+        NSLog(@"get step: %@", step);
+    } completed:^{
+        NSLog(@"get completed.");
+    }];
+}];
+[self.viewModel.loginCommand.errors subscribeNext:^(NSError * error) {
+    NSLog(@"get error.");
+}];</pre>
+    <p>首先进行<code>loginButton</code>的<code>rac_command</code>简单设定，然后订阅各种信号做出对应的UI反馈交互。示例中就没有写具体的UI交互了，都是用NSLog直接输出了日志。</p>
+    <h5><a name='header-n210' class='md-header-anchor' id="header-n210"></a>关于switchToLatest</h5>
+    <p>因为各处看到的博客都推荐使用<code>switchToLatest</code>，但是貌似很少有博客介绍它的细节，所以还是要在此讲清楚以免各位用出大问题。</p>
+    <p><code>switchToLatest</code>只能作用于信号流的信号流，它的主要作用：</p>
+    <ol start=''>
+      <li>每当父信号流发出一个新的子信号流时，就开始转发最新子信号流的<code>sendNext</code>和<code>sendError</code>。</li>
+      <li>当父信号流和最后一个子信号流都结束时，<code>sendCompleted</code>。</li>
+    </ol>
+    <p>从第一条就可以看出来，为什么要把RACCommand的<code>errors</code>信号流单独拎出来了。</p>
+    <p>然后列举一个信号流的示例图：</p>
+    <p><img src='19-C.png' alt='19-C'></p>
+    <p>如图所示，在子信号流的流程有并行的重叠时间时，<code>switchToLatest</code>是会丢失信号的。所以切记，在支持同时多次运行的RACCommand里，千万别用<code>switchToLatest</code>来处理<code>executionSignals</code>。而通常情况下我们用到的RACCommand都是不支持同时多次运行的，放心大胆的用<code>switchToLatest</code>就好。</p>
+    <h3><a name='header-n230' class='md-header-anchor' id="header-n230"></a>总结</h3>
+    <p>新的一篇RAC教程也就到此结束了，赶紧试试用RACCommand把你的指令们封装得更优雅吧。</p>
+    <hr>
+    <p>© 2017 苹果梨　　<a href='/'>首页</a>　　<a href='/about.html'>关于</a>　　<a href='https://github.com/HarrisonXi'>GitHub</a>　　<a href='mailto:gpra8764@gmail.com'>Email</a></p>
+  </div>
+</body>
+</html>
