@@ -11,8 +11,11 @@ tag: iOS, MVC, MVVM, 设计模式, RAC, Reactive Cocoa, 单元测试
 | 更新时间       | 更新内容 |
 | ---------- | ---- |
 | 2017-07-19 | 发布   |
+| 2017-09-19 | 补上目录 |
 
-#### 前言
+[TOC]
+
+### 前言
 
 [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)是微软于2005年开发出的一种软件架构设计模式，主要是为了在WPF和Silverlight中更简单的对UI实现事件驱动编程。在WPF和Silverlight中，通过MVVM成功的实现了UI布局和数据逻辑的剥离。虽然WPF和Silverlight最后都没有推广开来，但是还是让大家看到了MVVM设计模式的优秀之处。
 
@@ -20,7 +23,7 @@ tag: iOS, MVC, MVVM, 设计模式, RAC, Reactive Cocoa, 单元测试
 
 如果你想简单点直接看代码：[Show you the code](https://github.com/HarrisonXi/MvvmDemo)。
 
-#### MVC理想设计模式
+### MVC理想设计模式
 
 MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、数据和控制逻辑三大部分：
 
@@ -28,7 +31,7 @@ MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、
 
 一个UI交互的整体过程：View接受用户操作发送给Controller，Controller根据操作对数据进行修改，Controller接受数据修改的通知，并根据通知更新对应的UI。当然Controller可能有一些自有逻辑会修改数据或者更新UI，从属关系上来说View和Model都属于Controller。
 
-#### MVC实例
+### MVC实例
 
 这是我比较喜欢的一个实例，实现一个简单的登录界面。先罗列一下简单的需求：
 
@@ -46,7 +49,7 @@ MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、
 
 这里的`username`和`password`两个属性可以看作Model层，文本框和按钮的xib就是View层，VC主体代码就是Controller层。可以看到所有的Model修改逻辑和UI更新逻辑都是在Controller里一起完成的。（[完整代码](https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVC)）
 
-#### MVC解决的问题和优缺点
+### MVC解决的问题和优缺点
 
 - 代码成功分化为UI、数据和控制逻辑三大部分。
 - 易于理解使用，普及成本低。
@@ -54,13 +57,13 @@ MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、
 - 细节不够明确，基本上不明确归属的代码全部会放在Controller层。
 - 和UI操作事件绑定较重，难以进行单元测试。
 
-#### MVC实际使用状况
+### MVC实际使用状况
 
 因为上一节中提到的3和4两点，很多代码都只能写在Controller层。还因为xib的特殊性，对多人协作十分不友好，导致大部分UI的布局和初始化代码要用代码实现，而这些代码写成单独的类也多有不便，导致本该出现在View层的代码也堆积在了Controller层。而且在iOS中，UIViewController和UIView本来就是一一对应的。这就导致了MVC从最早的**Model-View-Controller**最终一点点变成了**Massive-View-Controller**：
 
 ![18-D](../2017/07/18-D.png)
 
-#### MVP设计模式
+### MVP设计模式
 
 所谓设计模式，就是软件设计过程中为了解决普遍性问题而提出的通用解决方案。MVP的出现就是为了解决MVC的Controller越来越臃肿的问题，进一步明确代码的分工：
 
@@ -70,7 +73,7 @@ MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、
 
 这么做的意义就在于真正意义上的将UI逻辑和数据逻辑隔离，而隔离之后就可以更方便的对数据逻辑部分进行单元测试，隔离的另一个好处就是解开了一部分的耦合。
 
-#### MVP实例
+### MVP实例
 
 接着刚刚的实例，我们在它的基础上继续进行修改。
 
@@ -94,7 +97,7 @@ Presenter的内部实现：
 
 从结果可以看到Controller的代码转移了一部分到Presenter，MVP也成功把逻辑和UI代码分离了。（[完整代码](https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVP)）
 
-#### MVP优缺点
+### MVP优缺点
 
 - UI布局和数据逻辑代码划分界限更明确。
 - 理解难度尚可，较容易推广。
@@ -102,7 +105,7 @@ Presenter的内部实现：
 - Presenter-Model层可以进行单元测试。
 - 需要额外写大量接口定义和逻辑代码（或者自己实现KVO监视）。
 
-#### MVVM设计模式
+### MVVM设计模式
 
 随着UI交互越来越复杂，MVP本身的一些缺点还是会暴露出来。
 
@@ -135,7 +138,7 @@ Presenter的内部实现：
 
 3. 基于数据绑定和数据管道，**可以对运算逻辑进行拆分和重用，最大程度的使代码易读易维护**。
 
-#### MVVM实例
+### MVVM实例
 
 还是接着刚刚的工程，首先要参照[Reactive Cocoa](https://github.com/ReactiveCocoa/ReactiveObjC)的文档把RAC添加到工程里。
 
@@ -239,7 +242,7 @@ Presenter的内部实现：
 
 ![19-K](../2017/07/19-K.png)
 
-#### MVVM优缺点
+### MVVM优缺点
 
 1. UI布局和数据逻辑代码划分界限更明确，数据逻辑还可以细分成各种转换器。
 2. 很难理解正确使用姿势，使用难度高容易出错，且出错调试难度也很大。
@@ -247,7 +250,7 @@ Presenter的内部实现：
 4. 更方便实现单元测试。
 5. 内存和CPU开销较大。
 
-#### 总结
+### 总结
 
 设计模式不是银弹，任何设计模式均有适用的场景，并没有某种设计模式可以解决所有的问题。
 

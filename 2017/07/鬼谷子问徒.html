@@ -11,8 +11,8 @@
 </head>
 <body class='typora-export'>
   <div id='write' class='is-mac'>
-    <h1><a name='header-c421' class='md-header-anchor' id="header-c421"></a>鬼谷子问徒</h1>
-    <h3><a name='header-c422' class='md-header-anchor' id="header-c422"></a>一道广为流传的古老数学逻辑求解题</h3>
+    <h1><a name='header-n2' class='md-header-anchor' id="header-n2"></a>鬼谷子问徒</h1>
+    <h3><a name='header-n3' class='md-header-anchor' id="header-n3"></a>一道广为流传的古老数学逻辑求解题</h3>
     <table>
       <thead>
         <tr>
@@ -28,18 +28,18 @@
       </tbody>
     </table>
     <p>题目的真实性已经不重要了，不要在意这个细节。🙄️</p>
-    <h4><a name='header-c432' class='md-header-anchor' id="header-c432"></a>题目</h4>
+    <h4><a name='header-n13' class='md-header-anchor' id="header-n13"></a>题目</h4>
     <p>孙膑、庞涓都是鬼谷子的徒弟。（反正意思就是他们仨都智慧过人）</p>
     <p>一天鬼谷子从2到99中选出了两个不同的整数，把积告诉孙，把和告诉庞。</p>
     <p>庞说：我虽然不能确定这两个数是什么，但是我肯定你也不知道这两个数是什么。</p>
     <p>孙说：我本来的确不知道，但是听你这么一说，我现在能够确定这两个数字了。</p>
     <p>庞说：既然你这么说，我现在也知道这两个数字是什么了。</p>
     <p>请问这两个数字是什么？为什么？（题目大意就是答得出来你也智慧过人）</p>
-    <h4><a name='header-c445' class='md-header-anchor' id="header-c445"></a>提示</h4>
+    <h4><a name='header-n26' class='md-header-anchor' id="header-n26"></a>提示</h4>
     <p>高亮选择下一行查看提示。</p>
     <p><em>建议码代码来辅助解题，就酱……另外，考虑一些质数相关的排除法。</em></p>
-    <h4><a name='header-c450' class='md-header-anchor' id="header-c450"></a>答案</h4>
-    <p><a href='#header-c488'>点我前往</a></p>
+    <h4><a name='header-n31' class='md-header-anchor' id="header-n31"></a>答案</h4>
+    <p><a href='#header-n69'>点我前往</a></p>
     <hr>
     <p>© 2017 苹果梨　　<a href='/'>首页</a>　　<a href='/about.html'>关于</a>　　<a href='https://github.com/HarrisonXi'>GitHub</a>　　<a href='mailto:gpra8764@gmail.com'>Email</a></p>
     <p>　</p>
@@ -58,26 +58,26 @@
     <p>　</p>
     <p>　</p>
     <p>　</p>
-    <h4><a name='header-c488' class='md-header-anchor' id="header-c488"></a>真答案</h4>
+    <h4><a name='header-n69' class='md-header-anchor' id="header-n69"></a>真答案</h4>
     <p>恭喜你发现了新大陆！🎉</p>
-    <h5><a name='header-c491' class='md-header-anchor' id="header-c491"></a>庞涓：我不能确定这两个数是什么</h5>
+    <h5><a name='header-n72' class='md-header-anchor' id="header-n72"></a>庞涓：我不能确定这两个数是什么</h5>
     <p>庞涓拿到的和不可能是5或者6（5=2+3，6=2+4，均有唯一解），同理也不可能是196或者197。</p>
     <p>所以两数字和的范围一定是7~195。</p>
-    <h5><a name='header-c496' class='md-header-anchor' id="header-c496"></a>庞涓：我肯定你也不知道这两个数是什么</h5>
+    <h5><a name='header-n77' class='md-header-anchor' id="header-n77"></a>庞涓：我肯定你也不知道这两个数是什么</h5>
     <p>知道两个质数的积一定可以推算出唯一解，所以庞涓知道的数一定无法拆解成两个质数的和。</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>a = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97] # 质数集合
 b = range(7,196) # 庞涓可能拿到的和集合
 for i in range(0, len(a)):
-        for j in range(i + 1, len(a)):
-                result = a[i] + a[j] # 两个质数的和
-                if result in b:
-                        b.remove(result) # 庞涓不可能拿到两个质数的和，从结果中移除
+    for j in range(i + 1, len(a)):
+        result = a[i] + a[j] # 两个质数的和
+        if result in b:
+            b.remove(result) # 庞涓不可能拿到两个质数的和，从结果中移除
 print b</pre>
     <p>用上面一段python，得到庞涓手上的和一定是在以下范围内：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>[11,17,23,27,29,35,37,41,47,51,53,57,59,65,67,71,77,79,83,87,89,93,95,97,101,103,105,107,109,111,113,115,117,119,121,123,125,127,129,131,133,135,137,139,141,143,145,147,149,151,153,155,157,159,161,163,165,166,167,169,171,173,174,175,177,178,179,181,182,183,184,185,187,188,189,190,191,192,193,194,195]</pre>
     <p>因为题目限制了数字的范围，所以其实如果庞涓手上的和过大，孙膑也有机会得到唯一解。所谓过大，就是孙膑有机会拿到大于上限一半的某个质因数。大于99/2的第一个质数就是53了，那么从55开始庞涓得到的和就可拆分成55=53+2、56=53+3、57=53+4……乘积的因数有53则孙膑能得到唯一解，而庞涓确认孙膑得不到唯一解，所以庞涓手上的和范围缩减为：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>[11,17,23,27,29,35,37,41,47,51,53]</pre>
-    <h5><a name='header-c506' class='md-header-anchor' id="header-c506"></a>孙膑：听你这么一说，我现在能够确定这两个数字了</h5>
+    <h5><a name='header-n87' class='md-header-anchor' id="header-n87"></a>孙膑：听你这么一说，我现在能够确定这两个数字了</h5>
     <p>孙膑也推算出了两数和的范围，剩下的就是分解质因数，看看组合起来的两数和在不在上面范围内。</p>
     <p>比如积是18，那么可能是2x9或者3x6，但是2+9=11在上面和范围内，3+6=9不在上面和的范围内，所以孙膑可以获得唯一解：两个数是2和9。</p>
     <p>比如积是30，那么可能是2x15或者3x10或者5x6，但是2+15=17且5+6=11都在上面和的范围内，所这种情况孙膑是拿不到唯一解的。</p>
@@ -100,36 +100,36 @@ print b</pre>
 c = []
 d = [] # 用来记录重复出现过的乘积
 for i in b:
-        for j in range(2, int(i * 0.5) + 1):
-                result = j * (i - j) # 孙膑可能拿到的积
-                if result in c:
-                        if result not in d:
-                                d.append(result) # 重复出现过的积
-                else:
-                        c.append(result) # 首次出现积
+    for j in range(2, int(i * 0.5) + 1):
+        result = j * (i - j) # 孙膑可能拿到的积
+        if result in c:
+            if result not in d:
+                d.append(result) # 重复出现过的积
+        else:
+            c.append(result) # 首次出现积
 for i in d:
-        c.remove(i)  # 重复出现过的积得不到唯一解，移除
+    c.remove(i)  # 重复出现过的积得不到唯一解，移除
 print c</pre>
     <p>用上面一段python，得到孙膑手上的积一定是在以下范围内：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>[18,24,28,52,76,112,130,50,92,110,140,152,162,170,176,182,54,100,138,154,168,190,198,204,208,96,124,174,216,234,250,276,294,304,306,160,186,232,252,336,340,114,148,238,288,310,348,364,390,400,408,414,418,172,246,280,370,442,480,496,510,522,532,550,552,98,144,188,230,308,344,410,440,468,494,518,560,578,594,608,620,638,644,648,650,240,282,360,430,492,520,570,592,612,646,660,672,682,690,696,700,702]</pre>
-    <h5><a name='header-c524' class='md-header-anchor' id="header-c524"></a>庞涓：我现在也知道这两个数字是什么了</h5>
+    <h5><a name='header-n105' class='md-header-anchor' id="header-n105"></a>庞涓：我现在也知道这两个数字是什么了</h5>
     <p>庞涓现在也知道了所有积的范围，他要做的就是把自己的和拆开来，看看相乘的积在不在上面范围里。</p>
     <p>假设庞涓的和是11，那么积可能为2x9=18或者3x8=24、4x7=28，都在上面的范围内，所以得不到唯一解。</p>
     <p>所以和上面的类似，我们又要做一次穷举。这次我们有两种解法，一种是从和下手，一种是从积下手。</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'># 紧接着上一节代码的后面运行
 for i in b:
-        count = 0 # 记录和拆成的两个数相乘能对应几个有效积
-        for j in range(2, int(i * 0.5) + 1):
-                result = j * (i - j) # 得到的积
-                if result in c:
-                        count = count + 1 # 对应的有效积多了一个
-        if count == 1:
-                print i # 仅能出现一次有效积的和为答案</pre>
+    count = 0 # 记录和拆成的两个数相乘能对应几个有效积
+    for j in range(2, int(i * 0.5) + 1):
+        result = j * (i - j) # 得到的积
+        if result in c:
+            count = count + 1 # 对应的有效积多了一个
+    if count == 1:
+        print i # 仅能出现一次有效积的和为答案</pre>
     <p>从和下手，仅对应一个有效积时，可获得唯一解：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>17</pre>
     <p>从积下手要分解质因数，写起来比较复杂就不写了先。🙄️</p>
     <p>所以最终的结果就是庞涓的和是17，孙膑的积是52，这两个数是4、13。</p>
-    <h5><a name='header-c539' class='md-header-anchor' id="header-c539"></a>验算</h5>
+    <h5><a name='header-n120' class='md-header-anchor' id="header-n120"></a>验算</h5>
     <p>4 x 13 = 52， 4 + 13 = 17（大意：我智慧过人，快夸夸我）</p>
   </div>
 </body>

@@ -11,14 +11,17 @@ tag: ObjC, keyword, define, static, extern, const
 | 更新时间       | 更新内容 |
 | ---------- | ---- |
 | 2017-06-05 | 发布   |
+| 2017-09-19 | 补上目录 |
 
-#### 前言
+[TOC]
+
+### 前言
 
 讲道理这些用处都完全不一样，为什么大家喜欢一起讲……那么既然都喜欢一起讲，我也写在一起好了……
 
 另外值得一提的是，这些其实就是纯C的东西，并不是ObjC才特有的。
 
-#### Static
+### Static
 
 参照[维基百科](https://en.wikipedia.org/wiki/Static_(keyword))，C语言里对此关键词的定义是一个**存储类型（storage class）**，用来控制变量的生命周期和可见性。
 
@@ -121,7 +124,7 @@ ObjC里面定义在`@implementation`段内的静态全局变量，作用范围�
 
 通常来说我们建立单例的时候就应该使用静态局部变量。另外很重要的一点，在创建单例的时候最好用`dispatch_once`方法避免多线程问题。
 
-#### Extern
+### Extern
 
 ##### 同文件的extern扩展
 
@@ -224,7 +227,7 @@ extern NSInteger externInt;
 
 这样外部文件只需要`#import "Public.h"`就可以直接引用到`externInt`了。
 
-#### Const
+### Const
 
 参照[维基百科](https://en.wikipedia.org/wiki/Const_(computer_programming))，通常习惯叫被const修饰的变量为常量，const是一个**类型修饰词（type qualifier）**，用来表示这个『变量』是不可修改的。
 
@@ -252,7 +255,7 @@ NSString * const constString = @"test";
 
 这样就可以保证别人不能写`constString = xxx;`了。
 
-#### Define
+### Define
 
 define并不是一个C语言的关键字，它只是一个预处理指令，在进行编译之前会做原封原样的替换。
 
@@ -302,7 +305,7 @@ int main(int argc, char * argv[]) {
 
 ##### 无法处理成指针
 
-参照下面的例子：
+参照下面的例子（警告的地方是因为常量指针和变量指针还是略有不同的）：
 
 ![05-C](../2017/06/05-C.png)
 
@@ -318,7 +321,7 @@ debug的时候上面的DefineInt是无法在调试台显示的，只能自己去
 
 这点真的很重要，**define是可以被undefine的**，然后再重新定义成别的值。如果团队里的成员沟通协作出现问题，同名的define覆盖了别人定义的值，会出很诡异的甚至可能灾难性的问题。
 
-#### Const配合Extern导出外界不可以修改的常量
+### Const配合Extern导出外界不可以修改的常量
 
 首先参照下系统提供的一些extern导出示例：
 

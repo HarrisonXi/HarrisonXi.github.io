@@ -11,7 +11,7 @@
 </head>
 <body class='typora-export'>
   <div id='write' class='is-mac'>
-    <h1><a name='header-c7' class='md-header-anchor' id="header-c7"></a>git基本工作流及rebase介绍</h1>
+    <h1><a name='header-n2' class='md-header-anchor' id="header-n2"></a>git基本工作流及rebase介绍</h1>
     <table>
       <thead>
         <tr>
@@ -32,12 +32,12 @@
     </table>
     <p>扩展阅读：<a href='http://nvie.com/posts/a-successful-git-branching-model/'>A successful Git branching model</a></p>
     <div class='md-toc' mdtype='toc'>
-      <p class="md-toc-content"><span class="md-toc-item md-toc-h1" data-ref="c7"><a class="md-toc-inner" style="" href="#header-c7">git基本工作流及rebase介绍</a></span><span class="md-toc-item md-toc-h2" data-ref="c21"><a class="md-toc-inner" style="" href="#header-c21">最原始的单分支工作流</a></span><span class="md-toc-item md-toc-h2" data-ref="c26"><a class="md-toc-inner" style="" href="#header-c26">开发分支与发布分支的分离</a></span><span class="md-toc-item md-toc-h2" data-ref="c40"><a class="md-toc-inner" style="" href="#header-c40">多人协作下的开发分支分离</a></span><span class="md-toc-item md-toc-h2" data-ref="c62"><a class="md-toc-inner" style="" href="#header-c62">基于需求拆分分支的需要及规范</a></span><span class="md-toc-item md-toc-h2" data-ref="c85"><a class="md-toc-inner" style="" href="#header-c85">发布准备分支的分离</a></span><span class="md-toc-item md-toc-h2" data-ref="c106"><a class="md-toc-inner" style="" href="#header-c106">线上版本问题紧急修复</a></span><span class="md-toc-item md-toc-h2" data-ref="c126"><a class="md-toc-inner" style="" href="#header-c126">Fork & Pull Request式工作流</a></span><span class="md-toc-item md-toc-h2" data-ref="c131"><a class="md-toc-inner" style="" href="#header-c131">关于merge产生的commit</a></span><span class="md-toc-item md-toc-h2" data-ref="c138"><a class="md-toc-inner" style="" href="#header-c138">使用rebase可以解决的问题</a></span><span class="md-toc-item md-toc-h2" data-ref="c162"><a class="md-toc-inner" style="" href="#header-c162">rebase带来的问题</a></span><span class="md-toc-item md-toc-h2" data-ref="c181"><a class="md-toc-inner" style="" href="#header-c181">在SourceTree中进行rebase</a></span><span class="md-toc-item md-toc-h2" data-ref="c194"><a class="md-toc-inner" style="" href="#header-c194">使用rebase的规则</a></span><span class="md-toc-item md-toc-h2" data-ref="c217"><a class="md-toc-inner" style="" href="#header-c217">使用squash合并多个commit</a></span><span class="md-toc-item md-toc-h2" data-ref="c226"><a class="md-toc-inner" style="" href="#header-c226">在SourceTree中进行squash</a></span><span class="md-toc-item md-toc-h2" data-ref="c243"><a class="md-toc-inner" style="" href="#header-c243">总结和广告时间</a></span></p>
+      <p class="md-toc-content"><span class="md-toc-item md-toc-h1" data-ref="n2"><a class="md-toc-inner" style="" href="#header-n2">git基本工作流及rebase介绍</a></span><span class="md-toc-item md-toc-h3" data-ref="n16"><a class="md-toc-inner" style="" href="#header-n16">最原始的单分支工作流</a></span><span class="md-toc-item md-toc-h3" data-ref="n21"><a class="md-toc-inner" style="" href="#header-n21">开发分支与发布分支的分离</a></span><span class="md-toc-item md-toc-h3" data-ref="n35"><a class="md-toc-inner" style="" href="#header-n35">多人协作下的开发分支分离</a></span><span class="md-toc-item md-toc-h3" data-ref="n57"><a class="md-toc-inner" style="" href="#header-n57">基于需求拆分分支的需要及规范</a></span><span class="md-toc-item md-toc-h3" data-ref="n80"><a class="md-toc-inner" style="" href="#header-n80">发布准备分支的分离</a></span><span class="md-toc-item md-toc-h3" data-ref="n101"><a class="md-toc-inner" style="" href="#header-n101">线上版本问题紧急修复</a></span><span class="md-toc-item md-toc-h3" data-ref="n121"><a class="md-toc-inner" style="" href="#header-n121">Fork & Pull Request式工作流</a></span><span class="md-toc-item md-toc-h3" data-ref="n126"><a class="md-toc-inner" style="" href="#header-n126">关于merge产生的commit</a></span><span class="md-toc-item md-toc-h3" data-ref="n133"><a class="md-toc-inner" style="" href="#header-n133">使用rebase可以解决的问题</a></span><span class="md-toc-item md-toc-h3" data-ref="n157"><a class="md-toc-inner" style="" href="#header-n157">rebase带来的问题</a></span><span class="md-toc-item md-toc-h3" data-ref="n176"><a class="md-toc-inner" style="" href="#header-n176">在SourceTree中进行rebase</a></span><span class="md-toc-item md-toc-h3" data-ref="n189"><a class="md-toc-inner" style="" href="#header-n189">使用rebase的规则</a></span><span class="md-toc-item md-toc-h3" data-ref="n212"><a class="md-toc-inner" style="" href="#header-n212">使用squash合并多个commit</a></span><span class="md-toc-item md-toc-h3" data-ref="n221"><a class="md-toc-inner" style="" href="#header-n221">在SourceTree中进行squash</a></span><span class="md-toc-item md-toc-h3" data-ref="n238"><a class="md-toc-inner" style="" href="#header-n238">总结和广告时间</a></span></p>
     </div>
-    <h2><a name='header-c21' class='md-header-anchor' id="header-c21"></a>最原始的单分支工作流</h2>
+    <h3><a name='header-n16' class='md-header-anchor' id="header-n16"></a>最原始的单分支工作流</h3>
     <p><img src='25-A.png' alt='25-A'></p>
     <p>这是在单人单版本线状况下，最简单的工作流了：所有的代码在一个master分支上提交，需要发布的时候直接在master分支发布新版本。</p>
-    <h2><a name='header-c26' class='md-header-anchor' id="header-c26"></a>开发分支与发布分支的分离</h2>
+    <h3><a name='header-n21' class='md-header-anchor' id="header-n21"></a>开发分支与发布分支的分离</h3>
     <p>每一种工作流的进化，都是为了解决一个实际工作中会遇到的问题。我们首先会遇到的问题就是：</p>
     <ol start=''>
       <li>开发中的分支可能不稳定，外部人员不明我们工作流的情况下，需要一个最新的稳定分支，却不知从哪获得。</li>
@@ -45,7 +45,7 @@
     </ol>
     <p><img src='25-B.png' alt='25-B'></p>
     <p>在此需求下，进化出了develop分支：开发时所有的代码在develop分支提交，在功能稳定需要发布的时候向master进行一次合并并发布，保证master始终是最后一次发布的稳定的代码。</p>
-    <h2><a name='header-c40' class='md-header-anchor' id="header-c40"></a>多人协作下的开发分支分离</h2>
+    <h3><a name='header-n35' class='md-header-anchor' id="header-n35"></a>多人协作下的开发分支分离</h3>
     <p>现在项目组人员增加了，所有人在同一个develop分支提交代码的结果就是：</p>
     <ol start=''>
       <li>每次提交都可能要处理冲突。</li>
@@ -57,7 +57,7 @@
     <p>有点扯远了，那么为了解决上述单develop分支的弊端，建立新的方案：</p>
     <p><img src='25-C.png' alt='25-C'></p>
     <p>每个人基于develop分支开出自己使用的develop分支副本，在此分支上进行开发工作，自行选择合适的时机处理冲突合回主干develop。这样的方案，一定程度可以解决多人协作的问题。</p>
-    <h2><a name='header-c62' class='md-header-anchor' id="header-c62"></a>基于需求拆分分支的需要及规范</h2>
+    <h3><a name='header-n57' class='md-header-anchor' id="header-n57"></a>基于需求拆分分支的需要及规范</h3>
     <p>随着需求数量的增多，以及单个需求规模和复杂度的增大，上述多develop分支方案也面临着新的挑战：</p>
     <ol start=''>
       <li>复杂的需求可能出现较多的bug，需要针对单个功能需求进行QA验证后再进行合并，维持开发主干稳定性。</li>
@@ -70,7 +70,7 @@
       <li>方便在feature分支合并入主干前进行QA和Code Review等工作。</li>
       <li>『这个需求这期不上了』时只要不合并对应feature分支到主干即可。</li>
     </ol>
-    <h2><a name='header-c85' class='md-header-anchor' id="header-c85"></a>发布准备分支的分离</h2>
+    <h3><a name='header-n80' class='md-header-anchor' id="header-n80"></a>发布准备分支的分离</h3>
     <p>上述各种方案最终都是依赖develop分支来生成总包进行QA验证，最后发布版本的。在这种情况下，发布期间就必须锁定develop分支，只能push修复总包问题的提交，之外的提交均不可以push。这就带来了问题：</p>
     <ol start=''>
       <li>无法处理多版本需要同时发布的需要。</li>
@@ -82,7 +82,7 @@
       <li>不阻塞develop分支的后续工作。</li>
       <li>需要发布的时候开出一个新的release分支即可，可以开出多个release分支适应多版同发的需要。</li>
     </ol>
-    <h2><a name='header-c106' class='md-header-anchor' id="header-c106"></a>线上版本问题紧急修复</h2>
+    <h3><a name='header-n101' class='md-header-anchor' id="header-n101"></a>线上版本问题紧急修复</h3>
     <p>现在线上版本出了重大问题，需要紧急修复之后发布一个新的版本！develop分支带了一些别的提交，可能是不稳定的，显然并不适合用develop去发布一个新的版本。这时候大家可以回想下当初把master和develop分离的初衷了，master分支到了出马的时候。</p>
     <p><img src='25-F.png' alt='25-F'></p>
     <p>我们其实可以在master分支直接提交修复。但是这会有些问题：</p>
@@ -93,14 +93,14 @@
     <p>所以这里诞生了hotfix分支，我们从master开出hotfix分支，进行QA验证后重新再发一个紧急修复版本，然后将hotfix分支合并回master和develop主干。</p>
     <p>当然方案并不是唯一的，在不违反规范且上一个release分支能被找到的情况下，这样也没什么问题：</p>
     <p><img src='25-G.png' alt='25-G'></p>
-    <h2><a name='header-c126' class='md-header-anchor' id="header-c126"></a>Fork & Pull Request式工作流</h2>
+    <h3><a name='header-n121' class='md-header-anchor' id="header-n121"></a>Fork & Pull Request式工作流</h3>
     <p><img src='26-A.png' alt='26-A'></p>
     <p>一图流……每个团队都有一个git副本，每个团队的git副本按照自己的工作流习惯来进行工作。在需要进行合并的时候，其他团队merge主团队的代码。在需要向主团队提交代码时，提出对应的pull request。这个暂不多述。</p>
-    <h2><a name='header-c131' class='md-header-anchor' id="header-c131"></a>关于merge产生的commit</h2>
+    <h3><a name='header-n126' class='md-header-anchor' id="header-n126"></a>关于merge产生的commit</h3>
     <p><img src='25-H.png' alt='25-H'></p>
     <p>如图所示，d-1表示在develop分支进行的第一个commit，2-1表示在feature2分支进行的第一个commit，m-1表示第一次用merge方式合并代码产生的合并commit。这个图示的方式在后面会用到。</p>
     <p>在常规工作中，我们是更建议使用merge方式来合并代码的，merge方式每一次合并会产生一个新的commit（需要禁用Fast Forward）并能忠实的反映每一个分支的合并历史。</p>
-    <h2><a name='header-c138' class='md-header-anchor' id="header-c138"></a>使用rebase可以解决的问题</h2>
+    <h3><a name='header-n133' class='md-header-anchor' id="header-n133"></a>使用rebase可以解决的问题</h3>
     <p><img src='25-I.png' alt='25-I'></p>
     <p>如图所示，大家可以看到merge模式带来的困扰：</p>
     <ol start=''>
@@ -113,7 +113,7 @@
     <p>可以看到feature2分支直接变成了基于m-1位置开出的分支，这也是rebase这个词的含义的直接体现。如果后续继续进行rebase操作，还可以得到结果：</p>
     <p><img src='25-K.png' alt='25-K'></p>
     <p>这样分支结构就会变得清晰无比，而对应分支的commit连贯性也变得十分的强。</p>
-    <h2><a name='header-c162' class='md-header-anchor' id="header-c162"></a>rebase带来的问题</h2>
+    <h3><a name='header-n157' class='md-header-anchor' id="header-n157"></a>rebase带来的问题</h3>
     <ol start=''>
       <li>多人协作灾难</li>
     </ol>
@@ -126,14 +126,14 @@
       <li>破坏合并冲突历史</li>
     </ol>
     <p>在merge的时候遇到冲突，对应的merge commit里会列出冲突的文件，以供之后回朔历史的时候找到问题。而rebase的时候，不会在commit信息里展示出曾经遇到过的冲突，遇到问题时只能人肉一点点排查了，基本上是无解的状态。</p>
-    <h2><a name='header-c181' class='md-header-anchor' id="header-c181"></a>在SourceTree中进行rebase</h2>
+    <h3><a name='header-n176' class='md-header-anchor' id="header-n176"></a>在SourceTree中进行rebase</h3>
     <p>综上所述，使用rebase时一定要在深入理解的情况下，谨慎操作才可以。在确保你了解并打算使用rebase之后，我来介绍一下在SourceTree中该如何进行操作。</p>
     <p>我建立了一个空白的git库，初始化commit在文件里写入了a=1，在develop提交一次将文件内容改为a=2，在feature分支提交了一次将文件内容改为a=3。</p>
     <p><img src='26-B.png' alt='26-B'></p>
     <p>如图所示，我现在身处feature分支，右键点击要合并的位置，选择『Rebase...』。这时候如果没有冲突的话，reabse就会直接完成了。可是喜闻乐见的是我这两个分支肯定是有冲突的，那么我们就去解决对应的冲突。解决完了之后要在SourceTree的主菜单里选择『Actions』-&gt;『Continue Rebase』，这时候Rebase就会继续完成。最后我们会得到结果：</p>
     <p><img src='26-C.png' alt='26-C'></p>
     <p>可以看到整个分支结构变了，feature分支的commit对应的hash和提交时间都变了，并没有展示产生过冲突，而是直接显示我把『a=2』改成了『a=3』。</p>
-    <h2><a name='header-c194' class='md-header-anchor' id="header-c194"></a>使用rebase的规则</h2>
+    <h3><a name='header-n189' class='md-header-anchor' id="header-n189"></a>使用rebase的规则</h3>
     <p>先做好例子用来讲后面的规则，这次也用SourceTree截图直接示意了：</p>
     <p><img src='30-A.png' alt='30-A'></p>
     <p>基于上图的状态，在b3分支对b2分支做rebase操作。这时候可以看到rebase处理冲突的位置和merge是不一样的，rebase处理的是b2最晚一个commit（a=3）和b3最早一个commit（a=4）之间的冲突：</p>
@@ -145,12 +145,12 @@
     <p><img src='30-D.png' alt='30-D'></p>
     <p>为什么会产生这种结果呢？因为b3在第一次rebase之后，相对于b1来说最早的commit已经变成了a=3，所以再对b1做rebase操作之后就直接把a=3挂在b1分支之后了。</p>
     <p>直接用现象来反推规则就是，rebase应该始终<strong>基于同一个分支</strong>（当初你开出分支所基于的base分支，一般来说是develop分支）进行操作。如果针对不同的分支反复进行rebase，中间几次操作『挂上』的commit们（比如这里的a=3），就会大串大串重复的出现在你的commit历史里。</p>
-    <h2><a name='header-c217' class='md-header-anchor' id="header-c217"></a>使用squash合并多个commit</h2>
+    <h3><a name='header-n212' class='md-header-anchor' id="header-n212"></a>使用squash合并多个commit</h3>
     <p>就拿上面我例子里的几个commit举例，我觉得这几个commit太脑残了，就改一个a的值反反复复改了3次，能不能把它们合并成一个commit（在假设只有feature分支的情况下）？</p>
     <p>答案是可以的！squash可以拯救你！强迫症有救了！</p>
     <p><img src='25-L.png' alt='25-L'></p>
     <p>如上图所示意，squash所做的操作就是把3个commit压缩成了一个新的commit。squash的弊端和rebase类似，会丢失很多信息。merge的时候也可以进行squash操作，一般在并不在乎commit历史的情况下才可以使用squash方式进行merge。通常情况下我们是在rebase的时候使用squash，处理自己的分支让其commit历史更加清晰干净。</p>
-    <h2><a name='header-c226' class='md-header-anchor' id="header-c226"></a>在SourceTree中进行squash</h2>
+    <h3><a name='header-n221' class='md-header-anchor' id="header-n221"></a>在SourceTree中进行squash</h3>
     <p>说了这么多，该怎么操作呢？我这就拿一个例子来示范。</p>
     <p>以下是我们项目组最新的一个release分支，存在反复修改build号和修改依赖分支的操作：</p>
     <p><img src='26-D.png' alt='26-D'></p>
@@ -159,7 +159,7 @@
     <p>选中最上方的commit 1d19972，然后点击下方的『Squash with previous』按钮就可以把两个commit合并成一个了，如上图所示。继续操作可以把下方两个commit也合并成一个。可以选中对应的commit点击下方的『Edit message』进行commit信息编辑。完成之后点击『OK』就搞定啦：</p>
     <p><img src='26-F.png' alt='26-F'></p>
     <p>可以看到合并后得到了两个新的commit，但是本地分支已经和远程分支渐行渐远。这里就是做个操作的示意，这种情况下是不建议强制push代码到远程的。</p>
-    <h2><a name='header-c243' class='md-header-anchor' id="header-c243"></a>总结和广告时间</h2>
+    <h3><a name='header-n238' class='md-header-anchor' id="header-n238"></a>总结和广告时间</h3>
     <p>画图画了一天，打字打了一天，总算是把本文写完了。本文总结了git工作流可以解决的问题，以及git常见操作优劣势及适用的场景，剩下的就是看大家自己灵活配合使用来解决各种问题了，祝大家好运。</p>
     <p>推荐一下<a href='https://www.processon.com/i/57d29512e4b08cbf6ce17376'>ProcessOn</a>，本文中流程图均使用此网站绘制，功能满足各种日常需要，而且因为是国内团队的产品速度也很优秀。</p>
     <hr>
