@@ -11,7 +11,7 @@ tag: iOS, RAC, Reactive Cocoa, 双向绑定, RACChannel
 | 2017-07-27 | 发布                              |
 | 2017-09-07 | 调整下RACKVOChannel章节内子章节的顺序，做了些补充 |
 
-#### 尝试直接用RACSignal实现双向绑定
+### 尝试直接用RACSignal实现双向绑定
 
 在某些场景下，我们需要把两个数据相互绑定，A的改动影响B，B的改动也影响A。
 
@@ -32,7 +32,7 @@ RAC(self.textFieldB, text) = self.textFieldA.rac_textSignal;
 
 在UITextField的`text`属性改变时，不会触发`rac_textSignal`。所以在A->B的信号影响了B的`text`时，不会触发B->A的信号。
 
-#### 对通常的数据用RACSignal实现双向绑定会出现的问题
+### 对通常的数据用RACSignal实现双向绑定会出现的问题
 
 而对于通常的数据来说进行双向绑定就会出错，代码和错误直接一图流甩出来先：
 
@@ -70,7 +70,7 @@ RAC(self.textFieldB, text) = self.textFieldA.rac_textSignal;
 2. 访问不到内部成员变量的时候，没有办法这样写。
 3. 如果为了这个需求来暴露内部成员变量，也是很不明智的行为，会破坏ViewModel的稳定性和封装性。
 
-#### RACChannel的出现
+### RACChannel的出现
 
 在这个时候，RACChannel就随需要出现了。
 
@@ -141,7 +141,7 @@ RAC(self, b) = channel.followingTerminal;
 
 因为RACChannel只是实现了双向绑定的设计思想，并没有帮我们处理循环调用的问题。我们在使用RACChannel的时候一般是需要使用它的子类，或者自己设计好代码在某条信号通路上进行打断。
 
-#### RACKVOChannel
+### RACKVOChannel
 
 看了那么多代码和原理，是时候晒一下简便正确的写法振奋人心了。想要实现A和B双向绑定，其实一句就可以：
 
@@ -232,7 +232,7 @@ if (!causedByDealloc && affectedOnlyLastComponent && self.currentThreadData.igno
 
 总之进行通常数据的双向绑定，RACChannelTo基本就是无敌的，几乎可以完成绝大部分需求了。
 
-#### 其他常见的RACChannel相关的类扩展
+### 其他常见的RACChannel相关的类扩展
 
 RAC库对常用的组件都进行了扩展方便我们使用，下面举几个例子。
 
@@ -276,7 +276,7 @@ RACChannelTerminal *textfieldTerminal = self.usernameTextField.rac_newTextChanne
 [userDefaultsTerminal subscribe:textfieldTerminal];
 ```
 
-#### 总结
+### 总结
 
 不得不说RAC的作者大神们伟大之极，当之无愧的ObjC新纪元开创者。RACChannel思路简单但是实现起来真的不简单，阅读代码慢慢理解RAC的精华实在是一种愉悦～
 

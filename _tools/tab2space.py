@@ -10,9 +10,7 @@ def tab2space(DIR):
 				print('Processing: %s' % (path))
 				mdFile = open(fullPath, 'r+')
 				content = mdFile.read()
-				content = re.sub("\t",
-					   		     "    ",
-					    		 content)
+				content = re.sub("\t", "    ", content)
 				mdFile.seek(0)
 				mdFile.write(content)
 				mdFile.truncate()

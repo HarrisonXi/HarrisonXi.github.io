@@ -6,7 +6,7 @@ tag: ObjC, keyword, define, static, extern, const
 
 # ObjC中的define、static、extern和const
 
-### 正确导出常量的姿势
+#### 正确导出常量的姿势
 
 | 更新时间       | 更新内容 |
 | ---------- | ---- |

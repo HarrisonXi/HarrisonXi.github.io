@@ -6,7 +6,7 @@ tag: iOS, MVC, MVVM, 设计模式, RAC, Reactive Cocoa, 单元测试
 
 # iOS使用RAC实现MVVM的正经姿势
 
-### 从MVC到MVVM
+#### 从MVC到MVVM
 
 | 更新时间       | 更新内容 |
 | ---------- | ---- |

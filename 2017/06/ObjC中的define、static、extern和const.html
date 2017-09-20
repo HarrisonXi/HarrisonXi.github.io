@@ -11,8 +11,8 @@
 </head>
 <body class='typora-export'>
   <div id='write' class='is-mac'>
-    <h1><a name='header-n212' class='md-header-anchor' id="header-n212"></a>ObjC中的define、static、extern和const</h1>
-    <h3><a name='header-n213' class='md-header-anchor' id="header-n213"></a>正确导出常量的姿势</h3>
+    <h1><a name='header-n2' class='md-header-anchor' id="header-n2"></a>ObjC中的define、static、extern和const</h1>
+    <h4><a name='header-n3' class='md-header-anchor' id="header-n3"></a>正确导出常量的姿势</h4>
     <table>
       <thead>
         <tr>
@@ -32,12 +32,12 @@
       </tbody>
     </table>
     <div class='md-toc' mdtype='toc'>
-      <p class="md-toc-content"><span class="md-toc-item md-toc-h1" data-ref="n212"><a class="md-toc-inner" href="#header-n212">ObjC中的define、static、extern和const</a></span><span class="md-toc-item md-toc-h3" data-ref="n213"><a class="md-toc-inner" href="#header-n213">正确导出常量的姿势</a></span><span class="md-toc-item md-toc-h3" data-ref="n405"><a class="md-toc-inner" href="#header-n405">前言</a></span><span class="md-toc-item md-toc-h3" data-ref="n226"><a class="md-toc-inner" href="#header-n226">Static</a></span><span class="md-toc-item md-toc-h5" data-ref="n244"><a class="md-toc-inner" href="#header-n244">静态全局变量（static global variable）</a></span><span class="md-toc-item md-toc-h5" data-ref="n259"><a class="md-toc-inner" href="#header-n259">静态成员变量（static member variables）</a></span><span class="md-toc-item md-toc-h5" data-ref="n270"><a class="md-toc-inner" href="#header-n270">静态局部变量（static local variables）</a></span><span class="md-toc-item md-toc-h3" data-ref="n279"><a class="md-toc-inner" href="#header-n279">Extern</a></span><span class="md-toc-item md-toc-h5" data-ref="n280"><a class="md-toc-inner" href="#header-n280">同文件的extern扩展</a></span><span class="md-toc-item md-toc-h5" data-ref="n293"><a class="md-toc-inner" href="#header-n293">外部变量（external variable）</a></span><span class="md-toc-item md-toc-h5" data-ref="n298"><a class="md-toc-inner" href="#header-n298">跨文件的extern扩展</a></span><span class="md-toc-item md-toc-h3" data-ref="n320"><a class="md-toc-inner" href="#header-n320">Const</a></span><span class="md-toc-item md-toc-h5" data-ref="n333"><a class="md-toc-inner" href="#header-n333">复杂的常量定义</a></span><span class="md-toc-item md-toc-h3" data-ref="n343"><a class="md-toc-inner" href="#header-n343">Define</a></span><span class="md-toc-item md-toc-h5" data-ref="n346"><a class="md-toc-inner" href="#header-n346">原封原样的替换</a></span><span class="md-toc-item md-toc-h5" data-ref="n359"><a class="md-toc-inner" href="#header-n359">定义的值无类型</a></span><span class="md-toc-item md-toc-h5" data-ref="n370"><a class="md-toc-inner" href="#header-n370">无法处理成指针</a></span><span class="md-toc-item md-toc-h5" data-ref="n379"><a class="md-toc-inner" href="#header-n379">对debug不友好</a></span><span class="md-toc-item md-toc-h5" data-ref="n382"><a class="md-toc-inner" href="#header-n382">可能被覆盖定义</a></span><span class="md-toc-item md-toc-h3" data-ref="n385"><a class="md-toc-inner" href="#header-n385">Const配合Extern导出外界不可以修改的常量</a></span></p>
+      <p class="md-toc-content"><span class="md-toc-item md-toc-h1" data-ref="n2"><a class="md-toc-inner" style="" href="#header-n2">ObjC中的define、static、extern和const</a></span><span class="md-toc-item md-toc-h2" data-ref="n15"><a class="md-toc-inner" style="" href="#header-n15">前言</a></span><span class="md-toc-item md-toc-h2" data-ref="n20"><a class="md-toc-inner" style="" href="#header-n20">Static</a></span><span class="md-toc-item md-toc-h3" data-ref="n38"><a class="md-toc-inner" style="" href="#header-n38">静态全局变量（static global variable）</a></span><span class="md-toc-item md-toc-h3" data-ref="n53"><a class="md-toc-inner" style="" href="#header-n53">静态成员变量（static member variables）</a></span><span class="md-toc-item md-toc-h3" data-ref="n64"><a class="md-toc-inner" style="" href="#header-n64">静态局部变量（static local variables）</a></span><span class="md-toc-item md-toc-h2" data-ref="n73"><a class="md-toc-inner" style="" href="#header-n73">Extern</a></span><span class="md-toc-item md-toc-h3" data-ref="n74"><a class="md-toc-inner" style="" href="#header-n74">同文件的extern扩展</a></span><span class="md-toc-item md-toc-h3" data-ref="n87"><a class="md-toc-inner" style="" href="#header-n87">外部变量（external variable）</a></span><span class="md-toc-item md-toc-h3" data-ref="n92"><a class="md-toc-inner" style="" href="#header-n92">跨文件的extern扩展</a></span><span class="md-toc-item md-toc-h2" data-ref="n114"><a class="md-toc-inner" style="" href="#header-n114">Const</a></span><span class="md-toc-item md-toc-h3" data-ref="n127"><a class="md-toc-inner" style="" href="#header-n127">复杂的常量定义</a></span><span class="md-toc-item md-toc-h2" data-ref="n137"><a class="md-toc-inner" style="" href="#header-n137">Define</a></span><span class="md-toc-item md-toc-h3" data-ref="n140"><a class="md-toc-inner" style="" href="#header-n140">原封原样的替换</a></span><span class="md-toc-item md-toc-h3" data-ref="n153"><a class="md-toc-inner" style="" href="#header-n153">定义的值无类型</a></span><span class="md-toc-item md-toc-h3" data-ref="n164"><a class="md-toc-inner" style="" href="#header-n164">无法处理成指针</a></span><span class="md-toc-item md-toc-h3" data-ref="n173"><a class="md-toc-inner" style="" href="#header-n173">对debug不友好</a></span><span class="md-toc-item md-toc-h3" data-ref="n176"><a class="md-toc-inner" style="" href="#header-n176">可能被覆盖定义</a></span><span class="md-toc-item md-toc-h2" data-ref="n179"><a class="md-toc-inner" style="" href="#header-n179">Const配合Extern导出外界不可以修改的常量</a></span></p>
     </div>
-    <h3><a name='header-n405' class='md-header-anchor' id="header-n405"></a>前言</h3>
+    <h3><a name='header-n15' class='md-header-anchor' id="header-n15"></a>前言</h3>
     <p>讲道理这些用处都完全不一样，为什么大家喜欢一起讲……那么既然都喜欢一起讲，我也写在一起好了……</p>
     <p>另外值得一提的是，这些其实就是纯C的东西，并不是ObjC才特有的。</p>
-    <h3><a name='header-n226' class='md-header-anchor' id="header-n226"></a>Static</h3>
+    <h3><a name='header-n20' class='md-header-anchor' id="header-n20"></a>Static</h3>
     <p>参照<a href='https://en.wikipedia.org/wiki/Static_(keyword)'>维基百科</a>，C语言里对此关键词的定义是一个<strong>存储类型（storage class）</strong>，用来控制变量的生命周期和可见性。</p>
     <p><img src='01-A.png' alt='01-A'></p>
     <p>static关键字会把一个变量的生命周期变成和程序的生命周期等同，这个感觉不用多介绍了，大家应该都懂的。</p>
@@ -80,7 +80,7 @@ int main(int argc, char * argv[]) {
 1
 0</pre>
     <p>一个编译单元简单来说就是一个.m文件，这里的<code>ClassA</code>和<code>ClassB</code>都引用了<code>Public.h</code>，但是因为这是两个编译单元，所以它们虽然都有<code>staticInt</code>这个静态变量，但是实际上是两个独立的静态变量，这两个独立的静态变量只对它们所在的文件内部可见。</p>
-    <h5><a name='header-n244' class='md-header-anchor' id="header-n244"></a>静态全局变量（static global variable）</h5>
+    <h5><a name='header-n38' class='md-header-anchor' id="header-n38"></a>静态全局变量（static global variable）</h5>
     <p>上述的例子就是一个静态全局变量，通常将变量定义在文件的顶部，这样就对整个文件都可见了。</p>
     <p>你问我为什么定义在顶部的话，那是因为：</p>
     <p><img src='01-B.png' alt='01-B'></p>
@@ -88,29 +88,29 @@ int main(int argc, char * argv[]) {
     <p>但是有比较奇特的一点：</p>
     <p><img src='01-C.png' alt='01-C'></p>
     <p>ObjC里面定义在<code>@implementation</code>段内的静态全局变量，作用范围会从当前的<code>@implementation</code>开始。</p>
-    <h5><a name='header-n259' class='md-header-anchor' id="header-n259"></a>静态成员变量（static member variables）</h5>
+    <h5><a name='header-n53' class='md-header-anchor' id="header-n53"></a>静态成员变量（static member variables）</h5>
     <p>这是C++的概念，很可惜在ObjC中并没有这个概念。</p>
     <p>在C++类的内部声明的静态变量会变成在这个类内部才能访问的静态成员变量。</p>
     <p>但是在上一节中大家也看到了ObjC中在<code>@implementation</code>段内的仍然是静态全局变量。</p>
     <p>在<code>@interface</code>段中声明静态变量则会直接报错：</p>
     <p><img src='01-D.png' alt='01-D'></p>
-    <h5><a name='header-n270' class='md-header-anchor' id="header-n270"></a>静态局部变量（static local variables）</h5>
+    <h5><a name='header-n64' class='md-header-anchor' id="header-n64"></a>静态局部变量（static local variables）</h5>
     <p>定义在函数体内的为静态局部变量，和定义在函数内的普通局部变量一样，在函数外是不可见的。例子如下图：</p>
     <p><img src='01-E.png' alt='01-E'></p>
     <p>要注意这里的<code>static = 0</code>是初始化，并不是赋值，仅会运行一次。</p>
     <p>通常来说我们建立单例的时候就应该使用静态局部变量。另外很重要的一点，在创建单例的时候最好用<code>dispatch_once</code>方法避免多线程问题。</p>
-    <h3><a name='header-n279' class='md-header-anchor' id="header-n279"></a>Extern</h3>
-    <h5><a name='header-n280' class='md-header-anchor' id="header-n280"></a>同文件的extern扩展</h5>
+    <h3><a name='header-n73' class='md-header-anchor' id="header-n73"></a>Extern</h3>
+    <h5><a name='header-n74' class='md-header-anchor' id="header-n74"></a>同文件的extern扩展</h5>
     <p>从纯C开始说起吧，因为同文件的extern一般来说只有纯C里需要：</p>
     <p><img src='01-F.png' alt='01-F'></p>
     <p>可以看到因为<code>int a = 0</code>写在了<code>main</code>函数之后，所以<code>main</code>函数是访问不到变量a的。</p>
     <p><img src='01-G.png' alt='01-G'></p>
     <p>这时候就要用到extern关键字，扩展变量的有效可见范围，就可以在<code>main</code>函数中访问到变量<code>a</code>了。</p>
     <p>在ObjC中，我们几乎已经不需要用到这种用法了。</p>
-    <h5><a name='header-n293' class='md-header-anchor' id="header-n293"></a>外部变量（external variable）</h5>
+    <h5><a name='header-n87' class='md-header-anchor' id="header-n87"></a>外部变量（external variable）</h5>
     <p>参照<a href='https://en.wikipedia.org/wiki/External_variable'>维基百科</a>，所谓外部变量就是定义在函数体外的变量。通常会把外部变量统一定义在文件顶部，这样就免去上面说的用extern扩展的麻烦了。在这种情况下，在文件内所有函数里就都可以访问到这个变量了。</p>
     <p>关于外部变量的编译相关原理细节在此就不多述，有兴趣的可以自行查阅资料。</p>
-    <h5><a name='header-n298' class='md-header-anchor' id="header-n298"></a>跨文件的extern扩展</h5>
+    <h5><a name='header-n92' class='md-header-anchor' id="header-n92"></a>跨文件的extern扩展</h5>
     <p>记得文章开始的截图么，extern关键字也是一个<strong>存储类型（storage class）</strong>。extern和static的不同点在于全程序共用一个变量而非每个编译单元有自己的独立变量，用了extern关键字之后变量将变得真正意义的全局可见。</p>
     <p>为了方便理解，举个例子：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>// Public.m
@@ -162,22 +162,22 @@ NSInteger externInt = 0;</pre>
 #import &lt;Foundation/Foundation.h&gt;
 extern NSInteger externInt;</pre>
     <p>这样外部文件只需要<code>#import "Public.h"</code>就可以直接引用到<code>externInt</code>了。</p>
-    <h3><a name='header-n320' class='md-header-anchor' id="header-n320"></a>Const</h3>
+    <h3><a name='header-n114' class='md-header-anchor' id="header-n114"></a>Const</h3>
     <p>参照<a href='https://en.wikipedia.org/wiki/Const_(computer_programming)'>维基百科</a>，通常习惯叫被const修饰的变量为常量，const是一个<strong>类型修饰词（type qualifier）</strong>，用来表示这个『变量』是不可修改的。</p>
     <p><img src='01-H.png' alt='01-H'></p>
     <p>可以看到只能在定义常量的时候进行初始化，在之后的代码里再进行值的修改就会报错。</p>
     <p>值得一提的是，const定义的常量是在编译器就确定好值的。所以大部分需要编译期就确定值的语法里，常量都是可以使用的：</p>
     <p><img src='05-D.png' alt='05-D'></p>
     <p>这也是很多情况下推荐使用常量的原因之一。后面还会和宏定义做个对比，在那之前先继续说常量的定义姿势。</p>
-    <h5><a name='header-n333' class='md-header-anchor' id="header-n333"></a>复杂的常量定义</h5>
+    <h5><a name='header-n127' class='md-header-anchor' id="header-n127"></a>复杂的常量定义</h5>
     <p>对指针变量怎么用const关键字应该是最绕的部分了，简单概括的话就是const修饰的右侧内容无法被修改。详细的直接看下面的例子：</p>
     <p><img src='05-E.png' alt='05-E'></p>
     <p>如果想要完全不能修改，采用d的策略就好了。通常情况下定义指针型常量都是字串型的，因为NSString型变量本身值是不可以修改的，所以一般来说定义如下：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>NSString * const constString = @"test";</pre>
     <p>这样就可以保证别人不能写<code>constString = xxx;</code>了。</p>
-    <h3><a name='header-n343' class='md-header-anchor' id="header-n343"></a>Define</h3>
+    <h3><a name='header-n137' class='md-header-anchor' id="header-n137"></a>Define</h3>
     <p>define并不是一个C语言的关键字，它只是一个预处理指令，在进行编译之前会做原封原样的替换。</p>
-    <h5><a name='header-n346' class='md-header-anchor' id="header-n346"></a>原封原样的替换</h5>
+    <h5><a name='header-n140' class='md-header-anchor' id="header-n140"></a>原封原样的替换</h5>
     <p>简单来说这两段代码是一毛一样的：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>#define DefineInt 1
 int defineInt = DefineInt;</pre>
@@ -192,22 +192,22 @@ int main(int argc, char * argv[]) {
     NSLog(@"%zd", 1 + 2 * 3);
 }</pre>
     <p>可以看出来『原封原样』是什么意思了吧？define的内容并不会成为一个单元，而只是原样的替换而已。当然原样替换并不是define的缺点，而是一个特性。</p>
-    <h5><a name='header-n359' class='md-header-anchor' id="header-n359"></a>定义的值无类型</h5>
+    <h5><a name='header-n153' class='md-header-anchor' id="header-n153"></a>定义的值无类型</h5>
     <p><img src='05-A.png' alt='05-A'></p>
     <p>上面的例子可以看出来宏定义的值类型十分灵活，所以在上面的代码里第7行和第8行都不会出警告，而常量因为包含明确指定的类型就会出警告。</p>
     <p>任何事情也都有双面性，在更需要明确的类型检查时，这个特性就会成为一个隐患。当然其实也有办法可以处理类型检查的问题：</p>
     <p><img src='05-B.png' alt='05-B'></p>
     <p>在面对更复杂的场景时，这种写法还是可能有一些别的问题的。在需要类型检查时，建议使用常量来代替宏定义。</p>
-    <h5><a name='header-n370' class='md-header-anchor' id="header-n370"></a>无法处理成指针</h5>
+    <h5><a name='header-n164' class='md-header-anchor' id="header-n164"></a>无法处理成指针</h5>
     <p>参照下面的例子（警告的地方是因为常量指针和变量指针还是略有不同的）：</p>
     <p><img src='05-C.png' alt='05-C'></p>
     <p>因为宏定义只是原封原样替换，所以理所当然编译器不会为其分配地址，所以是无法做指针操作的。</p>
     <p>在面对一些需要传递指针的场景，宏定义的值无法直接使用。</p>
-    <h5><a name='header-n379' class='md-header-anchor' id="header-n379"></a>对debug不友好</h5>
+    <h5><a name='header-n173' class='md-header-anchor' id="header-n173"></a>对debug不友好</h5>
     <p>debug的时候上面的DefineInt是无法在调试台显示的，只能自己去源代码里查阅定义的值是多少。</p>
-    <h5><a name='header-n382' class='md-header-anchor' id="header-n382"></a>可能被覆盖定义</h5>
+    <h5><a name='header-n176' class='md-header-anchor' id="header-n176"></a>可能被覆盖定义</h5>
     <p>这点真的很重要，<strong>define是可以被undefine的</strong>，然后再重新定义成别的值。如果团队里的成员沟通协作出现问题，同名的define覆盖了别人定义的值，会出很诡异的甚至可能灾难性的问题。</p>
-    <h3><a name='header-n385' class='md-header-anchor' id="header-n385"></a>Const配合Extern导出外界不可以修改的常量</h3>
+    <h3><a name='header-n179' class='md-header-anchor' id="header-n179"></a>Const配合Extern导出外界不可以修改的常量</h3>
     <p>首先参照下系统提供的一些extern导出示例：</p>
     <pre class='md-fences mock-cm' style='display:block;position:relative'>// NSError.h
 FOUNDATION_EXPORT NSString *const NSLocalizedDescriptionKey;             // NSString
