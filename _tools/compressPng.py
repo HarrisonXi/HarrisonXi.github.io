@@ -15,7 +15,8 @@ exclude_paths = [
 	'2015',
 	'2017/02',
 	'2017/03',
-	'2017/06'
+	'2017/06',
+	'2017/07'
 ]
 def compressPng(DIR):
 	for path in os.listdir(DIR):
