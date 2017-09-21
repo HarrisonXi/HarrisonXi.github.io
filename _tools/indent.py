@@ -15,8 +15,8 @@ def convertIndent(DIR):
 				content = re.sub('<span class="md-toc-item md-toc-h4"[^>]*><a[^>]+>[^<]+</a></span>',
 								 '',
 								 content)
-				content = re.sub("md-toc-h3", "md-toc-h2", content)
-				content = re.sub("md-toc-h5", "md-toc-h3", content)
+				content = re.sub("md-toc-item md-toc-h3", "md-toc-h2 md-toc-item", content)
+				content = re.sub("md-toc-item md-toc-h5", "md-toc-h3 md-toc-item", content)
 				htmlFile.seek(0)
 				htmlFile.write(content)
 				htmlFile.truncate()
