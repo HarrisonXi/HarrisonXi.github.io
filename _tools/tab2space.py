@@ -17,4 +17,4 @@ def tab2space(DIR):
 				mdFile.close()
 
 tab2space(os.path.join(os.getcwd(), '_posts'))
-print('Img convertion is done.')
+print('Tab to space convertion is done.')
