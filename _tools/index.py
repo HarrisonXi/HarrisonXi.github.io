@@ -38,8 +38,8 @@ def makeIndex(DIR):
 			categoryName = '未分类'
 			if categoryMatch:
 				categoryName = categoryMatch.group(1)
-			readmeContent = readmeContent + '\n`%s` [%s](http://blog.harrisonxi.com/%s/%s/%s.html)\n' % (categoryName, match.group(3), year, month, match.group(3))
-			indexContent = indexContent + '\n`%s` [%s](/%s/%s/%s.html)\n' % (categoryName, match.group(3), year, month, match.group(3))
+			readmeContent = readmeContent + '\n`%s` [%s](http://blog.harrisonxi.com/%s/%s/%s.html)\n' % (categoryName, match.group(3), year, month, match.group(3).replace(' ', '%20'))
+			indexContent = indexContent + '\n`%s` [%s](/%s/%s/%s.html)\n' % (categoryName, match.group(3), year, month, match.group(3).replace(' ', '%20'))
 	# 补全文件尾内容并写入
 	indexContent = indexContent + '\n------\n\n© 2017 苹果梨　　首页　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)\n'
 	file = open('README.md', 'w')
