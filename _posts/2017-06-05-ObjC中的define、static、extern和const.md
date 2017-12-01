@@ -31,12 +31,12 @@ static关键字会把一个变量的生命周期变成和程序的生命周期�
 
 static变量对每个编译单元都是内部可见且分别独立的，这个的意思参照例子：
 
-```
+```objective-c
 // Public.h
 static NSInteger staticInt = 0;
 ```
 
-```
+```objective-c
 // ClassA.m
 #import "ClassA.h"
 #import "Public.h"
@@ -50,7 +50,7 @@ static NSInteger staticInt = 0;
 @end
 ```
 
-```
+```objective-c
 // ClassB.m
 #import "ClassB.h"
 #import "Public.h"
@@ -64,7 +64,7 @@ static NSInteger staticInt = 0;
 @end
 ```
 
-```
+```objective-c
 // main.m
 #import "ClassA.h"
 #import "ClassB.h"
@@ -78,7 +78,7 @@ int main(int argc, char * argv[]) {
 
 输出：
 
-```
+```objective-c
 0
 1
 0
@@ -152,14 +152,14 @@ ObjC里面定义在`@implementation`段内的静态全局变量，作用范围�
 
 为了方便理解，举个例子：
 
-```
+```objective-c
 // Public.m
 // 注意这是.m文件！注意这是.m文件！注意这是.m文件！
 #import "Public.h"
 NSInteger externInt = 0;
 ```
 
-```
+```objective-c
 // ClassA.m
 #import "ClassA.h"
 extern NSInteger externInt;
@@ -173,7 +173,7 @@ extern NSInteger externInt;
 @end
 ```
 
-```
+```objective-c
 // ClassB
 #import "ClassB.h"
 extern NSInteger externInt;
@@ -187,7 +187,7 @@ extern NSInteger externInt;
 @end
 ```
 
-```
+```objective-c
 // main.m
 #import "ClassA.h"
 #import "ClassB.h"
@@ -201,7 +201,7 @@ int main(int argc, char * argv[]) {
 
 输出：
 
-```
+```objective-c
 0
 1
 2
@@ -213,13 +213,13 @@ int main(int argc, char * argv[]) {
 
 通常情况下，我们是成对的这样.m文件和.h文件：
 
-```
+```objective-c
 // Public.m
 #import "Public.h"
 NSInteger externInt = 0;
 ```
 
-```
+```objective-c
 // Public.h
 #import <Foundation/Foundation.h>
 extern NSInteger externInt;
@@ -249,7 +249,7 @@ extern NSInteger externInt;
 
 如果想要完全不能修改，采用d的策略就好了。通常情况下定义指针型常量都是字串型的，因为NSString型变量本身值是不可以修改的，所以一般来说定义如下：
 
-```
+```objective-c
 NSString * const constString = @"test";
 ```
 
@@ -263,18 +263,18 @@ define并不是一个C语言的关键字，它只是一个预处理指令，在�
 
 简单来说这两段代码是一毛一样的：
 
-```
+```objective-c
 #define DefineInt 1
 int defineInt = DefineInt;
 ```
 
-```
+```objective-c
 int defineInt = 1;
 ```
 
 关于原封原样替换的解释，下面这个例子应该是最常用的：
 
-```
+```objective-c
 #define DefineInt 1 + 2
 int main(int argc, char * argv[]) {
     NSLog(@"%zd", DefineInt * 3);
@@ -283,7 +283,7 @@ int main(int argc, char * argv[]) {
 
 输出结果为7，因为实际上代码等同于：
 
-```
+```objective-c
 int main(int argc, char * argv[]) {
     NSLog(@"%zd", 1 + 2 * 3);
 }
@@ -325,7 +325,7 @@ debug的时候上面的DefineInt是无法在调试台显示的，只能自己去
 
 首先参照下系统提供的一些extern导出示例：
 
-```
+```objective-c
 // NSError.h
 FOUNDATION_EXPORT NSString *const NSLocalizedDescriptionKey;             // NSString
 FOUNDATION_EXPORT NSString *const NSLocalizedFailureReasonErrorKey;      // NSString
@@ -333,7 +333,7 @@ FOUNDATION_EXPORT NSString *const NSLocalizedRecoverySuggestionErrorKey; // NSSt
 ...
 ```
 
-```
+```objective-c
 // UIWindow.h
 UIKIT_EXTERN const UIWindowLevel UIWindowLevelNormal;
 UIKIT_EXTERN const UIWindowLevel UIWindowLevelAlert;

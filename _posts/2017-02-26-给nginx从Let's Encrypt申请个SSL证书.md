@@ -26,22 +26,22 @@ LE只提供了DV（Domain Validation，域名验证）类型的SSL证书，只�
 
 整个过程还是比较繁琐的，所以LE推荐我们使用工具[Certbot](https://certbot.eff.org/)来搞定这件事。我的VPS是CentOS 6的，所以在Certbot首页选择好CentOS 6和nginx之后，打开了具体的[安装介绍页](https://certbot.eff.org/#centos6-nginx)。
 
-```
+```shell
 wget https://dl.eff.org/certbot-auto
 chmod a+x certbot-auto
 ```
 
 在想要安装Certbot的路径下执行上述指令，就可以得到可执行文件centbot-auto了。这个文件神通广大，可以自动安装各种需要的依赖。装好了它之后，Certbot推荐我们使用[webroot插件](https://certbot.eff.org/docs/using.html#webroot)来获得证书。
 
-```
-$ ./certbot-auto certonly --webroot -w /var/www/example -d example.com -d www.example.com -w /var/www/thing -d thing.is -d m.thing.is
+```shell
+./certbot-auto certonly --webroot -w /var/www/example -d example.com -d www.example.com -w /var/www/thing -d thing.is -d m.thing.is
 ```
 
 这是一个示例的指令。其中**/var/www/example**是第一个虚拟主机在VPS上的根路径，后面的**example.com**和**www.example.com**就是对应的已绑定的域名，也就是-d参数对应的域名会向前取最近一个-w参数对应的根路径。这样Certbot就会在**/var/www/example**路径下创建**/.well-known/acme-challenge**文件，然后通知LE去验证，最后获得签名好的SSL证书存在本地，最后删除刚刚创建的验证用文件并输出结果。
 
 我安装的nginx默认虚拟主机根路径在/usr/share/nginx下，我改了个名，所以指令是这样的：
 
-```
+```shell
 ./certbot-auto certonly --webroot -w /usr/share/nginx/harrisonxi.com -d harrisonxi.com
 ```
 
@@ -55,7 +55,7 @@ $ ./certbot-auto certonly --webroot -w /var/www/example -d example.com -d www.ex
 
 nginx的配置文件一般是在/etc/nginx路径下，打开这个路径下的nginx.conf，可以看到实际上它是从其他文件import了server配置：
 
-```
+```nginx
 http {
   ...
   include /etc/nginx/conf.d/*.conf;
@@ -64,7 +64,7 @@ http {
 
 在这种情况下，就要再去/etc/nginx/conf.d路径下找到对应的*.conf文件来编辑server配置。如果server配置是直接写在nginx.conf里的，那就直接在nginx.conf里编辑server配置：
 
-```
+```nginx
 server {
     listen       80;
     listen       443  ssl;
@@ -87,13 +87,13 @@ LE提供的证书只有90天有效期，这点也是我觉得比较靠谱的一�
 
 Certbot工具也可以自动续期SSL证书，使用renew方法即可：
 
-```
+```shell
 ./certbot-auto renew
 ```
 
 renew方法的详细介绍参考对应的[用户指导](https://certbot.eff.org/docs/using.html#renewal)。可以新建一个定期计划任务每隔几天自动运行指令：
 
-```
+```shell
 ./certbot-auto renew --quiet
 ```
 

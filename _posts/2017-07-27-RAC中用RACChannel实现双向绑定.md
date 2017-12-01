@@ -17,7 +17,7 @@ tag: iOS, RAC, Reactive Cocoa, 双向绑定, RACChannel
 
 为了表现上容易观察，我们先假设有一个同步两个文本框输入内容的需求。
 
-```
+```objective-c
 RAC(self.textFieldA, text) = self.textFieldB.rac_textSignal;
 RAC(self.textFieldB, text) = self.textFieldA.rac_textSignal;
 ```
@@ -48,7 +48,7 @@ RAC(self.textFieldB, text) = self.textFieldA.rac_textSignal;
 
 打破这个循环的方法也很简单，在信号订阅的block体内进行数据改动时，想办法不发出信号：
 
-```
+```objective-c
 @weakify(self);
 [RACObserve(self, a) subscribeNext:^(NSString *x) {
     @strongify(self);
@@ -89,7 +89,7 @@ RACReplaySubject是一种特殊的RACSubject，它可以向新的订阅者重新
 
 我们回过头来看RACChannel的完整代码：
 
-```
+```objective-c
 @implementation RACChannel
 
 - (instancetype)init {
@@ -129,7 +129,7 @@ RACReplaySubject是一种特殊的RACSubject，它可以向新的订阅者重新
 
 这么看下来，是不是创建个RACChannel，把四个口绑定好就可以双向传输数据了？试一试：
 
-```
+```objective-c
 RACChannel *channel = [RACChannel new];
 RAC(self, a) = channel.leadingTerminal;
 [RACObserve(self, a) subscribe:channel.leadingTerminal];
@@ -145,7 +145,7 @@ RAC(self, b) = channel.followingTerminal;
 
 看了那么多代码和原理，是时候晒一下简便正确的写法振奋人心了。想要实现A和B双向绑定，其实一句就可以：
 
-```
+```objective-c
 RACChannelTo(self, a) = RACChannelTo(self, b);
 ```
 
@@ -155,7 +155,7 @@ RACChannelTo(self, a) = RACChannelTo(self, b);
 
 我们把`RACChannelTo(self, a)`先展开来，看一下它到底做了什么：
 
-```
+```objective-c
 [[RACKVOChannel alloc] initWithTarget:self keyPath:@"a" nilValue:nil][@"followingTerminal"]
 ```
 
@@ -170,7 +170,7 @@ RACChannelTo(self, a) = RACChannelTo(self, b);
 
 我们看一下这段代码：
 
-```
+```objective-c
 @implementation RACKVOChannel (RACChannelTo)
 
 - (RACChannelTerminal *)objectForKeyedSubscript:(NSString *)key {
@@ -203,7 +203,7 @@ RACChannelTo(self, a) = RACChannelTo(self, b);
 
 我们主要关注的是，RACKVOChannel在哪里打断了信号通道的循环调用。先看`subscribeNext`段里这一部分：
 
-```
+```objective-c
 // Set the ignoreNextUpdate flag before setting the value so this channel
 // ignores the value in the subsequent -didChangeValueForKey: callback.
 [self createCurrentThreadData];
@@ -212,7 +212,7 @@ self.currentThreadData.ignoreNextUpdate = YES;
 
 注释写得比较清楚，这个`ignoreNextUpdate`使得下一次的值修改被忽略。具体的忽略代码在`sendNext`段：
 
-```
+```objective-c
 // If the change wasn't triggered by deallocation, only affects the last
 // path component, and ignoreNextUpdate is set, then it was triggered by
 // this channel and should not be forwarded.
@@ -238,7 +238,7 @@ RAC库对常用的组件都进行了扩展方便我们使用，下面举几个�
 
 ##### NSUserDefaults (RACSupport)
 
-```
+```objective-c
 - (RACChannelTerminal *)rac_channelTerminalForKey:(NSString *)key;
 ```
 
@@ -246,7 +246,7 @@ RAC库对常用的组件都进行了扩展方便我们使用，下面举几个�
 
 ##### UITextField (RACSignalSupport)
 
-```
+```objective-c
 - (RACChannelTerminal<NSString *> *)rac_newTextChannel;
 ```
 
@@ -258,7 +258,7 @@ RAC库对常用的组件都进行了扩展方便我们使用，下面举几个�
 
 这里是一个和ViewModel进行绑定的例子：
 
-```
+```objective-c
 // 如果仅需要单向绑定，使用rac_textSignal
 // RAC(self.viewModel, username) = self.usernameTextField.rac_textSignal;
 // 如果需要双向绑定，则使用rac_newTextChannel
@@ -269,7 +269,7 @@ RACChannelTo(self.viewModel, username) = self.usernameTextField.rac_newTextChann
 
 如果是NSUserDefaults和UITextField双向绑定，可以手动写一下订阅：
 
-```
+```objective-c
 RACChannelTerminal *userDefaultsTerminal = [[NSUserDefaults standardUserDefaults] rac_channelTerminalForKey:@"username"];
 RACChannelTerminal *textfieldTerminal = self.usernameTextField.rac_newTextChannel;
 [textfieldTerminal subscribe:userDefaultsTerminal];

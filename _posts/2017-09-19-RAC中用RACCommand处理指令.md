@@ -62,7 +62,7 @@ tag: iOS, RAC, Reactive Cocoa, 指令, RACCommand
 
 而`signalBlock`参数是为了传递数据和执行指令流程用的，先看一下这个block的类型：
 
-```
+```objective-c
 RACSignal<ValueType> * (^)(InputType _Nullable input)
 ```
 
@@ -86,7 +86,7 @@ RACSignal<ValueType> * (^)(InputType _Nullable input)
 
    `enabled`实时的状态是通过一个内部的`immediateEnabled`信号流来获得的：
 
-   ```
+   ```objective-c
    _immediateEnabled = [[[[RACSignal
        combineLatest:@[ enabledSignal, moreExecutionsAllowed ]]
        and]
@@ -98,7 +98,7 @@ RACSignal<ValueType> * (^)(InputType _Nullable input)
 
    `enabledSignal`是外部传入的不用讲解了，所以再来看看`moreExecutionsAllowed`信号流的实现：
 
-   ```
+   ```objective-c
    RACSignal *moreExecutionsAllowed = [RACSignal
        if:[self.allowsConcurrentExecutionSubject startWith:@NO]
        then:[RACSignal return:@YES]
@@ -113,7 +113,7 @@ RACSignal<ValueType> * (^)(InputType _Nullable input)
 
    内部其它信号的触发，基本都是通过`addedExecutionSignalsSubject`这个RACSubject来组织的：
 
-   ```
+   ```objective-c
    [self.addedExecutionSignalsSubject sendNext:connection.signal];
    ```
 
@@ -123,7 +123,7 @@ RACSignal<ValueType> * (^)(InputType _Nullable input)
 
 讲内部信号组织之前需要讲解下`catchTo:`是用来做什么的，这要首先看一下`catch:`：
 
-```
+```objective-c
 - (RACSignal *)catch:(RACSignal * (^)(NSError *error))catchBlock {
     NSCParameterAssert(catchBlock != NULL);
 
@@ -152,7 +152,7 @@ RACSignal<ValueType> * (^)(InputType _Nullable input)
 
 参照以下例子：
 
-```
+```objective-c
 // 原始信号
 RACSignal *signal = [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
     [subscriber sendNext:@1];
@@ -177,7 +177,7 @@ RACSignal *catchedSignal = [signal catch:^RACSignal * _Nonnull(NSError * _Nonnul
 
 最终输出结果如下，其中的错误信号被替换了：
 
-```
+```objective-c
 sendNext: 1
 sendNext: 2
 sendCompleted
@@ -185,7 +185,7 @@ sendCompleted
 
 而`catchTo:`又是做什么的，我们来看一下：
 
-```
+```objective-c
 - (RACSignal *)catchTo:(RACSignal *)signal {
     return [[self catch:^(NSError *error) {
         return signal;
@@ -197,7 +197,7 @@ sendCompleted
 
 这样的话上面的例子中间的`catch:`就可以替换为：
 
-```
+```objective-c
 RACSignal *catchedSignal = [signal catchTo:[RACSignal return:@2]];
 ```
 
@@ -207,7 +207,7 @@ RACSignal *catchedSignal = [signal catchTo:[RACSignal return:@2]];
 
 最开始做的都是一些常规的初始化操作，创建内部使用的RACSubject，然后将外部传入的`signalBlock`存下来。
 
-```
+```objective-c
 _executionSignals = [[[self.addedExecutionSignalsSubject
     map:^(RACSignal *signal) {
         return [signal catchTo:[RACSignal empty]];
@@ -218,7 +218,7 @@ _executionSignals = [[[self.addedExecutionSignalsSubject
 
 第一个处理的信号流就是供外部使用的`executionSignals`，将`execute:`里发出的**主流程信号流**进行了一次`catchTo:`操作后，再传出供外部使用。这里是为了将`sendError`统一由后面的`errors`信号流捕获，所以才需要进行`catchTo:`操作。在**主流程信号流**进行`sendError`的时候，NSError会被`catchTo:`吞掉，而我们重新创建的又是个空信号流，所以外部的订阅者就收不到这个错误信号了。
 
-```
+```objective-c
 RACMulticastConnection *errorsConnection = [[[self.addedExecutionSignalsSubject
     flattenMap:^(RACSignal *signal) {
         return [[signal
@@ -244,7 +244,7 @@ _errors = [errorsConnection.signal setNameWithFormat:@"%@ -errors", self];
 
 后面的信号流有的已经讲过了，有的很简单不需要讲解了，我就再重点讲一下这个信号流：
 
-```
+```objective-c
 RACSignal *immediateExecuting = [[[[self.addedExecutionSignalsSubject
     flattenMap:^(RACSignal *signal) {
         return [[[signal
@@ -319,7 +319,7 @@ UIButton的RACCommand扩展主要做了以下三件事：
 
 接着来看一下细节代码，首先是ViewModel里的RACCommand实现：
 
-```
+```objective-c
 self.loginCommand = [[RACCommand alloc] initWithEnabled:RACObserve(self, loginEnabled) signalBlock:^RACSignal * _Nonnull(id  _Nullable input) {
     return [RACSignal createSignal:^RACDisposable * _Nullable(id<RACSubscriber>  _Nonnull subscriber) {
         [subscriber sendNext:@"start"];
@@ -343,7 +343,7 @@ self.loginCommand = [[RACCommand alloc] initWithEnabled:RACObserve(self, loginEn
 
 ViewController这一侧的代码：
 
-```
+```objective-c
 self.loginButton.rac_command = self.viewModel.loginCommand;
 [self.viewModel.loginCommand.executionSignals subscribeNext:^(RACSignal<id> * executionSignal) {
     NSLog(@"get signal: %@", executionSignal);

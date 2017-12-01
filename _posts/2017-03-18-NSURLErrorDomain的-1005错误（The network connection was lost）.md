@@ -20,8 +20,8 @@ HTTP 1.0中，默认进行的都是短连接。一个HTTP请求会产生一个TC
 
 我们的团队是在使用SDWebImage的时候遇到这个问题的，经搜索发现早在iOS 8时代就有人在使用AFNetworking的时候遇到这个问题：[NSURLErrorDomain的-1005错误](http://stackoverflow.com/questions/25372318/error-domain-nsurlerrordomain-code-1005-the-network-connection-was-lost)
 
-```
-Error Domain=NSURLErrorDomain Code=-1005 "The network connection was lost." 
+```objective-c
+Error Domain=NSURLErrorDomain Code=-1005 "The network connection was lost."
 ```
 
 具体的原因参照[这个回答](http://stackoverflow.com/a/25996971/2562905)的描述：NSURLRequest的实现有问题，在维持长连接的时候维持时长超过了服务器约定的时长，在第二次HTTP请求准备复用TCP连接的时候实际上连接已经被服务器断开了。

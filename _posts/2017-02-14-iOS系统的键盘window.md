@@ -22,7 +22,7 @@ tag: window, 键盘, keyboard, iOS, 开源
 
 先写一些日志来方便观察一个App的window结构：
 
-```
+```objective-c
 for (UIWindow *win in [UIApplication sharedApplication].windows) {
     NSLog(@"window class: %@, window level: %.0f", NSStringFromClass([win class]), win.windowLevel);
     for (UIView *subview in win.subviews) {
@@ -33,14 +33,14 @@ for (UIWindow *win in [UIApplication sharedApplication].windows) {
 
 在iOS7里运行可能得到以下两种结果：
 
-```
+```objective-c
 window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
     subview class: UIPeripheralHostView
     subview class: TopmostView
 ```
 
-```
+```objective-c
 window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
     subview class: UIPeripheralHostView
@@ -54,7 +54,7 @@ window class: UITextEffectsWindow, window level: 2100
 
 iOS8的层次和iOS7基本一致，仅仅是subview的class有变化：
 
-```
+```objective-c
 window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
     subview class: UIInputSetContainerView
@@ -68,7 +68,7 @@ window class: UITextEffectsWindow, window level: 2100
 
 iOS9的window层次如下：
 
-```
+```objective-c
 window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
     subview class: UIInputSetContainerView
@@ -92,7 +92,7 @@ iOS10仅有一个区别就是UICalloutBar不见了，这个暂时不是关注的
 
 App有盖住键盘的提示之类需求，建议的统一方案是从高层往低层逆序遍历所有的window，找到第一个UITextEffectsWindow，在上面新增一个subview然后在这个subview上做剩余的操作。找到这个window的具体代码示例如下：
 
-```
+```objective-c
 for (UIWindow *window in [[UIApplication sharedApplication].windows reverseObjectEnumerator]) {
     if ([window isKindOfClass:NSClassFromString(@"UITextEffectsWindow")] && window.hidden == NO && window.alpha > 0) {
         return window;

@@ -29,7 +29,7 @@ ARC是一个支持自动管理ObjC对象内存的**编译器功能**。这里要
 
 用官方的例子来说一下，现在实现一个Person类，只需要这些代码：
 
-```
+```objective-c
 @interface Person : NSObject
 @property NSString *firstName;
 @property NSString *lastName;
@@ -45,7 +45,7 @@ ARC是一个支持自动管理ObjC对象内存的**编译器功能**。这里要
 
 然后，你可以像下面这样实现一个方法，而不用去关心内存管理问题：
 
-```
+```objective-c
 - (void)contrived {
     Person *aPerson = [[Person alloc] init];
     [aPerson setFirstName:@"William"];
@@ -59,7 +59,7 @@ ARC会搞定内存管理，Person实例和NSNumber实例都不会产生泄漏。
 
 你也可以像下面这样实现一个方法，不用担心变量被过早的释放：
 
-```
+```objective-c
 - (void)takeLastNameFrom:(Person *)person {
     NSString *oldLastname = [self lastName];
     [self setLastName:[person lastName]];
@@ -99,7 +99,7 @@ ARC没办法解决强引用导致的循环引用问题，所以新增了弱引�
 
 新的属性特性`strong`和`weak`，其中`strong`是ARC里默认的属性特性。
 
-```
+```objective-c
 // 相当于MRC里面的 @property(retain) MyClass *myObject;
 @property(strong) MyClass *myObject;
  
@@ -117,14 +117,14 @@ ARC没办法解决强引用导致的循环引用问题，所以新增了弱引�
 
 具体的使用例子如下：
 
-```
+```objective-c
 MyClass * __weak myWeakReference;
 MyClass * __unsafe_unretained myUnsafeReference;
 ```
 
 需要注意弱引用不能乱用，看下面的例子：
 
-```
+```objective-c
 NSString * __weak string = [[NSString alloc] initWithFormat:@"First Name: %@", [self firstName]];
 NSLog(@"string: %@", string);
 ```
@@ -145,7 +145,7 @@ NSLog(@"string: %@", string);
 
 #### 新的Autorelease Pool管理方式
 
-```
+```objective-c
 @autoreleasepool {
      // 需要用到Autorelease Pool特性的代码，例如在一个循环中反复创建大量临时对象。
 }
