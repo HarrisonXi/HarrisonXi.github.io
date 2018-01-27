@@ -69,6 +69,10 @@ time_format: HH:mm
 per_page: 10
 pagination_dir: page
 
+# Exclude
+exclude:
+  - README.md
+
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
