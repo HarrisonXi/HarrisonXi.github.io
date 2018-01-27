@@ -1,0 +1,21 @@
+menu:
+    首页: /
+    归档: /archives/
+    关于: /about.html
+    GitHub: https://github.com/HarrisonXi
+    RSS: /atom.xml
+
+favicon: /favicon.png
+logo: /favicon.png
+
+# Comment
+# e.g disqus: seansun
+disqus:
+duoshuo:
+
+# Analytics
+# google-analytics:
+ga: UA-110376743-1
+
+# Copyright
+startyear: 2017
