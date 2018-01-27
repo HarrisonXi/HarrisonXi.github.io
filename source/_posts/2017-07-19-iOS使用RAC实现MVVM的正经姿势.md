@@ -1,29 +1,25 @@
 ---
-title: 苹果梨的博客 - iOS使用RAC实现MVVM的正经姿势（从MVC到MVVM）
-category: iOS
-tag: iOS, MVC, MVVM, 设计模式, RAC, Reactive Cocoa, 单元测试
+title: iOS使用RAC实现MVVM的正经姿势
+subtitle: 从MVC到MVVM
+category:
+- iOS
+tag:
+- [iOS, MVC, MVVM, 设计模式, RAC, Reactive Cocoa, 单元测试]
 ---
-
-# iOS使用RAC实现MVVM的正经姿势
-
-#### 从MVC到MVVM
-
-| 更新时间       | 更新内容 |
-| ---------- | ---- |
-| 2017-07-19 | 发布   |
-| 2017-09-19 | 补上目录 |
 
 [TOC]
 
-### 前言
+# 前言
 
 [MVVM](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel)是微软于2005年开发出的一种软件架构设计模式，主要是为了在WPF和Silverlight中更简单的对UI实现事件驱动编程。在WPF和Silverlight中，通过MVVM成功的实现了UI布局和数据逻辑的剥离。虽然WPF和Silverlight最后都没有推广开来，但是还是让大家看到了MVVM设计模式的优秀之处。
 
 我有幸在早年参加过[Expression Blend](https://en.wikipedia.org/wiki/Microsoft_Blend)的自动化测试工作，期间做了不少WPF和Silverlight的App，算是较早一批接触熟悉MVVM的天朝码农了。在iOS平台出现了可以优雅实现MVVM的RAC时，着实激动了一下。下面就让我们先从最早的MVC开始慢慢说起。
 
+<!--more-->
+
 如果你想简单点直接看代码：[Show you the code](https://github.com/HarrisonXi/MvvmDemo)。
 
-### MVC理想设计模式
+# MVC理想设计模式
 
 MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、数据和控制逻辑三大部分：
 
@@ -31,7 +27,7 @@ MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、
 
 一个UI交互的整体过程：View接受用户操作发送给Controller，Controller根据操作对数据进行修改，Controller接受数据修改的通知，并根据通知更新对应的UI。当然Controller可能有一些自有逻辑会修改数据或者更新UI，从属关系上来说View和Model都属于Controller。
 
-### MVC实例
+# MVC实例
 
 这是我比较喜欢的一个实例，实现一个简单的登录界面。先罗列一下简单的需求：
 
@@ -49,7 +45,7 @@ MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、
 
 这里的`username`和`password`两个属性可以看作Model层，文本框和按钮的xib就是View层，VC主体代码就是Controller层。可以看到所有的Model修改逻辑和UI更新逻辑都是在Controller里一起完成的。（[完整代码](https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVC)）
 
-### MVC解决的问题和优缺点
+# MVC解决的问题和优缺点
 
 - 代码成功分化为UI、数据和控制逻辑三大部分。
 - 易于理解使用，普及成本低。
@@ -57,13 +53,13 @@ MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、
 - 细节不够明确，基本上不明确归属的代码全部会放在Controller层。
 - 和UI操作事件绑定较重，难以进行单元测试。
 
-### MVC实际使用状况
+# MVC实际使用状况
 
 因为上一节中提到的3和4两点，很多代码都只能写在Controller层。还因为xib的特殊性，对多人协作十分不友好，导致大部分UI的布局和初始化代码要用代码实现，而这些代码写成单独的类也多有不便，导致本该出现在View层的代码也堆积在了Controller层。而且在iOS中，UIViewController和UIView本来就是一一对应的。这就导致了MVC从最早的**Model-View-Controller**最终一点点变成了**Massive-View-Controller**：
 
 ![18-D](../2017/07/18-D.png)
 
-### MVP设计模式
+# MVP设计模式
 
 所谓设计模式，就是软件设计过程中为了解决普遍性问题而提出的通用解决方案。MVP的出现就是为了解决MVC的Controller越来越臃肿的问题，进一步明确代码的分工：
 
@@ -73,7 +69,7 @@ MVC是一种比较古老软件架构设计模式，主旨是将代码分为UI、
 
 这么做的意义就在于真正意义上的将UI逻辑和数据逻辑隔离，而隔离之后就可以更方便的对数据逻辑部分进行单元测试，隔离的另一个好处就是解开了一部分的耦合。
 
-### MVP实例
+# MVP实例
 
 接着刚刚的实例，我们在它的基础上继续进行修改。
 
@@ -97,7 +93,7 @@ Presenter的内部实现：
 
 从结果可以看到Controller的代码转移了一部分到Presenter，MVP也成功把逻辑和UI代码分离了。（[完整代码](https://github.com/HarrisonXi/MvvmDemo/releases/tag/MVP)）
 
-### MVP优缺点
+# MVP优缺点
 
 - UI布局和数据逻辑代码划分界限更明确。
 - 理解难度尚可，较容易推广。
@@ -105,7 +101,7 @@ Presenter的内部实现：
 - Presenter-Model层可以进行单元测试。
 - 需要额外写大量接口定义和逻辑代码（或者自己实现KVO监视）。
 
-### MVVM设计模式
+# MVVM设计模式
 
 随着UI交互越来越复杂，MVP本身的一些缺点还是会暴露出来。
 
@@ -138,11 +134,11 @@ Presenter的内部实现：
 
 3. 基于数据绑定和数据管道，**可以对运算逻辑进行拆分和重用，最大程度的使代码易读易维护**。
 
-### MVVM实例
+# MVVM实例
 
 还是接着刚刚的工程，首先要参照[Reactive Cocoa](https://github.com/ReactiveCocoa/ReactiveObjC)的文档把RAC添加到工程里。
 
-##### ViewModel的定义
+## ViewModel的定义
 
 然后我们首先要把Present改造成ViewModel：
 
@@ -150,7 +146,7 @@ Presenter的内部实现：
 
 这里可以看到作为ViewModel输出值的属性设置成了readonly，剩下的`username`和`password`是输入值。
 
-##### 单元测试
+## 单元测试
 
 值得一提的是软件工程中最好是测试驱动开发（TDD）而不是写完逻辑再补测试，所以我们先改好单元测试：
 
@@ -158,7 +154,7 @@ Presenter的内部实现：
 
 从单元测试也很容易看出来ViewModel现在足够独立并易于测试。
 
-##### View层和ViewModel层的绑定
+## View层和ViewModel层的绑定
 
 我们再看一眼现在Controller应该怎么写：
 
@@ -172,7 +168,7 @@ Presenter的内部实现：
 
 这就是MVVM设计模式在最理想的情况下，Controller里需要和ViewModel交互的所有代码内容。
 
-##### 数据管道（转换器）
+## 数据管道（转换器）
 
 现在来说说刚刚的`ConvertInputStateToColor`，它其实就是一个状态到颜色的转换器：
 
@@ -182,7 +178,7 @@ Presenter的内部实现：
 
 这里利用RACSignal的map方法做了一个映射，这就是我们的转换器。当然我们以后也可以实现别的转换器来进行方便的替换，比如实现一个仅在有效态显示绿色其他状态都显示白色的转换器。另外这个转换器如果写的更通用点，也可以被别的模块重复使用。
 
-##### ViewModel的UI无关性／转换器组合的多样可能性
+## ViewModel的UI无关性／转换器组合的多样可能性
 
 这里要提一下为什么ViewModel不直接提供颜色值的输出：
 
@@ -194,7 +190,7 @@ Presenter的内部实现：
 
 4. 可以进行二次组合，用以计算输出值`loginEnabled`。（见下一节）
 
-##### ViewModel的完整实现
+## ViewModel的完整实现
 
 ![19-F](../2017/07/19-F.png)
 
@@ -210,7 +206,7 @@ Presenter的内部实现：
 
 回想一下最早时候MVC里的Controller，在UITextField的回调里UI操作和数据逻辑混杂在一起，计算`loginEnabled`属性的逻辑还夹杂在计算文本框颜色的逻辑中。
 
-##### 相似的代码可以再次合并
+## 相似的代码可以再次合并
 
 刚刚的代码里，其实计算`usernameInputState`和`passwordInputState`两个值的转换器十分类似。如果以后还可能有类似的转换需求，我们应该把它俩的转换器再合并成独立的转换器，方便重用：
 
@@ -230,7 +226,7 @@ Presenter的内部实现：
 
 另外这里也看出来很灵活的一点，转换器可以直接写ViewModel里，也可以抽离成单独的类，这需要根据具体情况来定不同的写法。
 
-##### 为转换器写单元测试
+## 为转换器写单元测试
 
 简单点的办法是把逻辑从RACSignal的map方法里抽出来，这样就可以单独测试逻辑了：
 
@@ -242,7 +238,7 @@ Presenter的内部实现：
 
 ![19-K](../2017/07/19-K.png)
 
-### MVVM优缺点
+# MVVM优缺点
 
 1. UI布局和数据逻辑代码划分界限更明确，数据逻辑还可以细分成各种转换器。
 2. 很难理解正确使用姿势，使用难度高容易出错，且出错调试难度也很大。
@@ -250,7 +246,7 @@ Presenter的内部实现：
 4. 更方便实现单元测试。
 5. 内存和CPU开销较大。
 
-### 总结
+# 总结
 
 设计模式不是银弹，任何设计模式均有适用的场景，并没有某种设计模式可以解决所有的问题。
 
@@ -261,7 +257,3 @@ Presenter的内部实现：
 学习和了解新的设计模式主要是开拓自己的眼界，以后面临问题的时候可以多一个新的选择。
 
 而且谁说MVC就不能用RAC做数据绑定呢？MVC的Controller太臃肿了，也可以用Category来分散代码不是么？
-
-------
-
-© 2017 苹果梨　　[首页](/)　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)

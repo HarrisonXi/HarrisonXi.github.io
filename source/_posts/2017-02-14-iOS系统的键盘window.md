@@ -1,16 +1,11 @@
 ---
-title: 苹果梨的博客 - iOS系统的键盘window
-category: iOS
-tag: window, 键盘, keyboard, iOS, 开源
+title: iOS系统的键盘window
+subtitle: 从iOS7到iOS10的变更历史
+category:
+- iOS
+tag:
+- [window, 键盘, keyboard, iOS, 开源]
 ---
-
-# iOS系统的键盘window
-
-### 从iOS7到iOS10的变更历史
-
-| 更新时间       | 更新内容 |
-| ---------- | ---- |
-| 2017-02-14 | 发布   |
 
 具体某些细节内容和我的开源库[TopmostView](https://github.com/HarrisonXi/TopmostView)相关。
 
@@ -18,11 +13,13 @@ tag: window, 键盘, keyboard, iOS, 开源
 
 让我们从iOS7开始慢慢调研起。
 
-#### iOS7/8的键盘window
+<!--more-->
+
+# iOS7/8的键盘window
 
 先写一些日志来方便观察一个App的window结构：
 
-```objective-c
+```objc
 for (UIWindow *win in [UIApplication sharedApplication].windows) {
     NSLog(@"window class: %@, window level: %.0f", NSStringFromClass([win class]), win.windowLevel);
     for (UIView *subview in win.subviews) {
@@ -33,14 +30,14 @@ for (UIWindow *win in [UIApplication sharedApplication].windows) {
 
 在iOS7里运行可能得到以下两种结果：
 
-```objective-c
+```objc
 window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
     subview class: UIPeripheralHostView
     subview class: TopmostView
 ```
 
-```objective-c
+```objc
 window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
     subview class: UIPeripheralHostView
@@ -54,7 +51,7 @@ window class: UITextEffectsWindow, window level: 2100
 
 iOS8的层次和iOS7基本一致，仅仅是subview的class有变化：
 
-```objective-c
+```objc
 window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
     subview class: UIInputSetContainerView
@@ -64,11 +61,11 @@ window class: UITextEffectsWindow, window level: 2100
 
 再深入的话，iOS7和iOS8的键盘window有个区别：iOS7的键盘window是frame始终恒定，通过transform来变换旋转方向。细节可以参考我的后一篇博客，在此不深入讨论。
 
-#### iOS9/10的键盘window
+# iOS9/10的键盘window
 
 iOS9的window层次如下：
 
-```objective-c
+```objc
 window class: UIWindow, window level: 0
 window class: UITextEffectsWindow, window level: 1
     subview class: UIInputSetContainerView
@@ -88,11 +85,11 @@ iOS10仅有一个区别就是UICalloutBar不见了，这个暂时不是关注的
 
 比较有趣的事情是，我的开源库是在UITextEffectsWindow上addSubview的，结果实际上这个TopmostView被增加到了UIRemoteKeyboardWindow上。应该是UITextEffectsWindow做了一些代理或者转发的工作，所以按照iOS7/8的逻辑直接在顶层的UITextEffectsWindow上addSubview也可以。
 
-#### 总结
+# 总结
 
 App有盖住键盘的提示之类需求，建议的统一方案是从高层往低层逆序遍历所有的window，找到第一个UITextEffectsWindow，在上面新增一个subview然后在这个subview上做剩余的操作。找到这个window的具体代码示例如下：
 
-```objective-c
+```objc
 for (UIWindow *window in [[UIApplication sharedApplication].windows reverseObjectEnumerator]) {
     if ([window isKindOfClass:NSClassFromString(@"UITextEffectsWindow")] && window.hidden == NO && window.alpha > 0) {
         return window;
@@ -104,7 +101,3 @@ return nil;
 当然还有一些旋转和尺寸问题等着你处理。
 
 如果你不想自己处理这些，那么请移步至开源库：[TopmostView](https://github.com/HarrisonXi/TopmostView)
-
-------
-
-© 2017 苹果梨　　[首页](/)　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)

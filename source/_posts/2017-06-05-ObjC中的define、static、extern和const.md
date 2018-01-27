@@ -1,27 +1,23 @@
 ---
-title: 苹果梨的博客 - ObjC中的define、static、extern和const
-category: ObjC
-tag: ObjC, keyword, define, static, extern, const
+title: ObjC中的define、static、extern和const
+subtitle: 正确导出常量的姿势
+category:
+- ObjC
+tag:
+- [ObjC, keyword, define, static, extern, const]
 ---
-
-# ObjC中的define、static、extern和const
-
-#### 正确导出常量的姿势
-
-| 更新时间       | 更新内容 |
-| ---------- | ---- |
-| 2017-06-05 | 发布   |
-| 2017-09-19 | 补上目录 |
 
 [TOC]
 
-### 前言
+# 前言
 
 讲道理这些用处都完全不一样，为什么大家喜欢一起讲……那么既然都喜欢一起讲，我也写在一起好了……
 
 另外值得一提的是，这些其实就是纯C的东西，并不是ObjC才特有的。
 
-### Static
+<!--more-->
+
+# Static
 
 参照[维基百科](https://en.wikipedia.org/wiki/Static_(keyword))，C语言里对此关键词的定义是一个**存储类型（storage class）**，用来控制变量的生命周期和可见性。
 
@@ -31,12 +27,12 @@ static关键字会把一个变量的生命周期变成和程序的生命周期�
 
 static变量对每个编译单元都是内部可见且分别独立的，这个的意思参照例子：
 
-```objective-c
+```objc
 // Public.h
 static NSInteger staticInt = 0;
 ```
 
-```objective-c
+```objc
 // ClassA.m
 #import "ClassA.h"
 #import "Public.h"
@@ -50,7 +46,7 @@ static NSInteger staticInt = 0;
 @end
 ```
 
-```objective-c
+```objc
 // ClassB.m
 #import "ClassB.h"
 #import "Public.h"
@@ -64,7 +60,7 @@ static NSInteger staticInt = 0;
 @end
 ```
 
-```objective-c
+```objc
 // main.m
 #import "ClassA.h"
 #import "ClassB.h"
@@ -78,7 +74,7 @@ int main(int argc, char * argv[]) {
 
 输出：
 
-```objective-c
+```objc
 0
 1
 0
@@ -86,7 +82,7 @@ int main(int argc, char * argv[]) {
 
 一个编译单元简单来说就是一个.m文件，这里的`ClassA`和`ClassB`都引用了`Public.h`，但是因为这是两个编译单元，所以它们虽然都有`staticInt`这个静态变量，但是实际上是两个独立的静态变量，这两个独立的静态变量只对它们所在的文件内部可见。
 
-##### 静态全局变量（static global variable）
+## 静态全局变量（static global variable）
 
 上述的例子就是一个静态全局变量，通常将变量定义在文件的顶部，这样就对整个文件都可见了。
 
@@ -102,7 +98,7 @@ C语言就是这样的啊……定义在中间，在这之前的代码就访问�
 
 ObjC里面定义在`@implementation`段内的静态全局变量，作用范围会从当前的`@implementation`开始。
 
-##### 静态成员变量（static member variables）
+## 静态成员变量（static member variables）
 
 这是C++的概念，很可惜在ObjC中并没有这个概念。
 
@@ -114,7 +110,7 @@ ObjC里面定义在`@implementation`段内的静态全局变量，作用范围�
 
 ![01-D](../2017/06/01-D.png)
 
-##### 静态局部变量（static local variables）
+## 静态局部变量（static local variables）
 
 定义在函数体内的为静态局部变量，和定义在函数内的普通局部变量一样，在函数外是不可见的。例子如下图：
 
@@ -124,9 +120,9 @@ ObjC里面定义在`@implementation`段内的静态全局变量，作用范围�
 
 通常来说我们建立单例的时候就应该使用静态局部变量。另外很重要的一点，在创建单例的时候最好用`dispatch_once`方法避免多线程问题。
 
-### Extern
+# Extern
 
-##### 同文件的extern扩展
+## 同文件的extern扩展
 
 从纯C开始说起吧，因为同文件的extern一般来说只有纯C里需要：
 
@@ -140,26 +136,26 @@ ObjC里面定义在`@implementation`段内的静态全局变量，作用范围�
 
 在ObjC中，我们几乎已经不需要用到这种用法了。
 
-##### 外部变量（external variable）
+## 外部变量（external variable）
 
 参照[维基百科](https://en.wikipedia.org/wiki/External_variable)，所谓外部变量就是定义在函数体外的变量。通常会把外部变量统一定义在文件顶部，这样就免去上面说的用extern扩展的麻烦了。在这种情况下，在文件内所有函数里就都可以访问到这个变量了。
 
 关于外部变量的编译相关原理细节在此就不多述，有兴趣的可以自行查阅资料。
 
-##### 跨文件的extern扩展
+## 跨文件的extern扩展
 
 记得文章开始的截图么，extern关键字也是一个**存储类型（storage class）**。extern和static的不同点在于全程序共用一个变量而非每个编译单元有自己的独立变量，用了extern关键字之后变量将变得真正意义的全局可见。
 
 为了方便理解，举个例子：
 
-```objective-c
+```objc
 // Public.m
 // 注意这是.m文件！注意这是.m文件！注意这是.m文件！
 #import "Public.h"
 NSInteger externInt = 0;
 ```
 
-```objective-c
+```objc
 // ClassA.m
 #import "ClassA.h"
 extern NSInteger externInt;
@@ -173,7 +169,7 @@ extern NSInteger externInt;
 @end
 ```
 
-```objective-c
+```objc
 // ClassB
 #import "ClassB.h"
 extern NSInteger externInt;
@@ -187,7 +183,7 @@ extern NSInteger externInt;
 @end
 ```
 
-```objective-c
+```objc
 // main.m
 #import "ClassA.h"
 #import "ClassB.h"
@@ -201,7 +197,7 @@ int main(int argc, char * argv[]) {
 
 输出：
 
-```objective-c
+```objc
 0
 1
 2
@@ -213,13 +209,13 @@ int main(int argc, char * argv[]) {
 
 通常情况下，我们是成对的这样.m文件和.h文件：
 
-```objective-c
+```objc
 // Public.m
 #import "Public.h"
 NSInteger externInt = 0;
 ```
 
-```objective-c
+```objc
 // Public.h
 #import <Foundation/Foundation.h>
 extern NSInteger externInt;
@@ -227,7 +223,7 @@ extern NSInteger externInt;
 
 这样外部文件只需要`#import "Public.h"`就可以直接引用到`externInt`了。
 
-### Const
+# Const
 
 参照[维基百科](https://en.wikipedia.org/wiki/Const_(computer_programming))，通常习惯叫被const修饰的变量为常量，const是一个**类型修饰词（type qualifier）**，用来表示这个『变量』是不可修改的。
 
@@ -241,7 +237,7 @@ extern NSInteger externInt;
 
 这也是很多情况下推荐使用常量的原因之一。后面还会和宏定义做个对比，在那之前先继续说常量的定义姿势。
 
-##### 复杂的常量定义
+## 复杂的常量定义
 
 对指针变量怎么用const关键字应该是最绕的部分了，简单概括的话就是const修饰的右侧内容无法被修改。详细的直接看下面的例子：
 
@@ -249,32 +245,32 @@ extern NSInteger externInt;
 
 如果想要完全不能修改，采用d的策略就好了。通常情况下定义指针型常量都是字串型的，因为NSString型变量本身值是不可以修改的，所以一般来说定义如下：
 
-```objective-c
+```objc
 NSString * const constString = @"test";
 ```
 
 这样就可以保证别人不能写`constString = xxx;`了。
 
-### Define
+# Define
 
 define并不是一个C语言的关键字，它只是一个预处理指令，在进行编译之前会做原封原样的替换。
 
-##### 原封原样的替换
+## 原封原样的替换
 
 简单来说这两段代码是一毛一样的：
 
-```objective-c
+```objc
 #define DefineInt 1
 int defineInt = DefineInt;
 ```
 
-```objective-c
+```objc
 int defineInt = 1;
 ```
 
 关于原封原样替换的解释，下面这个例子应该是最常用的：
 
-```objective-c
+```objc
 #define DefineInt 1 + 2
 int main(int argc, char * argv[]) {
     NSLog(@"%zd", DefineInt * 3);
@@ -283,7 +279,7 @@ int main(int argc, char * argv[]) {
 
 输出结果为7，因为实际上代码等同于：
 
-```objective-c
+```objc
 int main(int argc, char * argv[]) {
     NSLog(@"%zd", 1 + 2 * 3);
 }
@@ -291,7 +287,7 @@ int main(int argc, char * argv[]) {
 
 可以看出来『原封原样』是什么意思了吧？define的内容并不会成为一个单元，而只是原样的替换而已。当然原样替换并不是define的缺点，而是一个特性。
 
-##### 定义的值无类型
+## 定义的值无类型
 
 ![05-A](../2017/06/05-A.png)
 
@@ -303,7 +299,7 @@ int main(int argc, char * argv[]) {
 
 在面对更复杂的场景时，这种写法还是可能有一些别的问题的。在需要类型检查时，建议使用常量来代替宏定义。
 
-##### 无法处理成指针
+## 无法处理成指针
 
 参照下面的例子（警告的地方是因为常量指针和变量指针还是略有不同的）：
 
@@ -313,19 +309,19 @@ int main(int argc, char * argv[]) {
 
 在面对一些需要传递指针的场景，宏定义的值无法直接使用。
 
-##### 对debug不友好
+## 对debug不友好
 
 debug的时候上面的DefineInt是无法在调试台显示的，只能自己去源代码里查阅定义的值是多少。
 
-##### 可能被覆盖定义
+## 可能被覆盖定义
 
 这点真的很重要，**define是可以被undefine的**，然后再重新定义成别的值。如果团队里的成员沟通协作出现问题，同名的define覆盖了别人定义的值，会出很诡异的甚至可能灾难性的问题。
 
-### Const配合Extern导出外界不可以修改的常量
+# Const配合Extern导出外界不可以修改的常量
 
 首先参照下系统提供的一些extern导出示例：
 
-```objective-c
+```objc
 // NSError.h
 FOUNDATION_EXPORT NSString *const NSLocalizedDescriptionKey;             // NSString
 FOUNDATION_EXPORT NSString *const NSLocalizedFailureReasonErrorKey;      // NSString
@@ -333,7 +329,7 @@ FOUNDATION_EXPORT NSString *const NSLocalizedRecoverySuggestionErrorKey; // NSSt
 ...
 ```
 
-```objective-c
+```objc
 // UIWindow.h
 UIKIT_EXTERN const UIWindowLevel UIWindowLevelNormal;
 UIKIT_EXTERN const UIWindowLevel UIWindowLevelAlert;
@@ -351,7 +347,3 @@ extern导出的常量有一个优点就是不会直接展示出具体的常量�
 extern导出的常量还有一个优点，理论上用extern导出的字串常量，在比对时都可以直接用`==`来直接进行比对而不需要使用`isEqualToString`。但是考虑代码的健壮性最好仍使用`isEqualToString`来进行比对，毕竟现在的设备CPU已经不差这么点性能优化了。
 
 所以从最后来说最合适的导出手段，也就是如上iOS SDK导出常量的方式了。
-
-------
-
-© 2017 苹果梨　　[首页](/)　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)

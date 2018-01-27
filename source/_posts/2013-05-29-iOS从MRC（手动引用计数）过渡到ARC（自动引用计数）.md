@@ -91,7 +91,7 @@ ARC会搞定内存管理，Person实例和NSNumber实例都不会产生泄漏。
 
 ARC没办法解决强引用导致的循环引用问题，所以新增了弱引用让大家使用弱引用来打破循环引用。
 
-# 属性特性（Property Attributes）
+## 属性特性（Property Attributes）
 
 新的属性特性`strong`和`weak`，其中`strong`是ARC里默认的属性特性。
 
@@ -104,7 +104,7 @@ ARC没办法解决强引用导致的循环引用问题，所以新增了弱引�
 @property(weak) MyClass *myObject;
 ```
 
-# 变量修饰词（Variable Qualifiers）
+## 变量修饰词（Variable Qualifiers）
 
 - `__strong`是默认值。只要有任意一个强引用指向对象，这个对象将一直『存活』于内存里。
 - `__weak`指定了一个弱引用，并不会阻止对象被销毁。当一个对象没有被强引用的话，这个对象就会被销毁，并且弱引用指针会被自动置`nil`。

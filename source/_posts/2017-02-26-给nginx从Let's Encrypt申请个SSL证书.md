@@ -1,16 +1,11 @@
 ---
-title: 苹果梨的博客 - 给nginx从Let's Encrypt申请个SSL证书
-category: web
-tag: web, HTTPS, SSL, 证书, nginx, CentOS
+title: 给nginx从Let's Encrypt申请个SSL证书
+subtitle: 给自己的站点启用HTTPS，基于CentOS 6和nginx 1.10.3示例
+category:
+- web
+tag:
+- [web, HTTPS, SSL, 证书, nginx, CentOS]
 ---
-
-# 给nginx从Let's Encrypt申请个SSL证书
-
-### 给自己的站点启用HTTPS，基于CentOS 6和nginx 1.10.3示例
-
-| 更新时间       | 更新内容 |
-| ---------- | ---- |
-| 2017-02-26 | 发布   |
 
 网站HTTPS化是迟早的事情了，一是国外各大厂都在推行HTTPS化（例如苹果），一是国内HTTP被劫持篡改的现象越来越严重了。
 
@@ -18,7 +13,9 @@ tag: web, HTTPS, SSL, 证书, nginx, CentOS
 
 国外两大提供免费SSL证书的机构就是[Let's Encrypt](https://letsencrypt.org/)和StartSSL了（别问我为什么不说国内的），然后StartSSL也是因为和国内的某厂产生了关系变得不可信任了，所以今天我能选择的就只有这么一家了。
 
-#### 从Let's Encrypt申请证书
+<!--more-->
+
+# 从Let's Encrypt申请证书
 
 文中之后就简称Let's Encrypt为LE了。
 
@@ -51,7 +48,7 @@ chmod a+x certbot-auto
 
 三步完成后没有什么问题应该就可以看到Congratulations的提示了，然后信息里也会提到你的证书存在哪里。
 
-#### 配置nginx
+# 配置nginx
 
 nginx的配置文件一般是在/etc/nginx路径下，打开这个路径下的nginx.conf，可以看到实际上它是从其他文件import了server配置：
 
@@ -81,7 +78,7 @@ server {
 
 用nginx -t验证一下配置文件没有问题，用nginx -s reload重启nginx，生效后就可以测试访问效果了。
 
-#### 证书续期
+# 证书续期
 
 LE提供的证书只有90天有效期，这点也是我觉得比较靠谱的一点，毕竟域名是个可能经常转手的东西。
 
@@ -96,7 +93,3 @@ renew方法的详细介绍参考对应的[用户指导](https://certbot.eff.org/
 ```shell
 ./certbot-auto renew --quiet
 ```
-
-------
-
-© 2017 苹果梨　　[首页](/)　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)
