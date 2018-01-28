@@ -21,11 +21,11 @@ RAC(self.textFieldB, text) = self.textFieldA.rac_textSignal;
 
 实现两个文本框，用上面的代码相互绑定，然后观看效果：
 
-![26-A](../2017/07/26-A.gif)
+![26-A](/2017/07/26-A.gif)
 
 可以看到所得到的效果和我们想要的是一致的。但是这只是一个比较凑巧的案例，因为UITextField的`rac_textSignal`监视的其实是UI事件：
 
-![26-B](../2017/07/26-B.png)
+![26-B](/2017/07/26-B.png)
 
 在UITextField的`text`属性改变时，不会触发`rac_textSignal`。所以在A->B的信号影响了B的`text`时，不会触发B->A的信号。
 
@@ -33,15 +33,15 @@ RAC(self.textFieldB, text) = self.textFieldA.rac_textSignal;
 
 而对于通常的数据来说进行双向绑定就会出错，代码和错误直接一图流甩出来先：
 
-![26-C](../2017/07/26-C.png)
+![26-C](/2017/07/26-C.png)
 
 看一眼错误的根源：
 
-![26-D](../2017/07/26-D.png)
+![26-D](/2017/07/26-D.png)
 
 可以看到这里出错的原因就是调用堆栈溢出了。因为双向绑定完成后，A的改动影响了B，然后B的改动又会影响A，形成了一个信号循环：
 
-![26-F](../2017/07/26-F.png)
+![26-F](/2017/07/26-F.png)
 
 打破这个循环的方法也很简单，在信号订阅的block体内进行数据改动时，想办法不发出信号：
 
@@ -118,7 +118,7 @@ RACReplaySubject是一种特殊的RACSubject，它可以向新的订阅者重新
 
 最后创建了两个终端将这两个Subject相互绑定，终端所做的工作图示如下：
 
-![27-A](../2017/07/27-A.png)
+![27-A](/2017/07/27-A.png)
 
 总体看下来，RACChannel的设计思想上就是提供两个终端，每个终端各有一个输入口和一个输出口，一个终端负责和内部数据绑定，一个终端暴露出来供外部数据绑定。上图把外部订阅者和外部信号源分开来写，表示它们可能是不同的对象，当然它们也可以是相同的对象（如另一个RACChannel的终端）。一般来说封装好的供使用的RACChannel会将其中一个终端在内部处理好，暴露另一端供使用者进行输入和输出的绑定。
 
@@ -223,7 +223,7 @@ if (!causedByDealloc && affectedOnlyLastComponent && self.currentThreadData.igno
 
 用图片标记的直观点，就是如果是在`leadingTerminal`的`subscribeNext`里修改了目标的属性值，通路会在此打断，不会重复的再把属性址改变的信号`sendNext`出去：
 
-![27-B](../2017/07/27-B.png)
+![27-B](/2017/07/27-B.png)
 
 ## RACChannelTo总结
 

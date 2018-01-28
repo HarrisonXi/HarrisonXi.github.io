@@ -6,8 +6,6 @@ tag:
 - [iOS, RAC, Reactive Cocoa, 指令, RACCommand]
 ---
 
-[TOC]
-
 # 前言
 
 信号流 - 即RACSignal，一组`next` / `error` / `completed`信号组成，本文称之为信号流。
@@ -236,7 +234,7 @@ _errors = [errorsConnection.signal setNameWithFormat:@"%@ -errors", self];
 
 简单用图片概括下这两个主要的信号流：
 
-![19-A](../2017/09/19-A.png)
+![19-A](/2017/09/19-A.png)
 
 其中蓝色框的本身就是个信号流，也被当做一个信号发送，就是前文说到的『信号流的信号』。
 
@@ -263,7 +261,7 @@ RACSignal *immediateExecuting = [[[[self.addedExecutionSignalsSubject
 
 看上去很绕，看着很头大，不过整理成图片后应该好理解的多：
 
-![19-B](../2017/09/19-B.png)
+![19-B](/2017/09/19-B.png)
 
 最后的两步就不再画了，再画要画不下了……😂
 
@@ -371,7 +369,7 @@ self.loginButton.rac_command = self.viewModel.loginCommand;
 
 然后列举一个信号流的示例图：
 
-![19-C](../2017/09/19-C.png)
+![19-C](/2017/09/19-C.png)
 
 如图所示，在子信号流的流程有并行的重叠时间时，`switchToLatest`是会丢失信号的。所以切记，在支持同时多次运行的RACCommand里，千万别用`switchToLatest`来处理`executionSignals`。而通常情况下我们用到的RACCommand都是不支持同时多次运行的，放心大胆的用`switchToLatest`就好。
 
