@@ -1,10 +1,8 @@
 ---
 title: iOS从MRC（手动引用计数）过渡到ARC（自动引用计数）
 subtitle: 手动引用计数过渡到自动引用计数
-category:
-- iOS
-tag:
-- [iOS, ObjC, MRC, ARC, 内存, 引用计数, 手动, 自动]
+category: iOS
+tag: [iOS, ObjC, MRC, ARC, 内存, 引用计数, 手动, 自动]
 ---
 
 Apple Developer原文：[Transitioning to ARC Release Notes](https://developer.apple.com/library/content/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html)

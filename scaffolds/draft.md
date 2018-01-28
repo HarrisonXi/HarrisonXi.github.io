@@ -1,7 +1,5 @@
 ---
 title: {{ title }}
-category:
-- iOS
-tags:
-- [iOS, ObjC]
+category: iOS
+tags: [iOS, ObjC]
 ---

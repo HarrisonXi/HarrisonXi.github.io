@@ -1,10 +1,8 @@
 ---
 title: 给nginx从Let's Encrypt申请个SSL证书
 subtitle: 给自己的站点启用HTTPS，基于CentOS 6和nginx 1.10.3示例
-category:
-- web
-tag:
-- [web, HTTPS, SSL, 证书, nginx, CentOS]
+category: web
+tag: [web, HTTPS, SSL, 证书, nginx, CentOS]
 ---
 
 网站HTTPS化是迟早的事情了，一是国外各大厂都在推行HTTPS化（例如苹果），一是国内HTTP被劫持篡改的现象越来越严重了。

@@ -1,9 +1,7 @@
 ---
 title: RAC中用RACChannel实现双向绑定
-category:
-- iOS
-tag:
-- [iOS, RAC, Reactive Cocoa, 双向绑定, RACChannel]
+category: iOS
+tag: [iOS, RAC, Reactive Cocoa, 双向绑定, RACChannel]
 ---
 
 # 尝试直接用RACSignal实现双向绑定

@@ -1,10 +1,8 @@
 ---
 title: iOS系统的键盘window
 subtitle: 从iOS7到iOS10的变更历史
-category:
-- iOS
-tag:
-- [window, 键盘, keyboard, iOS, 开源]
+category: iOS
+tag: [window, 键盘, keyboard, iOS, 开源]
 ---
 
 具体某些细节内容和我的开源库[TopmostView](https://github.com/HarrisonXi/TopmostView)相关。

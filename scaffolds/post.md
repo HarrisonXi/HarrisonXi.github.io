@@ -1,8 +1,6 @@
 ---
 title: {{ title }}
 date: {{ date }}
-category:
-- iOS
-tags:
-- [iOS, ObjC]
+category: iOS
+tags: [iOS, ObjC]
 ---

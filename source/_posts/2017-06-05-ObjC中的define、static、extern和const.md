@@ -1,10 +1,8 @@
 ---
 title: ObjC中的define、static、extern和const
 subtitle: 正确导出常量的姿势
-category:
-- ObjC
-tag:
-- [ObjC, keyword, define, static, extern, const]
+category: ObjC
+tag: [ObjC, keyword, define, static, extern, const]
 ---
 
 # 前言
