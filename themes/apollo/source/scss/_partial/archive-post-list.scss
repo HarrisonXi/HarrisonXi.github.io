@@ -1,5 +1,5 @@
 .archive {
-    max-width: 500px;
+    max-width: 580px;
     margin: 5em auto;
     .post-item {
         padding: 2px 0 0 50px;
@@ -10,7 +10,7 @@
     }
     .post-title-link {
         display: block;
-        margin-left: 125px;
+        margin-left: 100px;
         color: #42b983;
         word-break: break-all;
         &:hover {
@@ -20,7 +20,7 @@
     }
     .post-info {
         float: left;
-        width: 125px;
+        width: 100px;
         color: #7f8c8d;
     }
 }
