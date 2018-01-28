@@ -17,3 +17,11 @@
     font-weight: normal;
     font-style: normal;
 }
+
+@font-face {
+    font-family: 'sourcesanspro';
+    src: url('../font/sourcesanspro-b.woff2') format('woff2'),
+         url('../font/sourcesanspro-b.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}

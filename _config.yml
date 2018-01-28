@@ -14,7 +14,7 @@ timezone: Asia/Shanghai
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://blog.harrisonxi.com
 root: /
-permalink: :year/:month/:title/
+permalink: :year/:month/:title.html
 permalink_defaults:
 
 # Directory
@@ -25,7 +25,7 @@ archive_dir: archives
 category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
-skip_render:
+skip_render: README.md
 
 # Writing
 new_post_name: :year-:month-:day-:title.md # File name of new posts
@@ -68,10 +68,6 @@ time_format: HH:mm
 ## Set per_page to 0 to disable pagination
 per_page: 10
 pagination_dir: page
-
-# Exclude
-exclude:
-  - README.md
 
 # Extensions
 ## Plugins: https://hexo.io/plugins/
