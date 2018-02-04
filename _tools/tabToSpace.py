@@ -10,10 +10,11 @@ def tabToSpace(DIR):
 				print('Processing: %s' % (path))
 				mdFile = open(fullPath, 'r+')
 				content = mdFile.read()
-				content = re.sub("\t", "    ", content)
-				mdFile.seek(0)
-				mdFile.write(content)
-				mdFile.truncate()
+				newContent = re.sub("\t", "    ", content)
+				if newContent != content:
+					mdFile.seek(0)
+					mdFile.write(content)
+					mdFile.truncate()
 				mdFile.close()
 
 tabToSpace(os.path.join(os.getcwd(), 'source/_posts'))
