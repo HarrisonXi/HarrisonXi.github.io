@@ -2,7 +2,7 @@
 import re
 import sys,os
 
-def tab2space(DIR):
+def tabToSpace(DIR):
 	for path in os.listdir(DIR):
 		fullPath = os.path.join(DIR, path)
 		if os.path.isfile(fullPath):
@@ -16,5 +16,5 @@ def tab2space(DIR):
 				mdFile.truncate()
 				mdFile.close()
 
-tab2space(os.path.join(os.getcwd(), '_posts'))
+tabToSpace(os.path.join(os.getcwd(), 'source/_posts'))
 print('Tab to space convertion is done.')

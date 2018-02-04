@@ -10,13 +10,13 @@
 
 `iOS` [RAC中用RACChannel实现双向绑定](http://blog.harrisonxi.com/2017/07/RAC中用RACChannel实现双向绑定.html)
 
-`iOS` [iOS使用RAC实现MVVM的正经姿势（从MVC到MVVM）](http://blog.harrisonxi.com/2017/07/iOS使用RAC实现MVVM的正经姿势（从MVC到MVVM）.html)
+`iOS` [iOS使用RAC实现MVVM的正经姿势](http://blog.harrisonxi.com/2017/07/iOS使用RAC实现MVVM的正经姿势.html)
 
 `逻辑` [贪婪的海盗](http://blog.harrisonxi.com/2017/07/贪婪的海盗.html)
 
 `逻辑` [鬼谷子问徒](http://blog.harrisonxi.com/2017/07/鬼谷子问徒.html)
 
-`逻辑` [a为大于3的质数，证明a*a-1为24的倍数](http://blog.harrisonxi.com/2017/07/a为大于3的质数，证明a*a-1为24的倍数.html)
+`逻辑` [A为大于3的质数，证明A的平方减1为24的倍数](http://blog.harrisonxi.com/2017/07/A为大于3的质数，证明A的平方减1为24的倍数.html)
 
 ### 2017-06
 
@@ -26,7 +26,7 @@
 
 `git` [git基本工作流程及rebase介绍](http://blog.harrisonxi.com/2017/03/git基本工作流程及rebase介绍.html)
 
-`iOS` [NSURLErrorDomain的-1005错误（The network connection was lost）](http://blog.harrisonxi.com/2017/03/NSURLErrorDomain的-1005错误（The%20network%20connection%20was%20lost）.html)
+`iOS` [NSURLErrorDomain的-1005错误](http://blog.harrisonxi.com/2017/03/NSURLErrorDomain的-1005错误.html)
 
 ### 2017-02
 

@@ -5,7 +5,7 @@ import sys,os
 postNamePattern = re.compile(r'(\d{4})-(\d{2})-\d{2}-(.+)\.md')
 categoryPattern = re.compile(r'category: (.+)')
 
-def makeIndex(DIR):
+def makeReadme(DIR):
 	# 遍历所有有效的post
 	matchedPosts = []
 	for path in os.listdir(DIR):
@@ -18,7 +18,6 @@ def makeIndex(DIR):
 					matchedPosts.append(path)
 	# 创建文件头内容
 	readmeContent = '# [苹果梨的博客](http://blog.harrisonxi.com)\n'
-	indexContent = '---\ntitle: 苹果梨的博客 - 首页\n---\n\n# 苹果梨的博客\n'
 	# 按年月分类post并创建列表
 	matchedPosts = sorted(matchedPosts, reverse = True)
 	year = ''
@@ -30,7 +29,6 @@ def makeIndex(DIR):
 				year = match.group(1)
 				month = match.group(2)
 				readmeContent = readmeContent + '\n### %s-%s\n' % (year, month)
-				indexContent = indexContent + '\n### %s-%s\n' % (year, month)
 			file = open(os.path.join(DIR, post), 'r')
 			content = file.read()
 			file.close()
@@ -39,15 +37,10 @@ def makeIndex(DIR):
 			if categoryMatch:
 				categoryName = categoryMatch.group(1)
 			readmeContent = readmeContent + '\n`%s` [%s](http://blog.harrisonxi.com/%s/%s/%s.html)\n' % (categoryName, match.group(3), year, month, match.group(3).replace(' ', '%20'))
-			indexContent = indexContent + '\n`%s` [%s](/%s/%s/%s.html)\n' % (categoryName, match.group(3), year, month, match.group(3).replace(' ', '%20'))
-	# 补全文件尾内容并写入
-	indexContent = indexContent + '\n------\n\n© 2017 苹果梨　　首页　　[关于](/about.html)　　[GitHub](https://github.com/HarrisonXi)　　[Email](mailto:gpra8764@gmail.com)\n'
-	file = open('README.md', 'w')
+	# 写入文件内容
+	file = open('source/README.md', 'w')
 	file.write(readmeContent)
 	file.close()
-	file = open('_pages/index.md', 'w')
-	file.write(indexContent)
-	file.close()
 
-makeIndex(os.path.join(os.getcwd(), '_posts'))
-print('Index is generated.')
+makeReadme(os.path.join(os.getcwd(), 'source/_posts'))
+print('README is generated.')
