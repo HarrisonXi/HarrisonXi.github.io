@@ -3,7 +3,7 @@ import re
 import sys,os
 
 postNamePattern = re.compile(r'(\d{4})-(\d{2})-\d{2}-(.+)\.md')
-categoryPattern = re.compile(r'category: (.+)')
+categoryPattern = re.compile(r'categories: \[?([^,\n]+)')
 
 def makeReadme(DIR):
 	# 遍历所有有效的post
