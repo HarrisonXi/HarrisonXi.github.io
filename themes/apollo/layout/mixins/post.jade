@@ -1,8 +1,16 @@
+mixin postSubtitle(item)
+    if item.subtitle && (is_home() || is_post())
+        .post-subtitle
+            != item.subtitle
+
 mixin postInfo(item)
     .post-info
-        != full_date(item.date, 'll')
-        if item.from && (is_home() || is_post())
-            a.post-from(href=item.from target="_blank" title=item.from) 翻译 · 原文地址
+        != date(item.date)
+        if item.categories && (is_home() || is_post())
+            - item.categories.each(function (category) {
+                a.post-category(href= url_for('categories/' + category.name))!= category.name
+            - })
+                
 
 //- Index Page
 mixin posts()
@@ -13,6 +21,7 @@ mixin posts()
                     h2.post-title
                         a.post-title-link(href= url_for(item.path))
                             != item.title
+                    +postSubtitle(item)
                     +postInfo(item)
                     .post-content
                         != item.excerpt
@@ -42,6 +51,7 @@ mixin post(item)
         article.post-block
             h1.post-title
                 != item.title
+            +postSubtitle(item)
             +postInfo(item)
             .post-content
                 != item.content

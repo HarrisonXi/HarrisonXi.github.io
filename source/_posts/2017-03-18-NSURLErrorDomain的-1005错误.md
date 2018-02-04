@@ -1,8 +1,8 @@
 ---
 title: NSURLErrorDomain的-1005错误
 subtitle: （NSURLErrorNetworkConnectionLost，The network connection was lost）
-category: iOS
-tag: [iOS, NSURLErrorDomain, -1005, 长连接, HTTP, SDWebImage, YYWebImage]
+categories: iOS
+tags: [iOS, NSURLErrorDomain, -1005, 长连接, HTTP, SDWebImage, YYWebImage]
 ---
 
 # 关于HTTP 1.1和HTTP长连接

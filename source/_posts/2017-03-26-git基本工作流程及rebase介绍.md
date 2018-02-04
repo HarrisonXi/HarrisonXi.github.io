@@ -1,7 +1,7 @@
 ---
 title: git基本工作流及rebase介绍
-category: git
-tag: [git, 工作流, workflow, rebase, merge, squash, SourceTree]
+categories: git
+tags: [git, 工作流, workflow, rebase, merge, squash, SourceTree]
 ---
 
 扩展阅读：[A successful Git branching model](http://nvie.com/posts/a-successful-git-branching-model/)

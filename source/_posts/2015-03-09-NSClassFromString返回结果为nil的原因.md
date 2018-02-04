@@ -1,7 +1,7 @@
 ---
 title: NSClassFromString返回结果为nil的原因
-category: iOS
-tag: [iOS, ObjC, NSClassFromString, nil, 返回, 结果, library, 静态库]
+categories: iOS
+tags: [iOS, ObjC, NSClassFromString, nil, 返回, 结果, library, 静态库]
 ---
 
 NSClassFromString算是ObjC动态化的精华之一，在运行时可以从一个NSString动态获得对应的Class，再创建其对应实例，调用实例内部方法。

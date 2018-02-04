@@ -1,7 +1,7 @@
 ---
 title: RAC中用RACCommand处理指令
-category: iOS
-tag: [iOS, RAC, Reactive Cocoa, 指令, RACCommand]
+categories: iOS
+tags: [iOS, RAC, Reactive Cocoa, 指令, RACCommand]
 ---
 
 # 前言

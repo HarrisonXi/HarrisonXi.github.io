@@ -1,8 +1,8 @@
 ---
 title: iOS使用RAC实现MVVM的正经姿势
 subtitle: 从MVC到MVVM
-category: iOS
-tag: [iOS, MVC, MVVM, 设计模式, RAC, Reactive Cocoa, 单元测试]
+categories: iOS
+tags: [iOS, MVC, MVVM, 设计模式, RAC, Reactive Cocoa, 单元测试]
 ---
 
 # 前言

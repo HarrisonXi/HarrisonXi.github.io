@@ -1,8 +1,8 @@
 ---
 title: iOS系统window的旋转及自定义window的问题
 subtitle: 玩转window，真的是玩『转』
-category: iOS
-tag: [window, 旋转, 自定义, iOS, 开源]
+categories: iOS
+tags: [window, 旋转, 自定义, iOS, 开源]
 ---
 
 具体某些细节内容和我的开源库[TopmostView](https://github.com/HarrisonXi/TopmostView)相关。

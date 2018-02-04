@@ -4,9 +4,17 @@
 
 .post-block {
     .post-title {
-        margin: 0.65em 0;
+        margin: 0.65em 0 0.1em;
         color: #2c3e50;
         font-size: 1.5em;
+    }
+
+    .post-subtitle {
+        color: #2c3e50;
+        margin: 0.1em 0 0.65em;
+        span {
+            margin-left: 0.5rem;
+        }
     }
 
     .post-info {
@@ -15,7 +23,7 @@
         span {
             margin-left: 0.5rem;
         }
-        a.post-from {
+        a.post-category {
             margin-left: 0.5rem;
             padding: 3px 6px;
             border-radius: 5px;
