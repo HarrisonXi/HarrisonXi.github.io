@@ -81,6 +81,8 @@ deploy:
   repo: git@github.com:HarrisonXi/HarrisonXi.github.io.git
   branch: master
   message: update blog ({{ now('YYYY-MM-DD HH:mm') }})
+  name: HarrisonXi
+  email: gpra8764@gmail.com
 
 # 在归档页面显示所有文章
 # 需要 hexo-generator-archive 插件支持
