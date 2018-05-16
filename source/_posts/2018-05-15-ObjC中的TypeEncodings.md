@@ -277,7 +277,7 @@ testInt - i
 testStr - @"NSString"
 ```
 
-因为成员变量没有属性修饰词那些，所以直接获得的就是 type encoding，格式和属性的 `T` 段落一样。
+因为成员变量没有属性修饰词那些，所以直接获得的就是 type encoding，格式和属性的 `T` attribute 一样。
 
 ## 类方法的 type encoding
 
@@ -362,6 +362,8 @@ setFrame: - {CGRect={CGPoint=dd}{CGSize=dd}}
 
 这样就只会获得 type encoding 而不会带上 offset 信息，就容易解析多了。
 
+另外从这里也可以看到，返回值其实也是算一个参数。
+
 # 其它一些 type encodings 细节
 
 还有些 type encodings 的细节和解析模型其实不太相关，不过也在这里介绍一下。
@@ -399,12 +401,14 @@ if (method) {
 }
 ```
 
-依然只能得到这样的编码：
+依然还是只能得到这样的编码：
 
 ```
 setDelegate: - 3
 setDelegate: - @
 ```
+
+protocol 类型在模型解析中并没有很大的指导作用，因为我们无法知道具体实现了 protocol 协议的 class 是什么。
 
 ## block 类型的 type encoding
 
