@@ -24,19 +24,19 @@ date: 2018-08-16
 
 为了方便对比，我把使用 EasyReact 和 RAC 的对比做成了一个独立的 [commit f95ed50](https://github.com/HarrisonXi/MvvmDemo/commit/f95ed50c3933c5fa2efc3d04e13ba4127fc41253)。可以看到其实从语法上来说，它们的常规使用方法十分的相似。然后我们来一点点比较细节的差异。
 
-# EZNode vs RACSignal
+# EZRNode vs RACSignal
 
 RACSignal 的设计概念是表示一个可以被订阅的信号流，最主要的意义是表示其内部的值是变化的。而 RACSubject 是表示一个热信号流，热信号和冷信号的内容后面再说，当前主要先要说的 RACSubject 的特征是可以手动发送信号。
 
-EZNode 从设计上看上去更像是一个存着 value 的 model，这个使得初学者很容易理解它的用途。而 EZMutableNode 使得 node 存着的 value 可以被修改，然后修改这个 value 的时候就会对外发出信号。说起来我个人觉得这种设计的确可以让过程式编程的开发者更容易理解和过渡到响应式编程中，但是有点略二不像的设计也会带来对应的困扰。
+EZRNode 从设计上看上去更像是一个存着 value 的 model，这个使得初学者很容易理解它的用途。而 EZRMutableNode 使得 node 存着的 value 可以被修改，然后修改这个 value 的时候就会对外发出信号。说起来我个人觉得这种设计的确可以让过程式编程的开发者更容易理解和过渡到响应式编程中，但是有点略二不像的设计也会带来对应的困扰。
 
-## 1. 到底 EZNode 的 value 是不是可变的
+## 1. 到底 EZRNode 的 value 是不是可变的
 
-如果我们认为 EZNode 的 value 是不可变的，那么 EZNode 提供 `listenedBy:` 就会很奇怪，一个不可变的值我们监听它干什么呢？
+如果我们认为 EZRNode 的 value 是不可变的，那么 EZRNode 提供 `listenedBy:` 就会很奇怪，一个不可变的值我们监听它干什么呢？
 
-如果我们认为 EZNode 的 value 是可变的，那么有些接口的设计又看上去很怪，典型的代表就是响应式编程最常用到的宏定义 `EZR_PATH` 的实现类 `EZRPathTrampoline`，在其内部都默认认为 EZRMutableNode 才可以进行绑定。
+如果我们认为 EZRNode 的 value 是可变的，那么有些接口的设计又看上去很怪，典型的代表就是响应式编程最常用到的宏定义 `EZR_PATH` 的实现类 `EZRPathTrampoline`，在其内部都默认认为 EZRMutableNode 才可以进行绑定。
 
-我觉得从总体设计上来看，其实应该认为 EZNode 的 value 值是可变的，`EZRNode+Operation.h` 中的变换都是基于 EZNode 来实现的可以证明这一点。另一种理解是哪怕是不可变的值，其实也可以变换和监听的嘛，这样看起来 EZNode 的意义和 RACSignal 其实是十分接近的。
+我觉得从总体设计上来看，其实应该认为 EZRNode 的 value 值是可变的，`EZRNode+Operation.h` 中的变换都是基于 EZRNode 来实现的可以证明这一点。另一种理解是哪怕是不可变的值，其实也可以变换和监听的嘛，这样看起来 EZRNode 的意义和 RACSignal 其实是十分接近的。
 
 另外 `EZRPathTrampoline.m` 里面有个小细节：
 
@@ -54,26 +54,26 @@ EZNode 从设计上看上去更像是一个存着 value 的 model，这个使得
 
 得出的第一个结论：姑且认为 EZRNode 的意义和 RACSignal 相同，是信号的最基础单元。
 
-## 2. EZNode 还是 EZMutableNode
+## 2. EZRNode 还是 EZRMutableNode
 
 这个问题和问题1其实有点重叠，主要原因的根源还是宏定义 `EZR_PATH` 的实现类 `EZRPathTrampoline`。
 
-对外暴露 EZNode 类似于对外暴露一个 readonly 的属性，用户表面上可以感知到不可以修改其内部的 value。但是面临的一个问题是，用户想要使用 `EZR_PATH` 宏进行绑定时还是要进行一次 `mutablify` 的转换。
+对外暴露 EZRNode 类似于对外暴露一个 readonly 的属性，用户表面上可以感知到不可以修改其内部的 value。但是面临的一个问题是，用户想要使用 `EZR_PATH` 宏进行绑定时还是要进行一次 `mutablify` 的转换。
 
-对外直接暴露 EZMutableNode 的话相当于暴露了一个 readwrite 的属性，用户不仅可以监听它，同时也具备了可以修改其 value 的能力，这对于维持一个 ViewModel 的封装性来说可是个灾难。
+对外直接暴露 EZRMutableNode 的话相当于暴露了一个 readwrite 的属性，用户不仅可以监听它，同时也具备了可以修改其 value 的能力，这对于维持一个 ViewModel 的封装性来说可是个灾难。
 
-还有一点是，EZNode 转成 EZMutableNode 时，复用了原先的内存地址。
+还有一点是，EZRNode 转成 EZRMutableNode 时，复用了原先的内存地址。
 
 ```
 EZRNode *node = [EZRNode new];
 EZRMutableNode *mutableNode = [node mutablify];
 ```
 
-上面代码里 `node` 和 `mutableNode` 的指针是完全相等的，当然它们的 class 也都会是 EZRMutableNode。这样的好处就是转换前后，它们的逻辑都是连续的；坏处是类型原地转换的逻辑会导致使用方比较混乱（可能前一秒还是 EZRNode 的实例，下一秒就被别人变成 EZMutableNode 了），另外 `mutablify` 的转换也是不可逆的。
+上面代码里 `node` 和 `mutableNode` 的指针是完全相等的，当然它们的 class 也都会是 EZRMutableNode。这样的好处就是转换前后，它们的逻辑都是连续的；坏处是类型原地转换的逻辑会导致使用方比较混乱（可能前一秒还是 EZRNode 的实例，下一秒就被别人变成 EZRMutableNode 了），另外 `mutablify` 的转换也是不可逆的。
 
 这样设计应该也是没有办法：虽然说起来它们和 NSString & NSMutableString 组合有很多相似的地方，但是要支持 copy 协议是很麻烦的。比如想要维持监听的链路不被打断，信号源这种东西在支持 copy 时是很容易出大问题的，要复制要维持的状态多得难以想象。
 
-综上所诉，我们设计接口时到底是暴露 EZNode 还是 EZMutableNode 类型会有很大的困扰。相比较而言，RAC 就没有这个困扰，不想让别人知道这是个可以手动发信号的 RACSubject，包装成 RACSignal 暴露出去就好。其实我还是觉得 EasyReact 去修改下 `EZRPathTrampoline` 应该也可以达成类似的效果😓。
+综上所诉，我们设计接口时到底是暴露 EZRNode 还是 EZRMutableNode 类型会有很大的困扰。相比较而言，RAC 就没有这个困扰，不想让别人知道这是个可以手动发信号的 RACSubject，包装成 RACSignal 暴露出去就好。其实我还是觉得 EasyReact 去修改下 `EZRPathTrampoline` 应该也可以达成类似的效果😓。
 
 不过关于 Node 可变状态的转换的确也没有想到什么好的办法，现在的这个设计模式，即使用 readonly 式的 EZRNode 暴露接口给外界也是形同虚设，毕竟外界拿到这个 EZRNode 之后手动  `mutablify` 一下，然后想怎么改就怎么改。
 
@@ -88,9 +88,9 @@ EZRMutableNode *mutableNode = [node mutablify];
 | EasyReact 优缺点                                             |
 | ------------------------------------------------------------ |
 | ✅ 易理解，抛弃了大量对初学者很晦涩的响应式概念               |
-| ❌ 框架内部接口的设计对 EZNode & EZMutableNode 的理解貌似本身就不一致 |
+| ❌ 框架内部接口的设计对 EZRNode & EZRMutableNode 的理解貌似本身就不一致 |
 | ❌ 不可变和可变 node 的无缝转换过程可能引发其它业务方的逻辑混乱 |
-| ❌ EZNode 完全做不到 readonly 的效果，形同虚设                |
+| ❌ EZRNode 完全做不到 readonly 的效果，形同虚设                |
 | ⚠️ 抛弃了冷信号的概念，这个优劣参半吧                         |
 
 # 宏定义 EZR_PATH
