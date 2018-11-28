@@ -13,11 +13,10 @@ def do_shell(COMMAND):
 exclude_paths = [
 	'2013',
 	'2015',
-	'2017/02',
-	'2017/03',
-	'2017/06',
-	'2017/07',
-	'2017/09'
+	'2017',
+	'2018/03',
+	'2017/05',
+	'2017/08'
 ]
 def compressPng(DIR):
 	for path in os.listdir(DIR):
