@@ -22,7 +22,7 @@ date: 2018-08-16
 | ✅ 支持 CocoaPods           |
 | ❌ 没有提供二进制 Framework |
 
-为了方便对比，我把使用 EasyReact 和 RAC 的对比做成了一个独立的 [commit f95ed50](https://github.com/HarrisonXi/MvvmDemo/commit/f95ed50c3933c5fa2efc3d04e13ba4127fc41253)。可以看到其实从语法上来说，它们的常规使用方法十分的相似。然后我们来一点点比较细节的差异。
+为了方便对比，我把使用 EasyReact 和 RAC 的对比做成了一个独立的 [commit 0feb1cb](https://github.com/HarrisonXi/MvvmDemo/commit/0feb1cbc35467fb1e75f3c10199d5987ec2cb573)。可以看到其实从语法上来说，它们的常规使用方法十分的相似。然后我们来一点点比较细节的差异。
 
 # EZRNode vs RACSignal
 
@@ -126,7 +126,7 @@ EZR_PATH(self.loginButton, enabled) = EZR_PATH(self.viewModel, loginEnabled);
 
 # 对系统类的扩展
 
-基于刚刚提到的 [commit f95ed50](https://github.com/HarrisonXi/MvvmDemo/commit/f95ed50c3933c5fa2efc3d04e13ba4127fc41253) 的 MvvmDemo 是不完整的，一个很重要的原因就是 UITextField 这类 UI 控件，是不可以通过监听它的 text 属性就能简单实现响应式的。所以我们必须要一个新的 [commit fff9624](https://github.com/HarrisonXi/MvvmDemo/commit/fff9624d530a72048ee8659399add858f12c9d55)，来把 UITextField 依然通过 delegate 的方式链接到 ViewModel 上，说起来就是还是抛弃不了过程式的开发方法。
+基于刚刚提到的 [commit 0feb1cb](https://github.com/HarrisonXi/MvvmDemo/commit/0feb1cbc35467fb1e75f3c10199d5987ec2cb573) 的 MvvmDemo 是不完整的，一个很重要的原因就是 UITextField 这类 UI 控件，是不可以通过监听它的 text 属性就能简单实现响应式的。所以我们必须要一个新的 [commit ad46b53](https://github.com/HarrisonXi/MvvmDemo/commit/ad46b53d99920a377de01a4da4f95c44022ef896)，来把 UITextField 依然通过 delegate 的方式链接到 ViewModel 上，说起来就是还是抛弃不了过程式的开发方法。
 
 这点我相信美团内部应该还是有对应的一些封装吧，日后或许也会渐渐开源出来。毕竟如果一套响应式框架如果没有办法很便捷的应用到业务层的 UI 上，实用性就会大打折扣。
 
