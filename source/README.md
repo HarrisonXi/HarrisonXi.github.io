@@ -1,5 +1,9 @@
 # [苹果梨的博客](http://blog.harrisonxi.com)
 
+### 2019-07
+
+`编译原理` [编译原理入门课：（前言）实现一个表达式解析计算器](http://blog.harrisonxi.com/2019/07/编译原理入门课：（前言）实现一个表达式解析计算器.html)
+
 ### 2019-02
 
 `ObjC` [字符串比较中NSNumericSearch选项的工作原理](http://blog.harrisonxi.com/2019/02/字符串比较中NSNumericSearch选项的工作原理.html)
