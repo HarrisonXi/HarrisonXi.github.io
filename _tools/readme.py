@@ -36,7 +36,7 @@ def makeReadme(DIR):
 			categoryName = '未分类'
 			if categoryMatch:
 				categoryName = categoryMatch.group(1)
-			readmeContent = readmeContent + '\n`{}` [{}](http://blog.harrisonxi.com/{}/{}/{}.html)\n'.format(categoryName, match.group(3), year, month, match.group(3).replace(' ', '%20'))
+			readmeContent = readmeContent + '\n`{}` [{}](https://blog.harrisonxi.com/{}/{}/{}.html)\n'.format(categoryName, match.group(3), year, month, match.group(3).replace(' ', '%20'))
 	# 写入文件内容
 	file = open('source/README.md', 'w')
 	file.write(readmeContent)
