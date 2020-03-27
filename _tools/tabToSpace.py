@@ -7,7 +7,7 @@ def tabToSpace(DIR):
 		fullPath = os.path.join(DIR, path)
 		if os.path.isfile(fullPath):
 			if path.lower().endswith('.md'):
-				print('Processing: %s' % (path))
+				print('Processing: {}'.format(path))
 				mdFile = open(fullPath, 'r+')
 				content = mdFile.read()
 				newContent = re.sub("\t", "    ", content)

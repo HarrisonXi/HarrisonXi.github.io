@@ -14,10 +14,10 @@ def makeReadme(DIR):
 			if path.lower().endswith('.md'):
 				match = postNamePattern.match(path)
 				if match:
-					print('Adding post: %s' % (match.group(3)))
+					print('Adding post: {}'.format(match.group(3)))
 					matchedPosts.append(path)
 	# 创建文件头内容
-	readmeContent = '# [苹果梨的博客](http://blog.harrisonxi.com)\n'
+	readmeContent = '# [苹果梨的博客](https://blog.harrisonxi.com)\n'
 	# 按年月分类post并创建列表
 	matchedPosts = sorted(matchedPosts, reverse = True)
 	year = ''
@@ -28,7 +28,7 @@ def makeReadme(DIR):
 			if year != match.group(1) or month != match.group(2):
 				year = match.group(1)
 				month = match.group(2)
-				readmeContent = readmeContent + '\n### %s-%s\n' % (year, month)
+				readmeContent = readmeContent + '\n### {}-{}\n'.format(year, month)
 			file = open(os.path.join(DIR, post), 'r')
 			content = file.read()
 			file.close()
@@ -36,7 +36,7 @@ def makeReadme(DIR):
 			categoryName = '未分类'
 			if categoryMatch:
 				categoryName = categoryMatch.group(1)
-			readmeContent = readmeContent + '\n`%s` [%s](http://blog.harrisonxi.com/%s/%s/%s.html)\n' % (categoryName, match.group(3), year, month, match.group(3).replace(' ', '%20'))
+			readmeContent = readmeContent + '\n`{}` [{}](http://blog.harrisonxi.com/{}/{}/{}.html)\n'.format(categoryName, match.group(3), year, month, match.group(3).replace(' ', '%20'))
 	# 写入文件内容
 	file = open('source/README.md', 'w')
 	file.write(readmeContent)

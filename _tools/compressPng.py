@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding:utf-8 -*- 
 import sys,os
 import shlex,subprocess
@@ -15,7 +14,7 @@ exclude_paths = [
 	'2015',
 	'2017',
 	'2018',
-	'2019/02'
+	'2019'
 ]
 def compressPng(DIR):
 	for path in os.listdir(DIR):
@@ -31,7 +30,7 @@ def compressPng(DIR):
 			compressPng(fullPath)
 		elif os.path.isfile(fullPath):
 			if path.lower().endswith('.png'):
-				do_shell('%s/pngquant --skip-if-larger --ext .png.tmp "%s"' % (sys.path[0], fullPath))
+				do_shell('{}/pngquant --skip-if-larger --quality=80-90 --ext .png.tmp "{}"'.format(sys.path[0], fullPath))
 				tmpPath = fullPath + '.tmp'
 				if os.path.isfile(tmpPath):
 					originalSize = os.path.getsize(fullPath)
@@ -40,11 +39,11 @@ def compressPng(DIR):
 					if newSize < originalSize * 0.9 and originalSize - newSize > 10240:
 						global totalSave
 						totalSave = totalSave + (originalSize - newSize)
-						print('%s: -%dKB, =%.0f%%' % (fullPath.replace(rootPath, ''), (originalSize - newSize) / 1024, newSize * 100.0 / originalSize))
-						do_shell('rm "%s"' % (fullPath))
-						do_shell('mv "%s" "%s"' % (tmpPath, fullPath))
+						print('{}: -{}KB, ={:.1f}%'.format(fullPath.replace(rootPath, ''), int((originalSize - newSize) / 1024), newSize * 100.0 / originalSize))
+						do_shell('rm "{}"'.format(fullPath))
+						do_shell('mv "{}" "{}"'.format(tmpPath, fullPath))
 					else:
-						do_shell('rm "%s"' % (tmpPath))
+						do_shell('rm "{}"'.format(tmpPath))
 
 startTime = time.time()
 if len(sys.argv) > 1:
@@ -52,4 +51,4 @@ if len(sys.argv) > 1:
 else:
 	rootPath = os.getcwd()
 compressPng(rootPath)
-print('Png compression is done. Save %dKB. Cost: %.2fs' % (totalSave / 1024, time.time() - startTime))
+print('Png compression is done. Save: {}KB. Cost: {:.2f}s'.format(int(totalSave / 1024), time.time() - startTime))
