@@ -13,7 +13,7 @@ date: 2018-08-16
 
 # 使用 EasyReact 的 MvvmDemo
 
-评测的具体方案是用我以前的 [MvvmDemo](https://blog.harrisonxi.com/2017/07/iOS%E4%BD%BF%E7%94%A8RAC%E5%AE%9E%E7%8E%B0MVVM%E7%9A%84%E6%AD%A3%E7%BB%8F%E5%A7%BF%E5%8A%BF.html) 改造一下，旧 demo 的代码参照 [GitHub](https://github.com/HarrisonXi/MvvmDemo)。使用这个改造的方案，可以更方便的进行 EasyReact 和 RAC 的对比。
+评测的具体方案是用我以前的 [MvvmDemo](/2017/07/iOS%E4%BD%BF%E7%94%A8RAC%E5%AE%9E%E7%8E%B0MVVM%E7%9A%84%E6%AD%A3%E7%BB%8F%E5%A7%BF%E5%8A%BF.html) 改造一下，旧 demo 的代码参照 [GitHub](https://github.com/HarrisonXi/MvvmDemo)。使用这个改造的方案，可以更方便的进行 EasyReact 和 RAC 的对比。
 
 首先进行 EasyReact 的安装，不得不说支持 CocoaPods 的库安装起来还是方便。但是 EasyReact 是没有提供打包好的 Framework 或者对应的 Framework 工程的，这就不太方便进行一次打包多处直接使用二进制包了。
 
@@ -79,7 +79,7 @@ EZRMutableNode *mutableNode = [node mutablify];
 
 ## 3. 冷信号热信号
 
-冷信号一直是 RAC 里面一个让响应式编程新手懵逼的概念，详细的概念我在《[RAC中的冷信号与热信号](https://blog.harrisonxi.com/2017/09/RAC%E4%B8%AD%E7%9A%84%E5%86%B7%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%83%AD%E4%BF%A1%E5%8F%B7.html)》中介绍过。
+冷信号一直是 RAC 里面一个让响应式编程新手懵逼的概念，详细的概念我在《[RAC中的冷信号与热信号](/2017/09/RAC%E4%B8%AD%E7%9A%84%E5%86%B7%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%83%AD%E4%BF%A1%E5%8F%B7.html)》中介绍过。
 
 既然容易让新手懵逼，那么 EasyReact 是怎么处理的呢？EasyReact 里好像就压根没有提供冷信号的概念😂。
 
