@@ -1,5 +1,9 @@
 # [苹果梨的博客](https://blog.harrisonxi.com)
 
+### 2020-04
+
+`其它` [方案设计和选型中的思考](https://blog.harrisonxi.com/2020/04/方案设计和选型中的思考.html)
+
 ### 2019-07
 
 `编译原理` [编译原理入门课：（五）解析ID型词法和函数调用语法](https://blog.harrisonxi.com/2019/07/编译原理入门课：（五）解析ID型词法和函数调用语法.html)
