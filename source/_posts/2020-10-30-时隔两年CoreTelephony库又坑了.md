@@ -1,12 +1,12 @@
 ---
 title: 时隔两年CoreTelephony库又坑了
-subtitle: 那些标错了availabel版本的系统API
+subtitle: 那些标错了available版本的系统API
 categories: iOS
 tags: [iOS, CoreTelephony]
 date: 2020-10-30
 ---
 
-时隔两年苹果又坑了，还是那个熟悉的CoreTelephony库，还是那个熟悉的`CTTelephonyNetworkInfo.h`，还是那个熟悉的availabel标错导致的崩溃。
+时隔两年苹果又坑了，还是那个熟悉的CoreTelephony库，还是那个熟悉的`CTTelephonyNetworkInfo.h`，还是那个熟悉的available标错导致的崩溃。
 
 <!--more-->
 
@@ -54,7 +54,7 @@ iPhone 12终于支持5G了，用户反馈app没有正确的识别5G，当然是�
 
 拿实机验证了下，果然iOS 14.0其实并不存在对应的常量，调用了就会直接崩溃，和当初一模一样，熟悉的配方熟悉的味道。
 
-叹着气流着泪，我们又多了一行`if (@available(iOS 14.1, *)) {}`和一串长长的注释，希望大家看着这篇文章引以为戒，不要相信苹果的沙雕availabel标记。
+叹着气流着泪，我们又多了一行`if (@available(iOS 14.1, *)) {}`和一串长长的注释，希望大家看着这篇文章引以为戒，不要相信苹果的沙雕available标记。
 
 # 补充
 
