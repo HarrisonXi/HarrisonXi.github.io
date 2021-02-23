@@ -1,5 +1,9 @@
 # [苹果梨的博客](https://blog.harrisonxi.com)
 
+### 2021-02
+
+`ObjC` [怎么判断一个OC类有没有被初始化过](https://blog.harrisonxi.com/2021/02/怎么判断一个OC类有没有被初始化过.html)
+
 ### 2020-10
 
 `iOS` [时隔两年CoreTelephony库又坑了](https://blog.harrisonxi.com/2020/10/时隔两年CoreTelephony库又坑了.html)
