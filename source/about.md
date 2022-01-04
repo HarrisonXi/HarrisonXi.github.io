@@ -4,7 +4,7 @@ title: 关于
 
 # 我是码农
 
-走上奔四之路的码农一名。曾就职于阿里天猫，负责维护 [VirtualView-iOS](https://github.com/alibaba/VirtualView-iOS)。现就职于 bilibili，负责 iOS 基础架构。热烈欢迎想来一起工作的朋友联系我：gpra8764@gmail.com
+走上奔四之路的码农一名。曾就职于阿里天猫，负责维护 [VirtualView-iOS](https://github.com/alibaba/VirtualView-iOS)。也曾就职于 bilibili，负责 iOS 基础架构。现在去修仙了。
 
 完整的昵称是**绿梨子红苹果**，因为十个人有九个都记错，就简称成**苹果梨**了。
 

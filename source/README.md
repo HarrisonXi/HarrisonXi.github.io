@@ -1,5 +1,9 @@
 # [苹果梨的博客](https://blog.harrisonxi.com)
 
+### 2022-01
+
+`随笔` [2021总结](https://blog.harrisonxi.com/2022/01/2021总结.html)
+
 ### 2021-02
 
 `ObjC` [怎么判断一个OC类有没有被初始化过](https://blog.harrisonxi.com/2021/02/怎么判断一个OC类有没有被初始化过.html)
