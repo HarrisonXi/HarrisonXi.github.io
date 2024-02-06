@@ -1,0 +1,31 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 操蛋的Block语法（译） · 苹果梨的博客</title><meta name="description" content="操蛋的Block语法（译） - 苹果梨"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://blog.harrisonxi.com/atom.xml" title="苹果梨的博客"><meta name="generator" content="Hexo 4.2.1"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">首页</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/about.html" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/links.html" target="_self" class="nav-list-link">友链</a></li><li class="nav-list-item"><a href="https://github.com/HarrisonXi" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">操蛋的Block语法（译）</h1><div class="post-subtitle">在ObjC中如何定义一个Block</div><div class="post-info">2015-07-05<a href="/categories/ObjC" class="post-category">ObjC</a></div><div class="post-content"><p>原文：<a href="http://fuckingblocksyntax.com/" target="_blank" rel="noopener">How Do I Declare A Block in Objective-C?</a></p>
+<p>ObjC的Block语法的确是很难记满蛋疼的，对于不想背语法的我来说（主要是大部分情况下可以智能补全），是时候写一个备忘记录一下了……</p>
+<p>时隔一年多看了一下原文，居然新增了nullability相关的修饰词，赶紧补上。</p>
+<a id="more"></a>
+
+<p>本地变量：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">returnType (^blockName)(parameterTypes) = ^returnType(parameters) &#123;...&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>属性：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>, nullability) returnType (^blockName)(parameterTypes);</span><br></pre></td></tr></table></figure>
+
+<p>方法的参数：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)someMethodThatTakesABlock:(returnType (^nullability)(parameterTypes))blockName;</span><br></pre></td></tr></table></figure>
+
+<p>调用方法时传参：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[someObject someMethodThatTakesABlock:^returnType (parameters) &#123;...&#125;];</span><br></pre></td></tr></table></figure>
+
+<p>类型定义：</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> returnType (^TypeName)(parameterTypes);</span><br><span class="line">TypeName blockName = ^returnType(parameters) &#123;...&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这儿并不是用来罗列所有Block用法的列表。如果你发现你想要的语法没有在这里出现，那么很可能用一个类型定义（typedef）就可以使你的代码更有可读性了。</p>
+<p>如果你访问不了上面的原文链接，可能是因为域名里有屏蔽词，试试<a href="http://goshdarnblocksyntax.com" target="_blank" rel="noopener">这个链接</a>。</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2017/02/iOS%E7%B3%BB%E7%BB%9F%E7%9A%84%E9%94%AE%E7%9B%98window.html" class="prev">上一篇</a><a href="/2015/07/A%E8%82%A1%E5%8E%86%E5%8F%B2K%E7%BA%BF%E5%92%8C%E5%AE%9E%E6%97%B6%E8%A1%8C%E6%83%85%E6%95%B0%E6%8D%AE%E6%8E%A5%E5%8F%A3.html" class="next">下一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'ping-guo-li-de-bo-ke';
+var disqus_identifier = '2015/07/操蛋的Block语法（译）.html';
+var disqus_title = '操蛋的Block语法（译）';
+var disqus_url = 'https://blog.harrisonxi.com/2015/07/操蛋的Block语法（译）.html';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//ping-guo-li-de-bo-ke.disqus.com/count.js" async></script><div class="copyright"><p>© 2017 - 2024 <a href="https://blog.harrisonxi.com">苹果梨</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-110376743-1",'auto');ga('send','pageview');</script></body></html>

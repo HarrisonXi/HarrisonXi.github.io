@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 时隔两年CoreTelephony库又坑了 · 苹果梨的博客</title><meta name="description" content="时隔两年CoreTelephony库又坑了 - 苹果梨"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://blog.harrisonxi.com/atom.xml" title="苹果梨的博客"><meta name="generator" content="Hexo 4.2.1"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">首页</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/about.html" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/links.html" target="_self" class="nav-list-link">友链</a></li><li class="nav-list-item"><a href="https://github.com/HarrisonXi" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">时隔两年CoreTelephony库又坑了</h1><div class="post-subtitle">那些标错了available版本的系统API</div><div class="post-info">2020-10-30<a href="/categories/iOS" class="post-category">iOS</a></div><div class="post-content"><p>时隔两年苹果又坑了，还是那个熟悉的CoreTelephony库，还是那个熟悉的<code>CTTelephonyNetworkInfo.h</code>，还是那个熟悉的available标错导致的崩溃。</p>
+<a id="more"></a>
+
+<h1 id="两年前"><a href="#两年前" class="headerlink" title="两年前"></a>两年前</h1><p>因为我在公司是负责基础模块的，所以网络相关的蜂窝网络类型判断是我来处理的。</p>
+<p>两年前，苹果第一次做双卡手机，经验不成熟，所以出了不少问题。我们当然是只能选择原谅他，然后自己背锅啦。不然呢？我们还能硬刚苹果或者逼用户升级不成？</p>
+<p>当初和双卡相关的API，都被标记成了<code>API_AVAILABLE(ios(12.0)</code>，但是其实这些函数都是在iOS 12.1才实现的。在iOS 12.0里要么就是函数直接没有实现，要么是函数返回<code>nil</code>。好在只是导致一些功能逻辑上的问题，并不会导致用户用不了app。在后来版本的app里我们只能对这些函数又做了一层保护，以防调用出什么奇怪的逻辑。</p>
+<p>但是有一个常量就坑了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CORETELEPHONY_EXTERN NSString * const CTServiceRadioAccessTechnologyDidChangeNotification API_AVAILABLE(ios(12.0), watchos(5.0)) API_UNAVAILABLE(macos, tvos);</span><br></pre></td></tr></table></figure>
+
+<p>毕竟常量可没有办法用<code>respondsToSelector:</code>包一层，在iOS 12.0只要使用这个常量，就会导致iOS 12.0的用户崩成🐴 ……</p>
+<p>被苹果教育过的我们，给使用这个常量的地方都包上了<code>if (@available(iOS 12.1, *)) {}</code>，并且加上的长长的注释说明这个常量在iOS 12.1才能调用😭 。</p>
+<h1 id="iPhone-12-amp-5G"><a href="#iPhone-12-amp-5G" class="headerlink" title="iPhone 12 &amp; 5G"></a>iPhone 12 &amp; 5G</h1><p>iPhone 12终于支持5G了，用户反馈app没有正确的识别5G，当然是要尽快处理用户的问题啦。</p>
+<p>扫了眼<code>CTTelephonyNetworkInfo.h</code>果然发现有新的网络制式（下图为Xcode 12.1）：</p>
+<p><img src="/2020/10/30-154955.png" alt="30-154955"></p>
+<p>果断给加上对应判断，拿台iPhone 12配合5G测试一下，完美无瑕！</p>
+<p>然后，然后研发和灰度用户们就崩成🐴 了……看了眼崩溃的人都是iOS 14.0用户，这时我才想起两年前被苹果支配的恐惧😂 。</p>
+<p>赶紧去官网看了一眼，官网文档里甚至都还没有出现对应的网络制式枚举的说明：</p>
+<p><img src="/2020/10/30-180036.png" alt="30-180036"></p>
+<p>然后又拿了份Xcode 12.0，看了看里面的<code>CTTelephonyNetworkInfo.h</code>：</p>
+<p><img src="/2020/10/30-154144.png" alt="30-154144"></p>
+<p>我了个去，坑爹呢这是，果然是Xcode 12.0还没有的枚举，肯定又是一样的问题。</p>
+<p><img src="/stickers/002.png" alt="坑爹"></p>
+<p>拿实机验证了下，果然iOS 14.0其实并不存在对应的常量，调用了就会直接崩溃，和当初一模一样，熟悉的配方熟悉的味道。</p>
+<p>叹着气流着泪，我们又多了一行<code>if (@available(iOS 14.1, *)) {}</code>和一串长长的注释，希望大家看着这篇文章引以为戒，不要相信苹果的沙雕available标记。</p>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><p>2年前的文档错误苹果看来是不打算修了，这一次的API标记错误我们也向苹果反馈了，看看苹果会不会处理下，避免广大开发者踩坑吧。</p>
+<p>愿苹果开发者和用户能有一个美好的未来~</p>
+<h1 id="2天后"><a href="#2天后" class="headerlink" title="2天后"></a>2天后</h1><p>又想起来一个事情要补充一下，因为今年的iOS 14.2 beta和iOS 14.0发布时间是有重叠的，所以貌似iOS 14.2的前几个beta是没有对应常量的。</p>
+<p>从官方文档来看，iOS 14.2 beta 3才开始有对应的常量：</p>
+<p><img src="/2020/10/31-113519.png" alt="31-113519"></p>
+<p>但是我们的兼容代码只能写<code>if (@available(iOS 14.1, *)) {}</code>，所以想必还停留在iOS 14.2 beta 2的用户也炸了吧……</p>
+<p>苹果的beta是真的不能用，还望大家珍重，早日升级系统新版本~</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2021/02/%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AAOC%E7%B1%BB%E6%9C%89%E6%B2%A1%E6%9C%89%E8%A2%AB%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87.html" class="prev">上一篇</a><a href="/2020/04/%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1%E5%92%8C%E9%80%89%E5%9E%8B%E4%B8%AD%E7%9A%84%E6%80%9D%E8%80%83.html" class="next">下一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'ping-guo-li-de-bo-ke';
+var disqus_identifier = '2020/10/时隔两年CoreTelephony库又坑了.html';
+var disqus_title = '时隔两年CoreTelephony库又坑了';
+var disqus_url = 'https://blog.harrisonxi.com/2020/10/时隔两年CoreTelephony库又坑了.html';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//ping-guo-li-de-bo-ke.disqus.com/count.js" async></script><div class="copyright"><p>© 2017 - 2024 <a href="https://blog.harrisonxi.com">苹果梨</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-110376743-1",'auto');ga('send','pageview');</script></body></html>

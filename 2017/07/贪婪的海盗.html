@@ -1,0 +1,50 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 贪婪的海盗 · 苹果梨的博客</title><meta name="description" content="贪婪的海盗 - 苹果梨"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://blog.harrisonxi.com/atom.xml" title="苹果梨的博客"><meta name="generator" content="Hexo 4.2.1"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">首页</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/about.html" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/links.html" target="_self" class="nav-list-link">友链</a></li><li class="nav-list-item"><a href="https://github.com/HarrisonXi" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">贪婪的海盗</h1><div class="post-subtitle">一道逻辑推理题</div><div class="post-info">2017-07-12<a href="/categories/%E9%80%BB%E8%BE%91" class="post-category">逻辑</a></div><div class="post-content"><p>5名海盗在宝藏中发现了100颗钻石，他们决定采取投票的办法来分掉这些钻石。</p>
+<p>他们首先抽签决定了自己提出方案的顺序，这里5人按抽签顺序称为ABCDE。</p>
+<p>A首先提出一种分配钻石的方案，超过半数的人同意时，将按照这种方法分配钻石；否则，A将被丢进海里喂鲨鱼。（这里A参加投票，即需要3个人同意）</p>
+<a id="more"></a>
+
+<p>如果A被喂鲨鱼了，再由B提出一种分配钻石的方案，超过半数的人同意时，将按照这种方法分配钻石；否则，B也将被丢进海里喂鲨鱼。（这里B参加投票，即需要3个人同意）</p>
+<p>以此类推，直到有方案通过，或者仅剩E一人。最终钻石会被如何分配？</p>
+<p>额外条件补充：</p>
+<ol>
+<li>所有的钻石等价</li>
+<li>海盗们都智力过人，实力相当，冷静过人</li>
+<li>海盗们都很贪婪，在保命的条件下会想要尽可能多的钻石</li>
+<li>海盗们关系不是很好，两种分配方案下能获得的钻石一样多也会给前一个提议者投反对票</li>
+</ol>
+<p>木有什么好提示的。🙄️</p>
+<p>如果你想知道答案：<a href="#推理过程和答案">点这里</a></p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<p>　</p>
+<h1 id="推理过程和答案"><a href="#推理过程和答案" class="headerlink" title="推理过程和答案"></a>推理过程和答案</h1><p>从只剩DE俩人的情况开始说，因为只剩E一人的时候他可以独吞所有钻石，所以他不会给D投同意票的。只剩俩人的时候D必定会死，对应分赃方案：[0, 0, 0, 0, 100]</p>
+<p>如果剩CDE仨人时，C推理了以上的结果，D不想死肯定会投同意票。剩仨人的时候C可以独吞所有钻石，对应分赃方案：[0, 0, 100, 0, 0]</p>
+<p>剩BCDE四人时，B推理了以上的结果，C在自己死后可以独吞钻石肯定不会投同意票，需要拉拢DE俩人的同意票才能不被喂鲨鱼。B自己尽可能多拿钻石的条件下，对应分赃方案：[0, 98, 0, 1, 1]</p>
+<p>A推理了以上的结果，需要拉拢两个人，而拉拢B的代价太大，最终定下来需要拉拢C，并再拉拢DE中的一人。对应分赃方案：[97, 0, 1, 2, 0]或者[97, 0, 1, 0, 2]</p>
+<h1 id="然而不一定就这么一个答案"><a href="#然而不一定就这么一个答案" class="headerlink" title="然而不一定就这么一个答案"></a>然而不一定就这么一个答案</h1><p>剩仨人的时候，大家都遵守规则，同意票不过半则还有两个“执法者”对一个对象“执法”。但是只剩俩人的时候，作为海盗，为什么要乖乖“伏法”喂鲨鱼呢？在这种假设下DE实力也相当，双方取胜概率相同，另外考虑可能有同归于尽的情况，双方胜率其实都不到50%。所以这种情况下双方理智下来，应该谈判平分钻石：[0, 0, 0, 50, 50]</p>
+<p>剩CDE仨人，C需要拉拢其中一位。假设拉拢的是D，则对应分赃方案：[0, 0, 49, 51, 0]</p>
+<p>剩BCDE四人，B需要拉拢两位。因为轮到C来提出方案的时候，C可能拉拢D也可能拉拢E，所以DE其实从平均期望来说可以拿到25.5颗钻石。B拉拢这两位比较廉价一点，对应分配方案：[0, 48, 0, 26, 26]</p>
+<p>A推理了以上的结果，需要拉拢两个人，那就要拉拢C，再拉拢DE中的一人。假设拉拢的是C和D俩人，则对应分赃方案：[72, 0, 1, 27, 0]</p>
+<p>海盗还懂概率和统计，不怕海盗凶就怕海盗有文化啊233。😂</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2017/07/iOS%E4%BD%BF%E7%94%A8RAC%E5%AE%9E%E7%8E%B0MVVM%E7%9A%84%E6%AD%A3%E7%BB%8F%E5%A7%BF%E5%8A%BF.html" class="prev">上一篇</a><a href="/2017/07/%E9%AC%BC%E8%B0%B7%E5%AD%90%E9%97%AE%E5%BE%92.html" class="next">下一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'ping-guo-li-de-bo-ke';
+var disqus_identifier = '2017/07/贪婪的海盗.html';
+var disqus_title = '贪婪的海盗';
+var disqus_url = 'https://blog.harrisonxi.com/2017/07/贪婪的海盗.html';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//ping-guo-li-de-bo-ke.disqus.com/count.js" async></script><div class="copyright"><p>© 2017 - 2024 <a href="https://blog.harrisonxi.com">苹果梨</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-110376743-1",'auto');ga('send','pageview');</script></body></html>

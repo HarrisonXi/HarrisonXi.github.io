@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> NSURLErrorDomain的-1005错误 · 苹果梨的博客</title><meta name="description" content="NSURLErrorDomain的-1005错误 - 苹果梨"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://blog.harrisonxi.com/atom.xml" title="苹果梨的博客"><meta name="generator" content="Hexo 4.2.1"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">首页</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/about.html" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/links.html" target="_self" class="nav-list-link">友链</a></li><li class="nav-list-item"><a href="https://github.com/HarrisonXi" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">NSURLErrorDomain的-1005错误</h1><div class="post-subtitle">（NSURLErrorNetworkConnectionLost，The network connection was lost）</div><div class="post-info">2017-03-18<a href="/categories/iOS" class="post-category">iOS</a></div><div class="post-content"><h1 id="关于HTTP-1-1和HTTP长连接"><a href="#关于HTTP-1-1和HTTP长连接" class="headerlink" title="关于HTTP 1.1和HTTP长连接"></a>关于HTTP 1.1和HTTP长连接</h1><p>HTTP 1.0中，默认进行的都是短连接。一个HTTP请求会产生一个TCP连接，请求结束后就会关闭这个TCP连接。而自HTTP 1.1开始，默认进行的都是<a href="https://zh.wikipedia.org/wiki/HTTP%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5" target="_blank" rel="noopener">长连接</a>。在一个HTTP请求结束之后，客户端和服务端之间的TCP连接并不会立即断开，而是按照约定的Keep-Alive时长维持一定时间的连接状态。这样在下一次HTTP请求发生时，如果TCP连接还存在就会复用之前的TCP连接，省去重新建立TCP连接的时间。</p>
+<a id="more"></a>
+
+<h1 id="iOS的-1005错误"><a href="#iOS的-1005错误" class="headerlink" title="iOS的-1005错误"></a>iOS的-1005错误</h1><p>我们的团队是在使用SDWebImage的时候遇到这个问题的，经搜索发现早在iOS 8时代就有人在使用AFNetworking的时候遇到这个问题：<a href="http://stackoverflow.com/questions/25372318/error-domain-nsurlerrordomain-code-1005-the-network-connection-was-lost" target="_blank" rel="noopener">NSURLErrorDomain的-1005错误</a></p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error Domain=<span class="built_in">NSURLErrorDomain</span> Code=<span class="number">-1005</span> <span class="string">"The network connection was lost."</span></span><br></pre></td></tr></table></figure>
+
+<p>具体的原因参照<a href="http://stackoverflow.com/a/25996971/2562905" target="_blank" rel="noopener">这个回答</a>的描述：NSURLRequest的实现有问题，在维持长连接的时候维持时长超过了服务器约定的时长，在第二次HTTP请求准备复用TCP连接的时候实际上连接已经被服务器断开了。</p>
+<p>我没有去调研&amp;测试NSURLRequest的实现是不是真的有问题，倒是觉得移动设备的一些极端网络情况可能的确会面临这样的问题。</p>
+<p>那么接下来就是要解决这个问题。</p>
+<h1 id="由服务端解决这个问题"><a href="#由服务端解决这个问题" class="headerlink" title="由服务端解决这个问题"></a>由服务端解决这个问题</h1><h2 id="1-提高服务器Keep-Alive时长至30秒以上"><a href="#1-提高服务器Keep-Alive时长至30秒以上" class="headerlink" title="1. 提高服务器Keep-Alive时长至30秒以上"></a>1. 提高服务器Keep-Alive时长至30秒以上</h2><p>我在简书上也看到有人将Keep-Alive时长设置成了60秒，对应问题可以解决。</p>
+<p>但是这个设置对于服务器是有风险的。延长Keep-Alive时长无疑会浪费服务器的性能，毕竟同时需要维持的连接数变多了。很多用户其实也不需要这么长时间的长连接。所以这个方案需要斟酌之后再确定要不要实行。</p>
+<h2 id="2-针对iOS客户端禁用长连接"><a href="#2-针对iOS客户端禁用长连接" class="headerlink" title="2. 针对iOS客户端禁用长连接"></a>2. 针对iOS客户端禁用长连接</h2><p>不同的服务器设置方法不一样，具体方法就不多说了。</p>
+<p>这个方案的风险在于，抛弃了长连接会对HTTP请求的速度产生些许影响。</p>
+<h1 id="由客户端解决这个问题"><a href="#由客户端解决这个问题" class="headerlink" title="由客户端解决这个问题"></a>由客户端解决这个问题</h1><h2 id="1-重新实现HTTP请求底层，降低客户端Keep-Alive时长"><a href="#1-重新实现HTTP请求底层，降低客户端Keep-Alive时长" class="headerlink" title="1. 重新实现HTTP请求底层，降低客户端Keep-Alive时长"></a>1. 重新实现HTTP请求底层，降低客户端Keep-Alive时长</h2><p>这是个大工程，我们需要写一个完备的底层，使客户端的Keep-Alive时长比服务端传回的时长短一些。这样的话就更低概率甚至不会出现服务端比客户端早断开TCP连接的情况。在出现长连接断开的情况下，底层也应该负责进行一次重试，再开一个新的TCP连接进行HTTP请求。</p>
+<h2 id="2-由业务层或框架层重试HTTP请求"><a href="#2-由业务层或框架层重试HTTP请求" class="headerlink" title="2. 由业务层或框架层重试HTTP请求"></a>2. 由业务层或框架层重试HTTP请求</h2><p>出现错误的时候重试一次HTTP请求就好。在框架或者业务代码里仍然用NSURLRequest实现请求，捕获到-1005错误的时候进行一次重试。虽然说总体用时会更长，但是正确的结果更加重要些。</p>
+<h1 id="SDWebImage里的问题"><a href="#SDWebImage里的问题" class="headerlink" title="SDWebImage里的问题"></a>SDWebImage里的问题</h1><p>在SDWebImage中遇到此问题的现象：有些图片一旦请求失败一次就再也没法刷出来。</p>
+<p>归根结底在于SDWebImage维护了一个<strong>failedURLs</strong>列表，请求失败的图片URL都会被加入到这个表中。下次请求的时候如果没有带上SDWebImageRetryFailed选项，SDWebImage就会自动忽略这些URL直接返回错误。</p>
+<p>某些特殊的网络错误会被判定是网络连接问题，请求失败时SDWebImage不会将图片URL加入<strong>failedURLs</strong>列表。而这个特殊的网络错误列表里之前没有包含-1005错误，导致出现-1005错误后这些图片就再也不会被重加载。</p>
+<p>好在2个月前（2017-1-6）有人提交了对应的修改：<a href="https://github.com/rs/SDWebImage/commit/57502a9d1d3044a2c2f7969e5241619a697625fb" target="_blank" rel="noopener">add a network error situation</a>，我们的SDWebImage是太久没更新了才会遇到这个问题。</p>
+<h1 id="YYWebImage里的实现"><a href="#YYWebImage里的实现" class="headerlink" title="YYWebImage里的实现"></a>YYWebImage里的实现</h1><p>参照<a href="https://github.com/ibireme/YYWebImage/blob/master/YYWebImage/YYWebImageOperation.m" target="_blank" rel="noopener">YYWebImageOperation</a>类的实现。</p>
+<p>和SDWebImage实现不同的是：</p>
+<ol>
+<li>YYWebImage默认是不会记录<strong>URLInBlackList</strong>的，只有带上YYWebImageOptionIgnoreFailedURL选项，请求图片失败时才会把图片URL加入<strong>URLInBlackList</strong>。</li>
+<li>YYWebImage默认是会重试<strong>URLInBlackList</strong>的，必须带上YYWebImageOptionIgnoreFailedURL选项，才会忽略URLInBlackList中的图片URL。</li>
+</ol>
+<p>介于以上原因，实际上按照默认行为使用YYWebImage时如果加载图片失败，下一次加载还是会重试的，所以不会导致图片一直刷不出的严重问题。</p>
+<p>当然YYWebImage处理的网络连接问题列表里也没有包含-1005错误，所以我已经提了<a href="https://github.com/ibireme/YYWebImage/pull/172" target="_blank" rel="noopener">pull request</a>。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>对于大部分团队来说，应该还是用客户端方案2来处理比较方便。</p>
+<p>需要做的就是在客户端请求服务API和图片资源时，出现-1005错误就进行一次重试。</p>
+<p>当然如果使用了以上图片库，记得更新下最新版或者手动加上对-1005错误的处理。</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2017/03/git%E5%9F%BA%E6%9C%AC%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B%E5%8F%8Arebase%E4%BB%8B%E7%BB%8D.html" class="prev">上一篇</a><a href="/2017/02/%E7%BB%99nginx%E4%BB%8ELet's%20Encrypt%E7%94%B3%E8%AF%B7%E4%B8%AASSL%E8%AF%81%E4%B9%A6.html" class="next">下一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'ping-guo-li-de-bo-ke';
+var disqus_identifier = '2017/03/NSURLErrorDomain的-1005错误.html';
+var disqus_title = 'NSURLErrorDomain的-1005错误';
+var disqus_url = 'https://blog.harrisonxi.com/2017/03/NSURLErrorDomain的-1005错误.html';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//ping-guo-li-de-bo-ke.disqus.com/count.js" async></script><div class="copyright"><p>© 2017 - 2024 <a href="https://blog.harrisonxi.com">苹果梨</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-110376743-1",'auto');ga('send','pageview');</script></body></html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> iOS中App的生命周期 · 苹果梨的博客</title><meta name="description" content="iOS中App的生命周期 - 苹果梨"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://blog.harrisonxi.com/atom.xml" title="苹果梨的博客"><meta name="generator" content="Hexo 4.2.1"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">首页</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/about.html" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/links.html" target="_self" class="nav-list-link">友链</a></li><li class="nav-list-item"><a href="https://github.com/HarrisonXi" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">iOS中App的生命周期</h1><div class="post-subtitle">后台、中断及回调消息</div><div class="post-info">2013-04-17<a href="/categories/iOS" class="post-category">iOS</a></div><div class="post-content"><p>参考Apple的官方文章：<a href="https://developer.apple.com/library/content/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/StrategiesforHandlingAppStateTransitions/StrategiesforHandlingAppStateTransitions.html" target="_blank" rel="noopener">Strategies for Handling App State Transitions</a></p>
+<h1 id="在启动时我们应该做些什么"><a href="#在启动时我们应该做些什么" class="headerlink" title="在启动时我们应该做些什么"></a>在启动时我们应该做些什么</h1><a id="more"></a>
+
+<p>App启动的时候，我们应该在<a href="https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application" target="_blank" rel="noopener">application:didFinishLaunchingWithOptions:</a>回调里：</p>
+<ol>
+<li>通过launch options字典来检查App为什么被启动，做出相应的反馈</li>
+<li>初始化App所需要的各种数据</li>
+<li>准备应用的初始化window和视图用来展示</li>
+</ol>
+<p>在这个回调里的处理应该尽可能的轻量化，这样可以减少App的启动时间。如果5秒内App还没有成功进入接收消息的就绪状态，App将会被系统杀死。</p>
+<h1 id="启动后正式进入前台之前"><a href="#启动后正式进入前台之前" class="headerlink" title="启动后正式进入前台之前"></a>启动后正式进入前台之前</h1><p><a href="https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622956-applicationdidbecomeactive" target="_blank" rel="noopener">applicationDidBecomeActive:</a>会被触发，在这个回调触发之后我们就可以确认App是在前台运行了。</p>
+<h1 id="在临时中断时我们应该做些什么"><a href="#在临时中断时我们应该做些什么" class="headerlink" title="在临时中断时我们应该做些什么"></a>在临时中断时我们应该做些什么</h1><p>在一个基于alert的中断发生或者收到来电时，<a href="https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622950-applicationwillresignactive" target="_blank" rel="noopener">applicationWillResignActive:</a>会被触发，在这回调里：</p>
+<ol>
+<li>保存应用的状态</li>
+<li>停止计时器和其它的一些定时触发的周期任务</li>
+<li>停止各种请求并不再初始化新的任务</li>
+<li>进行其它各种暂停操作等</li>
+</ol>
+<p>在用户取消了alert或者未接电话时，App会回到原先的active状态，触发<a href="https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622956-applicationdidbecomeactive" target="_blank" rel="noopener">applicationDidBecomeActive:</a>回调，这时候我们应该做一些中断操作的反向操作。</p>
+<p>其实在App任何情况下即将失去焦点时，最先都会调用<code>applicationWillResignActive:</code>。</p>
+<p>而在App回到前台运行，在开始主线程Run Loop之前，必定会先触发<code>applicationDidBecomeActive:</code>。</p>
+<p>注意：一定不要刻意等到App状态切换的时候再去保存用户数据，用户数据应该在更改后尽快的进行保存。</p>
+<h1 id="在进入后台运行时我们应该做些什么"><a href="#在进入后台运行时我们应该做些什么" class="headerlink" title="在进入后台运行时我们应该做些什么"></a>在进入后台运行时我们应该做些什么</h1><p>在App进入后台时，<a href="https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622997-applicationdidenterbackground" target="_blank" rel="noopener">applicationDidEnterBackground:</a>回调将被触发，这时我们可以：</p>
+<ol>
+<li>处理App快照截图。在我们App进入后台之前，系统会做一张快照截图，用于多任务界面的切换动画。如果你的App包含一些敏感数据，一定要在<code>applicationDidEnterBackground:</code>返回之前，处理好你的App视图。记住大多数情况下可能需要强制执行一次绘图。</li>
+<li>保存应用信息。</li>
+<li>释放一些不需要的内存空间。占用内存大的后台App在系统内存吃紧的时候会最先被干掉。</li>
+</ol>
+<p>和App启动一样，真的进入后台前你有5秒钟时间再处理各种事务，这个回调的处理也应该尽可能的轻量化，否则超时的话App一样会被系统干掉。</p>
+<p>如果需要在后台进行一些较为耗时的处理，可以参照方法<code>beginBackgroundTaskWithExpirationHandler:</code>。</p>
+<p>在应用再从后台准备回到前台时，最先触发的是对应的回调<a href="https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623076-applicationwillenterforeground" target="_blank" rel="noopener">applicationWillEnterForeground:</a>，在这个回调里我们应该进行各种进入后台操作的反向操作。</p>
+<h1 id="具有后台运行权限的App"><a href="#具有后台运行权限的App" class="headerlink" title="具有后台运行权限的App"></a>具有后台运行权限的App</h1><p>通常代表是导航和多媒体播放App，这些App在后台也是需要工作的。在Info.plsit文件里声明对应的权限，开启后台模式后，App在后台运行的时候仍然会运行一个Run Loop。</p>
+<h1 id="图示总结"><a href="#图示总结" class="headerlink" title="图示总结"></a>图示总结</h1><p><img src="/2013/04/17-A.png" alt="17-A"></p>
+</div></article></div></main><footer><div class="paginator"><a href="/2013/05/iOS%E4%BB%8EMRC%EF%BC%88%E6%89%8B%E5%8A%A8%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%EF%BC%89%E8%BF%87%E6%B8%A1%E5%88%B0ARC%EF%BC%88%E8%87%AA%E5%8A%A8%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%EF%BC%89.html" class="prev">上一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'ping-guo-li-de-bo-ke';
+var disqus_identifier = '2013/04/iOS中App的生命周期.html';
+var disqus_title = 'iOS中App的生命周期';
+var disqus_url = 'https://blog.harrisonxi.com/2013/04/iOS中App的生命周期.html';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//ping-guo-li-de-bo-ke.disqus.com/count.js" async></script><div class="copyright"><p>© 2017 - 2024 <a href="https://blog.harrisonxi.com">苹果梨</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-110376743-1",'auto');ga('send','pageview');</script></body></html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> 编译原理入门课：（前言）实现一个表达式解析计算器 · 苹果梨的博客</title><meta name="description" content="编译原理入门课：（前言）实现一个表达式解析计算器 - 苹果梨"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://blog.harrisonxi.com/atom.xml" title="苹果梨的博客"><meta name="generator" content="Hexo 4.2.1"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">首页</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/about.html" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/links.html" target="_self" class="nav-list-link">友链</a></li><li class="nav-list-item"><a href="https://github.com/HarrisonXi" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">编译原理入门课：（前言）实现一个表达式解析计算器</h1><div class="post-info">2019-07-01<a href="/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86" class="post-category">编译原理</a></div><div class="post-content"><p>首先要聊聊我为什么想要写一篇编译原理的入门课。熟悉我的人可能会知道，我喜欢把复杂难懂的东西拆解成简单易理解的东西，无论是在代码的设计上，还是在知识的分享上。另外我也是个实用主义者，写出来的代码光好看没有什么卵用，必须要有实际的用途，它才是有价值的代码。所以写这样一个系列的博客，主要有两个目的：</p>
+<ol>
+<li>拆解编译原理里一部分入门级别的基础知识，用最少的篇幅讲解编译器前端的大致工作原理</li>
+<li>实现一个可以解析并计算简单数学表达式的库，让需要的人可以使用它完成一些计算功能</li>
+</ol>
+<a id="more"></a>
+
+<p>所谓编译器前端，主要是指词法分析、语法分析这一类解析的过程，负责把我们写的代码翻译成计算机可以理解的格式。编译器后端，主要负责把前端解析得到的中间代码进行优化，生成CPU可以运行的二进制代码。编译器后端的知识，需要对汇编、计算机组成原理之类的知识有一定了解，才能更好的理解。所以我在这里不太打算深入讲解编译器后端的知识，想要全面了解编译原理的同学可以参考别的教程进行学习。</p>
+<h1 id="推荐书籍"><a href="#推荐书籍" class="headerlink" title="推荐书籍"></a>推荐书籍</h1><p>曾经尝试学习过编译原理的同学，可能会深有感触，抱着书啃起来很枯燥，很容易从入门到放弃。编译原理的三大著名书籍人称龙书、虎书、鲸书，具体书名大家自己搜一下就很容易找到。我们比较熟悉的一本应该就是下图这个龙书——《编译原理》，普及最广应该是因为翻译得比较好吧。书里说的大部分是理论知识，很可能看完三四章后，了解了很多编译器中的概念和方法，但是想要自制个编译器就会觉得无从下手。不过这不会影响它的地位，想深入学习编译原理肯定还是离不开它的，建议对编译器感兴趣的同学先从博客入门，入门后如果觉得想要更深入，再买一本《编译原理》回去啃也不迟。</p>
+<p><img src="/2019/07/01-A.png" alt="01-A"></p>
+<h1 id="推荐博客及开源库"><a href="#推荐博客及开源库" class="headerlink" title="推荐博客及开源库"></a>推荐博客及开源库</h1><p>首推一个lotabout大佬的《<a href="https://lotabout.me/2015/write-a-C-interpreter-0/" target="_blank" rel="noopener">手把手教你构建 C 语言编译器</a>》系列博客。博客从构建虚拟机开始，然后逐步的介绍词法分析再到语法分析，围绕着已经构建好的虚拟机一步步构造编译器。从构造编译器的过程上来说，大概是下图这样：</p>
+<p><img src="/2019/07/01-B.png" alt="01-B"></p>
+<p>lotabout大佬的教程总结起来有以下特点：</p>
+<ol>
+<li><p>编译器完整：包含编译器前端和编译器后端，对了解编译器完整工作流程有很大帮助</p>
+</li>
+<li><p>功能丰富：支持变量，条件和循环语句等复杂功能</p>
+</li>
+<li><p>较为深入：对虚拟机设计的讲解，以及对应虚拟机的代码生成逻辑都讲得较为深入。这个有好有坏，好处当然是大家能学到的东西更多，坏处就是对于不了解CPU和汇编的同学来说太难理解</p>
+</li>
+<li><p>中期无法运行：教程中期几篇的结尾都会有“本章的代码还无法正常运行”。这是必然的，编译器必须完成完整的流程才能运行，在虚拟机的基础上没有完成生成代码的逻辑，肯定会无法运行。这就可能让中间的学习过程有一定的断层</p>
+</li>
+</ol>
+<p>推荐的开源库首先也是推荐lotabout大佬博客对应的GitHub开源库：<a href="https://github.com/lotabout/write-a-C-interpreter" target="_blank" rel="noopener">write-a-C-interpreter</a>。光对着代码干啃很累，有对应的博客当然还是学起来更快的。</p>
+<p>然后推荐的是<a href="https://zh.wikipedia.org/wiki/%E6%B3%95%E5%B8%83%E9%87%8C%E6%96%AF%C2%B7%E8%B4%9D%E6%8B%89" target="_blank" rel="noopener">Fabrice Bellard</a>大神的<a href="https://bellard.org/otcc/" target="_blank" rel="noopener">otcc</a>，这应该是最迷你的C语言编译器了，迷你但五脏俱全，甚至于可以做到自举（自举就是自己可以编译自己）。它是当年Fabrice Bellard参加国际混淆（混乱）C语言代码大赛的获奖作品，可以编译<strong>C语言的子集</strong>。当然我们阅读代码的时候请阅读<a href="https://bellard.org/otcc/otccn.c" target="_blank" rel="noopener">非混淆版本</a>的，不然你的大脑可能得跟计算机一样才能看懂写得是什么……</p>
+<p>想再深入学习代码就试着看<a href="https://bellard.org/tcc/" target="_blank" rel="noopener">TinyCC</a>吧，是Fabrice Bellard基于otcc扩展写出来的<strong>完整的C语言</strong>编译器，号称最快最小。这个级别的代码，反正我已经看不懂了……</p>
+<h1 id="本入门课"><a href="#本入门课" class="headerlink" title="本入门课"></a>本入门课</h1><p>我这里要写的入门课，一开始就说了不包含编译器后端，所以这里不能叫它编译器，只能叫做解释器或者说计算器。和大部分的编译原理课不同，我会先写出来可以运行的最小单元，然后一边展开知识范围一边迭代，让解释器可以支持更多的功能。大概的过程会是这样：</p>
+<p><img src="/2019/07/01-C.png" alt="01-C"></p>
+<p>是不是更像是一个软件的常规迭代过程些？入门课会有以下特征：</p>
+<ol>
+<li>只含编译器前端，功能只有简单计算，简化了要学习的内容</li>
+<li>始终可以运行，持续迭代新功能</li>
+</ol>
+<p>目录会如下：</p>
+<p><a href="/2019/07/编译原理入门课：（一）用最简单的语法分析器解析加减法.html">（一）用最简单的语法分析器解析加减法</a></p>
+<p><a href="/2019/07/编译原理入门课：（二）递归解析中怎么处理运算符优先级.html">（二）递归解析中怎么处理运算符优先级</a></p>
+<p><a href="/2019/07/编译原理入门课：（三）简单错误处理逻辑以及负数的解析.html">（三）简单错误处理逻辑以及负数的解析</a></p>
+<p><a href="/2019/07/编译原理入门课：（四）用词法解析处理多位数字和空白符.html">（四）用词法解析处理多位数字和空白符</a></p>
+<p><a href="/2019/07/编译原理入门课：（五）解析ID型词法和函数调用语法.html">（五）解析ID型词法和函数调用语法</a></p>
+<p>后面还可能会补充其他内容，要看看大家对什么内容/功能感兴趣，还要等我的懒癌被治好。</p>
+<p>入门课对应的代码都会开源放在GitHub：<a href="https://github.com/HarrisonXi/SlimeExpressionC" target="_blank" rel="noopener">SlimeExpressionC</a></p>
+<p>想要更多的功能/教学可以在我的博客里留言，或者到对应的开源库下面去提issue，也热烈欢迎你们提MR或者fork出去自己玩。今天就先水到这里。</p>
+<p><img src="/stickers/001.png" alt="01-D"></p>
+</div></article></div></main><footer><div class="paginator"><a href="/2019/07/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E5%85%A5%E9%97%A8%E8%AF%BE%EF%BC%9A%EF%BC%88%E4%B8%80%EF%BC%89%E7%94%A8%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E8%AF%AD%E6%B3%95%E5%88%86%E6%9E%90%E5%99%A8%E8%A7%A3%E6%9E%90%E5%8A%A0%E5%87%8F%E6%B3%95.html" class="prev">上一篇</a><a href="/2019/02/%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%AF%94%E8%BE%83%E4%B8%ADNSNumericSearch%E9%80%89%E9%A1%B9%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.html" class="next">下一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'ping-guo-li-de-bo-ke';
+var disqus_identifier = '2019/07/编译原理入门课：（前言）实现一个表达式解析计算器.html';
+var disqus_title = '编译原理入门课：（前言）实现一个表达式解析计算器';
+var disqus_url = 'https://blog.harrisonxi.com/2019/07/编译原理入门课：（前言）实现一个表达式解析计算器.html';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//ping-guo-li-de-bo-ke.disqus.com/count.js" async></script><div class="copyright"><p>© 2017 - 2024 <a href="https://blog.harrisonxi.com">苹果梨</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-110376743-1",'auto');ga('send','pageview');</script></body></html>

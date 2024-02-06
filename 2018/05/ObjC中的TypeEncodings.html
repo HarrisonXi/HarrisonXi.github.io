@@ -1,0 +1,246 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><title> ObjC中的TypeEncodings · 苹果梨的博客</title><meta name="description" content="ObjC中的TypeEncodings - 苹果梨"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" href="/favicon.png"><link rel="stylesheet" href="/css/apollo.css"><link rel="search" type="application/opensearchdescription+xml" href="https://blog.harrisonxi.com/atom.xml" title="苹果梨的博客"><meta name="generator" content="Hexo 4.2.1"></head><body><div class="wrap"><header><a href="/" class="logo-link"><img src="/favicon.png" alt="logo"></a><ul class="nav nav-list"><li class="nav-list-item"><a href="/" target="_self" class="nav-list-link">首页</a></li><li class="nav-list-item"><a href="/archives/" target="_self" class="nav-list-link">归档</a></li><li class="nav-list-item"><a href="/about.html" target="_self" class="nav-list-link">关于</a></li><li class="nav-list-item"><a href="/links.html" target="_self" class="nav-list-link">友链</a></li><li class="nav-list-item"><a href="https://github.com/HarrisonXi" target="_blank" class="nav-list-link">GITHUB</a></li><li class="nav-list-item"><a href="/atom.xml" target="_self" class="nav-list-link">RSS</a></li></ul></header><main class="container"><div class="post"><article class="post-block"><h1 class="post-title">ObjC中的TypeEncodings</h1><div class="post-subtitle">模型解析必备技能点</div><div class="post-info">2018-05-15<a href="/categories/ObjC" class="post-category">ObjC</a></div><div class="post-content"><p>参考 Apple Developer 官方文档：<a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html" target="_blank" rel="noopener">Type Encodings</a>，<a href="https://developer.apple.com/documentation/objectivec/objective_c_runtime?language=objc" target="_blank" rel="noopener">Objective-C Runtime</a></p>
+<p>我们在 JSON &lt;-&gt; Dictionary &lt;-&gt; Model 中面临的一个很大的问题就是判断数据需要转换成什么样的类型。好在 ObjC 作为一款动态语言，利用 runtime 可以轻松解决这个问题。再配合转换器和 KVC，就可以轻松把我们解析好的值放进对应 Model 里。今天要给大家介绍的就是这个类型编码（Type Encodings）的具体细节。</p>
+<a id="more"></a>
+
+<h1 id="ObjC-的-type-encodings-列表"><a href="#ObjC-的-type-encodings-列表" class="headerlink" title="ObjC 的 type encodings 列表"></a>ObjC 的 type encodings 列表</h1><table>
+<thead>
+<tr>
+<th>编码</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>c</td>
+<td>char 类型</td>
+</tr>
+<tr>
+<td>i</td>
+<td>int 类型</td>
+</tr>
+<tr>
+<td>s</td>
+<td>short 类型</td>
+</tr>
+<tr>
+<td>l</td>
+<td>long 类型，仅用在 32-bit 设备上</td>
+</tr>
+<tr>
+<td>q</td>
+<td>long long 类型</td>
+</tr>
+<tr>
+<td>C</td>
+<td>unsigned char 类型</td>
+</tr>
+<tr>
+<td>I</td>
+<td>unsigned int 类型</td>
+</tr>
+<tr>
+<td>S</td>
+<td>unsigned short 类型</td>
+</tr>
+<tr>
+<td>L</td>
+<td>unsigned long 类型</td>
+</tr>
+<tr>
+<td>Q</td>
+<td>unsigned long long 类型</td>
+</tr>
+<tr>
+<td>f</td>
+<td>float 类型</td>
+</tr>
+<tr>
+<td>d</td>
+<td>double 类型，long double 不被 ObjC 支持，所以也是指向此编码</td>
+</tr>
+<tr>
+<td>B</td>
+<td>bool 或 _Bool 类型</td>
+</tr>
+<tr>
+<td>v</td>
+<td>void 类型</td>
+</tr>
+<tr>
+<td>*</td>
+<td>C 字串（char *）类型</td>
+</tr>
+<tr>
+<td>@</td>
+<td>对象（id）类型</td>
+</tr>
+<tr>
+<td>#</td>
+<td>Class 类型</td>
+</tr>
+<tr>
+<td>:</td>
+<td>SEL 类型</td>
+</tr>
+<tr>
+<td>[array type]</td>
+<td>C 数组类型（注意这不是 NSArray）</td>
+</tr>
+<tr>
+<td>{name=type…}</td>
+<td>结构体类型</td>
+</tr>
+<tr>
+<td>(name=type…)</td>
+<td>联合体类型</td>
+</tr>
+<tr>
+<td>bnum</td>
+<td>位段（bit field）类型用 b 表示，num 表示字节数，这个类型很少用</td>
+</tr>
+<tr>
+<td>^type</td>
+<td>一个指向 type 类型的指针类型</td>
+</tr>
+<tr>
+<td>?</td>
+<td>未知类型</td>
+</tr>
+</tbody></table>
+<h1 id="C-语言基础数据类型的-type-encodings"><a href="#C-语言基础数据类型的-type-encodings" class="headerlink" title="C 语言基础数据类型的 type encodings"></a>C 语言基础数据类型的 type encodings</h1><h2 id="整型和浮点型数据"><a href="#整型和浮点型数据" class="headerlink" title="整型和浮点型数据"></a>整型和浮点型数据</h2><p>简单给大家举个例子，我们先来看看常用的数值类型，用下面的代码来打印日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">NSLog(@&quot;char     : %s, %lu&quot;, @encode(char), sizeof(char));</span><br><span class="line">NSLog(@&quot;short    : %s, %lu&quot;, @encode(short), sizeof(short));</span><br><span class="line">NSLog(@&quot;int      : %s, %lu&quot;, @encode(int), sizeof(int));</span><br><span class="line">NSLog(@&quot;long     : %s, %lu&quot;, @encode(long), sizeof(long));</span><br><span class="line">NSLog(@&quot;long long: %s, %lu&quot;, @encode(long long), sizeof(long long));</span><br><span class="line">NSLog(@&quot;float    : %s, %lu&quot;, @encode(float), sizeof(float));</span><br><span class="line">NSLog(@&quot;double   : %s, %lu&quot;, @encode(double), sizeof(double));</span><br><span class="line">NSLog(@&quot;NSInteger: %s, %lu&quot;, @encode(NSInteger), sizeof(NSInteger));</span><br><span class="line">NSLog(@&quot;CGFloat  : %s, %lu&quot;, @encode(CGFloat), sizeof(CGFloat));</span><br><span class="line">NSLog(@&quot;int32_t  : %s, %lu&quot;, @encode(int32_t), sizeof(int32_t));</span><br><span class="line">NSLog(@&quot;int64_t  : %s, %lu&quot;, @encode(int64_t), sizeof(int64_t));</span><br></pre></td></tr></table></figure>
+
+<p>在 32-bit 设备上输出日志如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">char     : c, 1</span><br><span class="line">short    : s, 2</span><br><span class="line">int      : i, 4</span><br><span class="line">long     : l, 4</span><br><span class="line">long long: q, 8</span><br><span class="line">float    : f, 4</span><br><span class="line">double   : d, 8</span><br><span class="line">NSInteger: i, 4</span><br><span class="line">CGFloat  : f, 4</span><br><span class="line">int32_t  : i, 4</span><br><span class="line">int64_t  : q, 8</span><br></pre></td></tr></table></figure>
+
+<p>大家注意下上面日志里的 <code>long</code> 类型输出结果，然后我们再看下在 64-bit 设备上的输出日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">char     : c, 1</span><br><span class="line">short    : s, 2</span><br><span class="line">int      : i, 4</span><br><span class="line">long     : q, 8</span><br><span class="line">long long: q, 8</span><br><span class="line">float    : f, 4</span><br><span class="line">double   : d, 8</span><br><span class="line">NSInteger: q, 8</span><br><span class="line">CGFloat  : d, 8</span><br><span class="line">int32_t  : i, 4</span><br><span class="line">int64_t  : q, 8</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 <code>long</code> 的长度变成了 8，而且类型编码也变成 <code>q</code>，这就是表格里那段话的意思。</p>
+<p>所以呢，一般如果想要整形的长度固定且长度能被一眼看出，建议使用例子最后的 <code>int32_t</code> 和 <code>int64_t</code>，尽量少去使用 <code>long</code> 类型。</p>
+<p>然后要提一下 <code>NSInteger</code> 和 <code>CGFloat</code>，这俩都是针对不同 CPU 分开定义的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#if __LP64__ || (TARGET_OS_EMBEDDED &amp;&amp; !TARGET_OS_IPHONE) || TARGET_OS_WIN32 || NS_BUILD_32_LIKE_64</span><br><span class="line">typedef long NSInteger;</span><br><span class="line">#else</span><br><span class="line">typedef int NSInteger;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">#if defined(__LP64__) &amp;&amp; __LP64__</span><br><span class="line"># define CGFLOAT_TYPE double</span><br><span class="line">#else</span><br><span class="line"># define CGFLOAT_TYPE float</span><br><span class="line">#endif</span><br><span class="line">typedef CGFLOAT_TYPE CGFloat;</span><br></pre></td></tr></table></figure>
+
+<p>所以他们在 32-bit 设备上长度为 4，在 64-bit 设备上长度为 8，对应类型编码也会有变化。</p>
+<h2 id="布尔数据"><a href="#布尔数据" class="headerlink" title="布尔数据"></a>布尔数据</h2><p>用下面的代码打印日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NSLog(@&quot;bool     : %s, %lu&quot;, @encode(bool), sizeof(bool));</span><br><span class="line">NSLog(@&quot;_Bool    : %s, %lu&quot;, @encode(_Bool), sizeof(_Bool));</span><br><span class="line">NSLog(@&quot;BOOL     : %s, %lu&quot;, @encode(BOOL), sizeof(BOOL));</span><br><span class="line">NSLog(@&quot;Boolean  : %s, %lu&quot;, @encode(Boolean), sizeof(Boolean));</span><br><span class="line">NSLog(@&quot;boolean_t: %s, %lu&quot;, @encode(boolean_t), sizeof(boolean_t));</span><br></pre></td></tr></table></figure>
+
+<p>在 32-bit 设备上输出日志如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bool     : B, 1</span><br><span class="line">_Bool    : B, 1</span><br><span class="line">BOOL     : c, 1</span><br><span class="line">Boolean  : C, 1</span><br><span class="line">boolean_t: i, 4</span><br></pre></td></tr></table></figure>
+
+<p>在 64-bit 设备上输出日志如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bool     : B, 1</span><br><span class="line">_Bool    : B, 1</span><br><span class="line">BOOL     : B, 1</span><br><span class="line">Boolean  : C, 1</span><br><span class="line">boolean_t: I, 4</span><br></pre></td></tr></table></figure>
+
+<p>可以看到我们最常用的 <code>BOOL</code> 类型还真的是有点妖，这个妖一句两句还说不清楚，我在下一篇博客里会介绍一下。在本篇博客里，这个变化倒是对我们解析模型不会产生很大的影响，所以先略过。</p>
+<h2 id="void、指针和数组"><a href="#void、指针和数组" class="headerlink" title="void、指针和数组"></a>void、指针和数组</h2><p>用下面的代码打印日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NSLog(@&quot;void    : %s, %lu&quot;, @encode(void), sizeof(void));</span><br><span class="line">NSLog(@&quot;char *  : %s, %lu&quot;, @encode(char *), sizeof(char *));</span><br><span class="line">NSLog(@&quot;short * : %s, %lu&quot;, @encode(short *), sizeof(short *));</span><br><span class="line">NSLog(@&quot;int *   : %s, %lu&quot;, @encode(int *), sizeof(int *));</span><br><span class="line">NSLog(@&quot;char[3] : %s, %lu&quot;, @encode(char[3]), sizeof(char[3]));</span><br><span class="line">NSLog(@&quot;short[3]: %s, %lu&quot;, @encode(short[3]), sizeof(short[3]));</span><br><span class="line">NSLog(@&quot;int[3]  : %s, %lu&quot;, @encode(int[3]), sizeof(int[3]));</span><br></pre></td></tr></table></figure>
+
+<p>在 64-bit 设备上输出日志如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">void    : v, 1</span><br><span class="line">char *  : *, 8</span><br><span class="line">short * : ^s, 8</span><br><span class="line">int *   : ^i, 8</span><br><span class="line">char[3] : [3c], 3</span><br><span class="line">short[3]: [3s], 6</span><br><span class="line">int[3]  : [3i], 12</span><br></pre></td></tr></table></figure>
+
+<p>在 32-bit 设备上指针类型的长度会变成 4，这个就不多介绍了。</p>
+<p>可以看到只有 C 字串类型比较特殊，会处理成 <code>*</code> 编码，其它整形数据的指针类型还是正常处理的。</p>
+<h2 id="结构体和联合体"><a href="#结构体和联合体" class="headerlink" title="结构体和联合体"></a>结构体和联合体</h2><p>用下面的代码打印日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NSLog(@&quot;CGSize: %s, %lu&quot;, @encode(CGSize), sizeof(CGSize));</span><br></pre></td></tr></table></figure>
+
+<p>在 64-bit 设备上输出日志如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CGSize: &#123;CGSize&#x3D;dd&#125;, 16</span><br></pre></td></tr></table></figure>
+
+<p>因为 <code>CGSize</code> 内部的字段都是 <code>CGFloat</code> 的，在 64-bit 设备上实际是 <code>double</code> 类型，所以等于号后面是两个 <code>d</code> 编码，总长度是 16。</p>
+<p>联合体的编码格式十分类似，不多赘述。而位段现在用到的十分少，也不介绍了，有兴趣了解位段的可以参考<a href="https://en.wikipedia.org/wiki/Bit_field" target="_blank" rel="noopener">维基百科</a>。</p>
+<h1 id="ObjC-数据类型的-type-encodings"><a href="#ObjC-数据类型的-type-encodings" class="headerlink" title="ObjC 数据类型的 type encodings"></a>ObjC 数据类型的 type encodings</h1><p>ObjC 数据类型大部分情况下要配合 runtime 使用，单独用 <code>@encode</code> 操作符的话，基本上也就能做到下面这些：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">NSLog(@&quot;Class   : %s&quot;, @encode(Class));</span><br><span class="line">NSLog(@&quot;NSObject: %s&quot;, @encode(NSObject));</span><br><span class="line">NSLog(@&quot;NSString: %s&quot;, @encode(NSString));</span><br><span class="line">NSLog(@&quot;id      : %s&quot;, @encode(id));</span><br><span class="line">NSLog(@&quot;Selector: %s&quot;, @encode(SEL));</span><br></pre></td></tr></table></figure>
+
+<p>输出日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Class   : #</span><br><span class="line">NSObject: &#123;NSObject&#x3D;#&#125;</span><br><span class="line">NSString: &#123;NSString&#x3D;#&#125;</span><br><span class="line">id      : @</span><br><span class="line">Selector: :</span><br></pre></td></tr></table></figure>
+
+<p>可以看到对象的类名称的编码方式跟结构体相似，等于号后面那个 <code>#</code> 就是 <code>isa</code> 指针了，是一个 <code>Class</code> 类型的数据。</p>
+<h2 id="类属性和成员变量的-type-encodings"><a href="#类属性和成员变量的-type-encodings" class="headerlink" title="类属性和成员变量的 type encodings"></a>类属性和成员变量的 type encodings</h2><p>我们可以用 runtime 去获得类的属性对应的 type encoding：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">objc_property_t property &#x3D; class_getProperty([NSObject class], &quot;description&quot;);</span><br><span class="line">if (property) &#123;</span><br><span class="line">    NSLog(@&quot;%s - %s&quot;, property_getName(property), property_getAttributes(property));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    NSLog(@&quot;not found&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们会获得这么一段输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">description - T@&quot;NSString&quot;,R,C</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>R</code> 表示 <code>readonly</code>，<code>C</code> 表示 <code>copy</code>，这都是属性的修饰词，不过在本篇先不多介绍。</p>
+<p>主要要说的是这里的 <code>T</code>，也就是 <code>type</code>，后面跟的这段 <code>@&quot;NSString&quot;</code> 就是 type encoding 了。可以看到 runtime 比较贴心的用双引号的方式告诉了我们这个对象的实际类型是什么。</p>
+<p>关于属性的修饰词，更多内容可以参考 <a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtPropertyIntrospection.html" target="_blank" rel="noopener">Apple 文档</a>。其中 <code>T</code> 段始终会是第一个 attribute，所以处理起来会简单点。</p>
+<p>而如果是成员变量的话，我们可以用类似下面的办法去获得 type encoding：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@interface TestObject : NSObject &#123;</span><br><span class="line">    int testInt;</span><br><span class="line">    NSString *testStr;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">Ivar ivar &#x3D; class_getInstanceVariable([TestObject class], &quot;testInt&quot;);</span><br><span class="line">if (ivar) &#123;</span><br><span class="line">    NSLog(@&quot;%s - %s&quot;, ivar_getName(ivar), ivar_getTypeEncoding(ivar));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    NSLog(@&quot;not found&quot;);</span><br><span class="line">&#125;</span><br><span class="line">ivar &#x3D; class_getInstanceVariable([TestObject class], &quot;testStr&quot;);</span><br><span class="line">if (ivar) &#123;</span><br><span class="line">    NSLog(@&quot;%s - %s&quot;, ivar_getName(ivar), ivar_getTypeEncoding(ivar));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    NSLog(@&quot;not found&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>获得的输出会是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">testInt - i</span><br><span class="line">testStr - @&quot;NSString&quot;</span><br></pre></td></tr></table></figure>
+
+<p>因为成员变量没有属性修饰词那些，所以直接获得的就是 type encoding，格式和属性的 <code>T</code> attribute 一样。</p>
+<h2 id="类方法的-type-encoding"><a href="#类方法的-type-encoding" class="headerlink" title="类方法的 type encoding"></a>类方法的 type encoding</h2><p>有的时候模型设置数据的方式并不是用属性的方式，而是用方法的方式。我们举个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Method method &#x3D; class_getInstanceMethod([UIView class], @selector(setFrame:));</span><br><span class="line">if (method) &#123;</span><br><span class="line">    NSLog(@&quot;%@ - %s&quot;, NSStringFromSelector(method_getName(method)), method_getTypeEncoding(method));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    NSLog(@&quot;not found&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以获得输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setFrame: - v48@0:8&#123;CGRect&#x3D;&#123;CGPoint&#x3D;dd&#125;&#123;CGSize&#x3D;dd&#125;&#125;16</span><br></pre></td></tr></table></figure>
+
+<p>输出就是整个类方法的 type encoding，关于这个我没找到官方文档的介绍，所以只能根据自己的推测来介绍这个编码的格式：</p>
+<ul>
+<li>第一个字符 <code>v</code> 是表示函数的返回值是 void 类型</li>
+<li>后续的 <code>48</code> 表示函数参数表的长度（指返回值之后的所有参数，虽然返回值在 runtime 里也算是个参数）</li>
+<li>后续的 <code>@</code> 表示一个对象，在 ObjC 里这里传递的是 <code>self</code>，实例方法是要传递实例对象给函数的</li>
+<li>后续的 <code>0</code> 上面参数对应的 offset</li>
+<li>后续的 <code>:</code> 表示一个 selector，用来指出要调用的函数是哪个</li>
+<li>后续的 <code>8</code> 是 selector 参数的 offset，因为这是跑在 64-bit 设备上的，所以 <code>@</code> 和 <code>:</code> 的长度都是 8</li>
+<li>后续的 <code>{CGRect={CGPoint=dd}{CGSize=dd}}</code> 是 CGRect 结构体的 type encoding，从这里也可以看出结构体嵌套使用时对应的 type encoding 是这种格式的，这个结构体包含 4 个 double 类型的数据，所以总长度应该是 32</li>
+<li>最后的 <code>16</code> 是最后一个参数的 offset，加上刚刚的参数长度 32 正好是整个函数参数表的长度</li>
+</ul>
+<p>我们拿另一个类方法来验证下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Method method &#x3D; class_getInstanceMethod([UIViewController class], @selector(title));</span><br><span class="line">if (method) &#123;</span><br><span class="line">    NSLog(@&quot;%@ - %s&quot;, NSStringFromSelector(method_getName(method)), method_getTypeEncoding(method));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    NSLog(@&quot;not found&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@16@0:8</span><br></pre></td></tr></table></figure>
+
+<p>可以看到很可惜，NSString 类型在类方法的 type encoding 里是不会有引号内容的，所以我们只能知道这个参数是个 id 类型。编码的具体解析：</p>
+<ul>
+<li><code>@</code> - 返回 id 类型</li>
+<li><code>16</code> - 参数表总长度</li>
+<li><code>@</code> - 用来传递 <code>self</code>，是 id 类型</li>
+<li><code>0</code> - <code>self</code> 参数的 offset</li>
+<li><code>:</code> - 传递具体要调用哪个方法，selector 类型</li>
+<li><code>8</code> - selector 参数的 offset</li>
+</ul>
+<p>如果是类的静态方法而不是实例方法，我们可以用类似这样的代码获得 Method 结构体：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Method method &#x3D; class_getClassMethod([TestObject class], @selector(testMethod));</span><br></pre></td></tr></table></figure>
+
+<p>不过说起来这种格式的编码还是不容易解析，所以我们可以用另一种方式直接拿对应位置的参数的编码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Method method &#x3D; class_getInstanceMethod([UIView class], @selector(setFrame:));</span><br><span class="line">if (method) &#123;</span><br><span class="line">    NSLog(@&quot;%@ - %d&quot;, NSStringFromSelector(method_getName(method)), method_getNumberOfArguments(method));</span><br><span class="line">    NSLog(@&quot;%@ - %s&quot;, NSStringFromSelector(method_getName(method)), method_copyArgumentType(method, 2));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    NSLog(@&quot;not found&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出内容如下，这里是获得了 index 为 2 的参数的编码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setFrame: - 3</span><br><span class="line">setFrame: - &#123;CGRect&#x3D;&#123;CGPoint&#x3D;dd&#125;&#123;CGSize&#x3D;dd&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就只会获得 type encoding 而不会带上 offset 信息，就容易解析多了。</p>
+<p>另外从这里也可以看到，返回值其实也是算一个参数。</p>
+<h1 id="其它一些-type-encodings-细节"><a href="#其它一些-type-encodings-细节" class="headerlink" title="其它一些 type encodings 细节"></a>其它一些 type encodings 细节</h1><p>还有些 type encodings 的细节和解析模型其实不太相关，不过也在这里介绍一下。</p>
+<h2 id="protocol-类型的-type-encoding"><a href="#protocol-类型的-type-encoding" class="headerlink" title="protocol 类型的 type encoding"></a>protocol 类型的 type encoding</h2><p>用以下代码打印日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">objc_property_t property &#x3D; class_getProperty([UIScrollView class], &quot;delegate&quot;);</span><br><span class="line">if (property) &#123;</span><br><span class="line">    NSLog(@&quot;%s - %s&quot;, property_getName(property), property_getAttributes(property));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    NSLog(@&quot;not found&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>会获得输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delegate - T@&quot;&lt;UIScrollViewDelegate&gt;&quot;,W,N,V_delegate</span><br></pre></td></tr></table></figure>
+
+<p>可以看到在属性的 type encoding 里，会用双引号和尖括号表示出 protocol 的类型</p>
+<p>但是去查看方法的话：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Method method &#x3D; class_getInstanceMethod([UIScrollView class], @selector(setDelegate:));</span><br><span class="line">if (method) &#123;</span><br><span class="line">    NSLog(@&quot;%@ - %d&quot;, NSStringFromSelector(method_getName(method)), method_getNumberOfArguments(method));</span><br><span class="line">    NSLog(@&quot;%@ - %s&quot;, NSStringFromSelector(method_getName(method)), method_copyArgumentType(method, 2));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    NSLog(@&quot;not found&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>依然还是只能得到这样的编码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setDelegate: - 3</span><br><span class="line">setDelegate: - @</span><br></pre></td></tr></table></figure>
+
+<p>protocol 类型在模型解析中并没有很大的指导作用，因为我们无法知道具体实现了 protocol 协议的 class 是什么。</p>
+<h2 id="block-类型的-type-encoding"><a href="#block-类型的-type-encoding" class="headerlink" title="block 类型的 type encoding"></a>block 类型的 type encoding</h2><p>直接亮结果吧，获得的 type encoding 是 <code>@?</code>，没有任何参考意义，还好我们做模型解析用不到这个。</p>
+<h2 id="关于方法参数的内存对齐"><a href="#关于方法参数的内存对齐" class="headerlink" title="关于方法参数的内存对齐"></a>关于方法参数的内存对齐</h2><p>对 <code>setEnable:</code> 方法取 type encoding 的话会得到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setEnabled: - v20@0:8B16</span><br></pre></td></tr></table></figure>
+
+<p>可是 bool 的长度明明只有 1 啊，所以这是为什么呢？感兴趣的朋友可以了解下<a href="https://en.wikipedia.org/wiki/Data_structure_alignment" target="_blank" rel="noopener">内存对齐</a>。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>关于 Type Encodings，要讲的差不多就这么多了。暂时没有想到还有什么要补充的，后面想到了再补上来吧。</p>
+<p>希望对大家有帮助，也欢迎大家指正错误或者进行讨论。</p>
+</div></article></div></main><footer><div class="paginator"><a href="/2018/05/ObjC%E7%9A%84BOOL%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8YES%E3%80%81NO%E8%80%8C%E4%B8%8D%E5%BB%BA%E8%AE%AE%E7%94%A8true%E3%80%81false%EF%BC%9F.html" class="prev">上一篇</a><a href="/2018/03/%E5%9C%A8iOS%E4%B8%AD%E5%A6%82%E4%BD%95%E6%AD%A3%E7%A1%AE%E7%9A%84%E5%AE%9E%E7%8E%B0%E8%A1%8C%E9%97%B4%E8%B7%9D%E4%B8%8E%E8%A1%8C%E9%AB%98.html" class="next">下一篇</a></div><div id="disqus_thread"></div><script>var disqus_shortname = 'ping-guo-li-de-bo-ke';
+var disqus_identifier = '2018/05/ObjC中的TypeEncodings.html';
+var disqus_title = 'ObjC中的TypeEncodings';
+var disqus_url = 'https://blog.harrisonxi.com/2018/05/ObjC中的TypeEncodings.html';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//ping-guo-li-de-bo-ke.disqus.com/count.js" async></script><div class="copyright"><p>© 2017 - 2024 <a href="https://blog.harrisonxi.com">苹果梨</a>, powered by <a href="https://hexo.io/" target="_blank">Hexo</a> and <a href="https://github.com/pinggod/hexo-theme-apollo" target="_blank">hexo-theme-apollo</a>.</p></div></footer></div><script async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML" integrity="sha384-crwIf/BuaWM9rM65iM+dWFldgQ1Un8jWZMuh3puxb8TOY9+linwLoI7ZHZT+aekW" crossorigin="anonymous"></script><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));ga('create',"UA-110376743-1",'auto');ga('send','pageview');</script></body></html>
